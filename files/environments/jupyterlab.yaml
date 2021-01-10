@@ -5,6 +5,7 @@ dependencies:
   - pip
   - nb_conda_kernels
   - jupyterlab
+  - ipywidgets
   - dask-gateway
   # required to launch jupterlab from jupyterhub
   - jupyterhub
