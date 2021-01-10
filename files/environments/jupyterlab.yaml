@@ -1,0 +1,13 @@
+name: jupyterlab
+channels:
+  - conda-forge
+dependencies:
+  - pip
+  - nb_conda_kernels
+  - jupyterlab
+  - dask-gateway
+  # required to launch jupterlab from jupyterhub
+  - jupyterhub
+  - pip:
+      # batchspawner latest slurm fixes
+      - https://github.com/jupyterhub/batchspawner/archive/129951ad11e3049567b94adb8c9725dc22225a1a.tar.gz

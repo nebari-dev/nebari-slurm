@@ -1,0 +1,86 @@
+node_exporter:
+  version: "1.0.1"
+  port: "9100"
+
+prometheus:
+  version: "2.23.0"
+  port: "9090"
+
+prometheus_slurm_exporter:
+  version: "0.15"
+  port: "9341"
+
+grafana:
+  port: "3000"
+
+traefik:
+  version: "1.7.25"
+
+jupyterhub:
+  port: 8000
+  hub_environment: jupyterhub
+  lab_environment: jupyterlab
+  services:
+    prometheus: dpsZlpwaAhi9K8kKf4ZPvCJCuL7D25k1
+    dask_gateway: CStgn1NN8DogQR1KajuoQfye1qNRqx6zsh
+
+dask_gateway:
+  api_port: 8010
+  tcp_port: 8011
+  environment: dask-gateway
+
+mysql:
+  database: slurm
+  users:
+    - username: slurm
+      password: password1
+      privileges: '*.*:ALL'
+
+slurm:
+  munge_key: eC36WeTj1JKUGyQEcfqkaRO0fDBoyTVHnkn7kE5sOZ1YUYyqWMSp3qeRZEmtEX9B
+  config:
+    ClusterName: cluster
+    # slurmctld options
+    SlurmctldPort: 6817
+    SlurmctldLogFile: /var/log/slurm-llnl/slurmctld.log
+    SlurmctldPidFile: /var/lib/slurm-llnl/slurmctld.pid
+    StateSaveLocation: /var/lib/slurm-llnl/slurmctld
+    # slurmd options
+    SlurmdPort: 6818
+    SlurmdLogFile: /var/log/slurm-llnl/slurmd.log
+    SlurmdPidFile: /var/lib/slurm-llnl/slurmd.pid
+    SlurmdSpoolDir: /var/lib/slurm-llnl/slurmd
+    # jobs consume cpus not nodes
+    # https://slurm.schedmd.com/cons_res_share.html
+    SelectType: select/cons_res
+    SelectTypeParameters: CR_CPU_MEMORY
+  dbd:
+    # slurmdbd options
+    DbdPort: 6819
+    LogFile: /var/log/slurm-llnl/slurmdbd.log
+    PidFile: /var/lib/slurm-llnl/slurmdbd.pid
+
+installed_packages:
+  - openmpi-doc
+  - openmpi-bin
+  - openmpi-common
+
+enabled_users:
+  - username: example-user
+    uid: 10000
+    fullname: Example User
+    email: example-user@example.com
+    # mkpasswd --method=sha-512
+    # password: example-user
+    password: "$6$3aaf4gr8D$2T31r9/GtXM6rVY8oHOejn.sThwhBZehbPZC.ZkN0XJOZUuguR9VnRQRYmqYAt9eW3LgLR21q1kbqSYSEDm5U."
+    primary_group: example-user
+    groups:
+      - users
+      - example-user
+
+enabled_groups:
+  - name: example-user
+    gid: 10000
+
+disabled_users: []
+disabled_groups: []

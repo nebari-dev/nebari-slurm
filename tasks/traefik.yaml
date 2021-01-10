@@ -1,0 +1,9 @@
+---
+ - name: Download traefik binary
+   become: true
+   get_url:
+      url: "https://github.com/containous/traefik/releases/download/v{{ traefik.version }}/traefik_linux-amd64"
+      dest: /usr/local/bin/traefik
+      owner: root
+      group: root
+      mode: '0755'

@@ -1,0 +1,41 @@
+##
+## This file is maintained by Ansible - ALL MODIFICATIONS WILL BE REVERTED
+## https://prometheus.io/docs/prometheus/latest/configuration/configuration/
+##
+
+global:
+  scrape_interval:     15s
+  evaluation_interval: 15s
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+  - static_configs:
+    - targets:
+      # - alertmanager:9093
+
+# Load rules once and periodically evaluate them according to the global 'evaluation_interval'.
+rule_files:
+  # - "first_rules.yml"
+  # - "second_rules.yml"
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+    - targets:
+        - 'localhost:{{ prometheus.port }}'
+{% for host in groups['all'] %}
+        - '{{ host }}:{{ node_exporter.port }}'
+{% endfor %}
+
+  - job_name: 'jupyterhub'
+    bearer_token: '{{ jupyterhub.services.prometheus }}'
+    metrics_path: '/hub/metrics'
+    static_configs:
+      - targets:
+         - 'localhost:{{ jupyterhub.port }}'
+
+  - job_name: 'slurm'
+    static_configs:
+      - targets:
+        - 'localhost:{{ prometheus_slurm_exporter.port }}'

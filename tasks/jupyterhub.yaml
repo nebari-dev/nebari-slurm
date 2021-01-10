@@ -1,0 +1,62 @@
+---
+ - name: Create hub config directory
+   become: true
+   file:
+     path: /etc/jupyterhub
+     state: directory
+     mode: '0755'
+
+ - name: Create hub state directory
+   become: true
+   file:
+     path: /var/lib/jupyterhub
+     state: directory
+     mode: '0755'
+
+ - name: Copy jupyterhub_config.py file
+   become: true
+   template:
+     src: templates/jupyterhub_config.py.j2
+     dest: /etc/jupyterhub/jupyterhub_config.py
+   register: _jupyterhub_config
+
+ - name: Setup JupyterHub systemd unit
+   become: true
+   copy:
+     content: |
+       [Service]
+       User=root
+       Restart=always
+       WorkingDirectory=/var/lib/jupyterhub
+       # Protect bits that are normally shared across the system
+       PrivateTmp=yes
+       PrivateDevices=yes
+       ProtectKernelTunables=yes
+       ProtectKernelModules=yes
+       # By default, $PATH is pretty bare (thanks, systemd)
+       # We add the conda dir & /bin
+       # batchspawner uses sudo, which is in /bin (at least on CentOS)
+       Environment=PATH={{ miniforge.home }}/envs/{{ jupyterhub.hub_environment }}/bin:$PATH:/bin:/usr/bin:/usr/local/bin
+       ExecStart={{ miniforge.home }}/envs/{{ jupyterhub.hub_environment }}/bin/jupyterhub --config /etc/jupyterhub/jupyterhub_config.py --upgrade-db
+
+       [Install]
+       WantedBy=multi-user.target
+     dest: /etc/systemd/system/jupyterhub.service
+     mode: '0544'
+   register: _jupyterhub_service
+
+ - name: Restart JupyterHub
+   become: true
+   systemd:
+     name: jupyterhub
+     enabled: true
+     state: restarted
+     daemon_reload: true
+   when: _jupyterhub_service.changed or _jupyterhub_config.changed
+
+ - name: Allow jupyterhub through firewall in local network
+   become: true
+   community.general.ufw:
+     rule: allow
+     port: "{{ jupyterhub.port }}"
+     proto: tcp

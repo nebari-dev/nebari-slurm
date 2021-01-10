@@ -1,0 +1,13 @@
+miniforge:
+  version: "4.9.2-3"
+  home: /opt/conda
+
+nfs_client:
+  mounts:
+   - path: /home
+     host: hpc01-test
+   - path: /opt/conda
+     host: hpc01-test
+
+cifs_client:
+  mounts: []

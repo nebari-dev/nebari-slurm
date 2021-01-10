@@ -1,0 +1,135 @@
+---
+ - name: Check that the node exporter binary exists
+   stat:
+     path: "/usr/local/bin/prometheus"
+   register: _prometheus_stat
+
+ - name: Download prometheus binary to local folder
+   get_url:
+     url: "https://github.com/prometheus/prometheus/releases/download/v{{ prometheus.version }}/prometheus-{{ prometheus.version }}.linux-amd64.tar.gz"
+     dest: "/tmp/prometheus-{{ prometheus.version }}.linux-amd64.tar.gz"
+     force: false
+     mode: 0755
+   when: not _prometheus_stat.stat.exists
+
+ - name: Unpack prometheus binary
+   unarchive:
+     src: "/tmp/prometheus-{{ prometheus.version }}.linux-amd64.tar.gz"
+     remote_src: true
+     dest: "/tmp"
+     creates: "/tmp/prometheus-{{ prometheus.version }}.linux-amd64/prometheus"
+   when: not _prometheus_stat.stat.exists
+
+ - name: Install prometheus binary
+   become: true
+   copy:
+     src: "/tmp/prometheus-{{ prometheus.version }}.linux-amd64/prometheus"
+     dest: "/usr/local/bin/prometheus"
+     remote_src: true
+     mode: 0755
+     owner: root
+     group: root
+   when: not _prometheus_stat.stat.exists
+
+ - name: Create prometheus group
+   become: true
+   group:
+    name: prometheus
+    state: present
+    system: true
+
+ - name: Create the prometheus user
+   become: true
+   user:
+     name: prometheus
+     groups: prometheus
+     append: true
+     shell: /usr/sbin/nologin
+     system: true
+     create_home: false
+     home: /
+
+ - name: Ensure that promethus configuration directory exists
+   become: true
+   file:
+     path: /etc/prometheus
+     state: directory
+     mode: '0700'
+     owner: prometheus
+     group: prometheus
+
+ - name: Ensure that promethus data directory exists
+   become: true
+   file:
+     path: /var/lib/prometheus
+     state: directory
+     mode: '0755'
+     owner: prometheus
+     group: prometheus
+
+ - name: Copy prometheus configuration
+   become: true
+   template:
+     src: templates/prometheus.yaml.j2
+     dest: /etc/prometheus/prometheus.yaml
+     mode: '0600'
+     owner: prometheus
+     group: prometheus
+   register: _prometheus_configuration
+
+ - name: Copy the prometheus systemd service file
+   become: true
+   copy:
+     content: |
+       [Unit]
+       Description=Prometheus
+       After=network-online.target
+
+       [Service]
+       Type=simple
+       User=prometheus
+       Group=prometheus
+       ExecReload=/bin/kill -HUP $MAINPID
+       ExecStart=/usr/local/bin/prometheus --config.file=/etc/prometheus/prometheus.yaml --storage.tsdb.path=/var/lib/prometheus --web.listen-address=:{{ prometheus.port }}
+       CapabilityBoundingSet=CAP_SET_UID
+       LimitNOFILE=65000
+       LockPersonality=true
+       NoNewPrivileges=true
+       MemoryDenyWriteExecute=true
+       PrivateDevices=true
+       PrivateTmp=true
+       ProtectHome=true
+       RemoveIPC=true
+       RestrictSUIDSGID=true
+       PrivateUsers=true
+       ProtectControlGroups=true
+       ProtectKernelModules=true
+       ProtectKernelTunables=true
+       ProtectSystem=strict
+       SyslogIdentifier=prometheus
+       Restart=always
+       ReadWritePaths=/var/lib/prometheus
+
+       [Install]
+       WantedBy=multi-user.target
+     dest: /etc/systemd/system/prometheus.service
+     owner: root
+     group: root
+     mode: 0644
+   register: _prometheus_service
+
+ - name: Ensure Prometheus is enabled on boot
+   become: true
+   systemd:
+     daemon_reload: true
+     name: prometheus
+     enabled: true
+     state: restarted
+   when: _prometheus_service.changed or _prometheus_configuration.changed
+
+ - name: Allow prometheus through firewall in local network
+   become: true
+   community.general.ufw:
+     rule: allow
+     port: "{{ prometheus.port }}"
+     proto: tcp

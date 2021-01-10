@@ -1,0 +1,83 @@
+---
+ - name: Create dask group
+   become: true
+   group:
+    name: dask
+    state: present
+    system: true
+
+ - name: Create the dask user
+   become: true
+   user:
+     name: dask
+     groups: dask
+     append: true
+     shell: /usr/sbin/nologin
+     system: true
+     create_home: false
+     home: /
+
+ - name: Ensure that dask-gateway configuration directory exists
+   become: true
+   file:
+     path: /etc/dask-gateway
+     state: directory
+     mode: '0700'
+     owner: dask
+     group: dask
+
+ - name: Ensure that dask-gateway runtime directory exists
+   become: true
+   file:
+     path: /var/lib/dask-gateway
+     state: directory
+     mode: '0700'
+     owner: dask
+     group: dask
+
+ - name: Copy the dask-gateway configuration
+   become: true
+   template:
+     src: templates/dask_gateway_config.py.j2
+     dest: /etc/dask-gateway/dask_gateway_config.py
+     owner: dask
+     group: dask
+     mode: 0644
+   register: _dask_gateway_configuration
+
+ - name: Copy the dask-gateway systemd service file
+   become: true
+   copy:
+     content: |
+       [Unit]
+       Description=dask-gateway
+       After=network-online.target
+
+       [Service]
+       Type=simple
+       User=root
+       Group=root
+       # By default, $PATH is pretty bare (thanks, systemd)
+       # We add the conda dir & /bin
+       # batchspawner uses sudo, which is in /bin (at least on CentOS)
+       Environment=PATH={{ miniforge.home }}/envs/{{ dask_gateway.environment }}/bin:$PATH:/bin:/usr/bin:/usr/local/bin
+       ExecStart={{ miniforge.home }}/envs/{{ dask_gateway.environment }}/bin/dask-gateway-server -f /etc/dask-gateway/dask_gateway_config.py
+       Restart=always
+       WorkingDirectory=/var/lib/dask-gateway
+
+       [Install]
+       WantedBy=multi-user.target
+     dest: /etc/systemd/system/dask-gateway.service
+     owner: root
+     group: root
+     mode: 0644
+   register: _dask_gateway_service
+
+ - name: Ensure dask-gateway is enabled on boot
+   become: true
+   systemd:
+     daemon_reload: true
+     name: dask-gateway
+     enabled: true
+     state: restarted
+   when: _dask_gateway_configuration.changed or _dask_gateway_service.changed

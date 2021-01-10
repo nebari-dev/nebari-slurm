@@ -1,0 +1,26 @@
+---
+ - name: Install mysql
+   become: true
+   apt:
+     name:
+       - mysql-server
+       - python3
+       - python3-pip
+       - python3-mysqldb
+     state: latest
+     cache_valid_time: 3600
+
+ - name: Create mysql database
+   become: true
+   community.mysql.mysql_db:
+     name: "{{ mysql.database }}"
+     state: present
+
+ - name: Create mysql users
+   become: true
+   community.mysql.mysql_user:
+     name: "{{ item.username }}"
+     password: "{{ item.password }}"
+     priv: "{{ item.privileges }}"
+     state: present
+   with_items: "{{ mysql.users }}"

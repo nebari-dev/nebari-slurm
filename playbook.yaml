@@ -1,0 +1,64 @@
+---
+ - hosts: hpc-master
+   tasks:
+     - name: Install common packages
+       include_tasks: tasks/apt-packages.yaml
+
+     - name: Install users/groups
+       include_tasks: tasks/accounts.yaml
+
+     - name: Install prometheus node_exporter
+       include_tasks: tasks/node-exporter.yaml
+
+     - name: Install prometheus
+       include_tasks: tasks/prometheus.yaml
+
+     - name: Install prometheus slurm-exporter
+       include_tasks: tasks/prometheus-slurm-exporter.yaml
+
+     - name: Install grafana
+       include_tasks: tasks/grafana.yaml
+
+     - name: Install mysql
+       include_tasks: tasks/mysql.yaml
+
+     - name: Install slurm master
+       include_tasks: tasks/slurm-master.yaml
+
+     - name: Install traefik
+       include_tasks: tasks/traefik.yaml
+
+     - name: Install conda
+       include_tasks: tasks/conda.yaml
+
+     - name: Install nfs server
+       include_tasks: tasks/nfs-server.yaml
+
+     - name: Install jupyterhub
+       include_tasks: tasks/jupyterhub.yaml
+
+     - name: Install dask-gateway
+       include_tasks: tasks/dask-gateway.yaml
+
+ - hosts: hpc-worker
+   tasks:
+     - name: Install common packages
+       include_tasks: tasks/apt-packages.yaml
+
+     - name: Install users/groups
+       include_tasks: tasks/accounts.yaml
+
+     - name: Install prometheus node_exporter
+       include_tasks: tasks/node-exporter.yaml
+
+     - name: Install slurm worker
+       include_tasks: tasks/slurm-worker.yaml
+
+     - name: Install nfs client
+       include_tasks: tasks/nfs-client.yaml
+
+     - name: Install cifs client
+       include_tasks: tasks/cifs-client.yaml
+
+     - name: Install conda
+       include_tasks: tasks/conda.yaml

@@ -1,0 +1,59 @@
+##
+## This file is maintained by Ansible - ALL MODIFICATIONS WILL BE REVERTED
+## https://jupyterhub.readthedocs.io/en/stable/getting-started/config-basics.html
+##
+
+from jupyterhub_traefik_proxy import TraefikTomlProxy
+from batchspawner import SlurmSpawner
+
+# Don't kill servers when JupyterHub restarts
+c.JupyterHub.cleanup_servers = False
+
+# We run traefik under JupyterHub. Makes things simpler in this case
+c.JupyterHub.proxy_class = TraefikTomlProxy
+
+# Turn sessions off - we don't use them, since we pass through to slurm
+c.PAMAuthenticator.open_sessions = False
+
+# Listen on all interfaces, since hub should be reachable from spawned nodes
+c.JupyterHub.hub_ip = '0.0.0.0'
+
+c.JupyterHub.spawner_class = SlurmSpawner
+c.SlurmSpawner.default_url = '/lab'
+c.SlurmSpawner.req_memory = '1G'
+c.SlurmSpawner.req_prologue = '''
+export PATH={{ miniforge.home }}/envs/{{ jupyterhub.lab_environment }}/bin:$PATH
+'''
+{% raw %}
+c.SlurmSpawner.batch_script = """#!/bin/bash
+#SBATCH --output={{homedir}}/.jupyterhub_slurmspawner_%j.log
+#SBATCH --job-name=spawner-jupyterhub
+#SBATCH --chdir={{homedir}}
+#SBATCH --export={{keepvars}}
+#SBATCH --get-user-env=L
+{% if partition  %}#SBATCH --partition={{partition}}
+{% endif %}{% if runtime    %}#SBATCH --time={{runtime}}
+{% endif %}{% if memory     %}#SBATCH --mem={{memory}}
+{% endif %}{% if gres       %}#SBATCH --gres={{gres}}
+{% endif %}{% if nprocs     %}#SBATCH --cpus-per-task={{nprocs}}
+{% endif %}{% if reservation%}#SBATCH --reservation={{reservation}}
+{% endif %}{% if options    %}#SBATCH {{options}}{% endif %}
+set -euo pipefail
+trap 'echo SIGTERM received' TERM
+{{prologue}}
+which jupyterhub-singleuser
+{% if srun %}{{srun}} {% endif %}{{cmd}}
+echo "jupyterhub-singleuser ended gracefully"
+{{epilogue}}
+"""
+{% endraw %}
+
+c.JupyterHub.services = [
+{% for service_name in jupyterhub.services %}
+   {
+      'name': "{{ service_name }}",
+      'api_token': "{{ jupyterhub.services[service_name] }}",
+      'admin': True
+   },
+{% endfor %}
+]

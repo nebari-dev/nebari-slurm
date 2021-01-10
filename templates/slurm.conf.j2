@@ -1,0 +1,37 @@
+##
+## This file is maintained by Ansible - ALL MODIFICATIONS WILL BE REVERTED
+##          https://slurm.schedmd.com/slurm.conf.html
+##
+
+AuthType=auth/munge
+CryptoType=crypto/munge
+SlurmUser=slurm
+ControlMachine={{ groups['hpc-master'][0] }}
+
+# Automatically add new/unexpected restarted nodes to cluster
+ReturnToService=2
+
+# default is proctrack/cgroup which is the best but also less than 100% chance of working e.g. in docker
+ProctrackType=proctrack/pgid
+
+# Configuration options
+{% for key in slurm.config | sort %}
+{% if slurm.config[key] != None %}
+{{ key }}={{ slurm.config[key] }}
+{% endif %}
+{% endfor %}
+
+# Accounting
+AccountingStorageType=accounting_storage/slurmdbd
+AccountingStorageHost={{ groups['hpc-master'][0] }}
+AccountingStoragePort={{ slurm.dbd.DbdPort }}
+JobAcctGatherType=jobacct_gather/linux
+JobAcctGatherFrequency=30
+
+# Nodes
+{% for item in groups['hpc-worker'] %}
+NodeName={{ item }} CPUs={{ hostvars[item].slurm_cpus | default(1)}} RealMemory={{ hostvars[item].slurm_memory | default(1024) }} State=UNKNOWN
+{% endfor %}
+
+# Partitions
+PartitionName=general Nodes={{ groups['hpc-worker'] | join(',') }} Default=YES MaxTime=INFINITE State=UP

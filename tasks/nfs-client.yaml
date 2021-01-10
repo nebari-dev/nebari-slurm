@@ -1,0 +1,25 @@
+---
+ - name: Install nfs
+   become: true
+   apt:
+     state: latest
+     cache_valid_time: 3600
+     name:
+       - nfs-common
+
+ - name: Ensure nfs mounted directories exist
+   become: true
+   file:
+     path: "{{ item.path }}"
+     state: directory
+   with_items: "{{ nfs_client.mounts }}"
+
+ - name: Add fstab entries for nfs mounts
+   become: true
+   ansible.posix.mount:
+     src: "{{ item.host }}:{{ item.path }}"
+     path: "{{ item.path }}"
+     opts: "rw,sync,hard,intr"
+     state: mounted
+     fstype: nfs
+   with_items: "{{ nfs_client.mounts }}"

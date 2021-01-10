@@ -1,0 +1,11 @@
+name: dask-gateway
+channels:
+  - conda-forge
+dependencies:
+  # had to install dask-gateway-server via pip due to
+  # conda-forge install issue
+  # https://github.com/dask/dask-gateway/issues/366
+  - pip
+  - pip:
+    - dask-gateway-server
+    - sqlalchemy

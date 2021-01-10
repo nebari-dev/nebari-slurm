@@ -1,0 +1,25 @@
+---
+ - name: Install cifs
+   become: true
+   apt:
+     state: latest
+     cache_valid_time: 3600
+     name:
+       - cifs-utils
+
+ - name: Ensure cifs mounted directories exist
+   become: true
+   file:
+     path: "{{ item.path }}"
+     state: directory
+   with_items: "{{ cifs_client.mounts }}"
+
+ - name: Add fstab entries for cifs mounts
+   become: true
+   ansible.posix.mount:
+     src: "{{ item.host }}:{{ item.path }}"
+     path: "{{ item.path }}"
+     opts: "{{ item.options | default('rw,sync,hard,intr') }}"
+     state: mounted
+     fstype: cifs
+   with_items: "{{ cifs_client.mounts }}"

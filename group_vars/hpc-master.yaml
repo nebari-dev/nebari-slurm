@@ -1,0 +1,13 @@
+miniforge:
+  version: "4.9.2-3"
+  home: /opt/conda
+  environments:
+    - jupyterhub
+    - dask-gateway
+    - jupyterlab
+    - datascience
+
+nfs_server:
+  exports:
+    - /home
+    - /opt/conda
