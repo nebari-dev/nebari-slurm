@@ -4,7 +4,7 @@ channels:
 dependencies:
   - pip
   - nb_conda_kernels
-  - jupyterlab
+  - jupyterlab==2.2.9
   - ipywidgets
   - dask-gateway
   # required to launch jupterlab from jupyterhub

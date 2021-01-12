@@ -24,9 +24,11 @@ c.SlurmSpawner.req_memory = '1G'
 c.SlurmSpawner.req_prologue = '''
 export PATH={{ miniforge.home }}/envs/{{ jupyterhub.lab_environment }}/bin:$PATH
 '''
+
 {% raw %}
 c.SlurmSpawner.batch_script = """#!/bin/bash
 #SBATCH --output={{homedir}}/.jupyterhub_slurmspawner_%j.log
+#SBATCH --error={{homedir}}/.jupyterhub_slurmspawner_%j.log
 #SBATCH --job-name=spawner-jupyterhub
 #SBATCH --chdir={{homedir}}
 #SBATCH --export={{keepvars}}
@@ -42,6 +44,7 @@ set -euo pipefail
 trap 'echo SIGTERM received' TERM
 {{prologue}}
 which jupyterhub-singleuser
+echo "running command {{cmd}}"
 {% if srun %}{{srun}} {% endif %}{{cmd}}
 echo "jupyterhub-singleuser ended gracefully"
 {{epilogue}}
