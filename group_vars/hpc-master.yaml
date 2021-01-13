@@ -6,7 +6,6 @@ miniforge:
     - jupyterhub
     - dask-gateway
     - jupyterlab
-    - datascience
 
 nfs_server:
   exports:

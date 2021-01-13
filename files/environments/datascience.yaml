@@ -1,8 +1,0 @@
-name: example
-channels:
-  - conda-forge
-dependencies:
- - ipykernel
- - numba
- - numpy
- - dask-gateway
