@@ -28,6 +28,13 @@
      dest: "/etc/profile.d/conda.sh"
      state: link
 
+ - name: Ensure conda activate directory exists
+   become: true
+   file:
+     path: "{{ miniforge.home }}/etc/conda/activate.d"
+     state: directory
+     mode: '0755'
+
  - name: create conda configuration directory
    become: yes
    file:

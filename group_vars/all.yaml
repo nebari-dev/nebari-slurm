@@ -94,3 +94,10 @@ disabled_users: []
 disabled_groups: []
 
 installed_packages: []
+
+# On/Off Features
+bodo:
+  enabled: false
+  conda_username: ...
+  conda_token: ...
+  license: ...

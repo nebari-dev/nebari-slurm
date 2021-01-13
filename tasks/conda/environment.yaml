@@ -7,7 +7,7 @@
 
  - name: copy environments files
    become: yes
-   copy:
+   template:
      src: "files/environments/{{ item }}.yaml"
      dest: "/opt/conda-environments/{{ item }}.yaml"
      mode: 0644

@@ -28,5 +28,5 @@
      content: |
        export PATH=/opt/go/bin:$PATH
      dest: /etc/profile.d/golang.sh
-     mode: '600'
+     mode: '755'
    when: not _golang_stat.stat.exists

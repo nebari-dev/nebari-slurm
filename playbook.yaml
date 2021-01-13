@@ -40,6 +40,11 @@
      - name: Install dask-gateway
        include_tasks: tasks/dask-gateway.yaml
 
+     # On/Off Features
+     - name: Install bodo
+       include_tasks: tasks/bodo.yaml
+       when: bodo.enabled
+
  - hosts: hpc-worker
    tasks:
      - name: Install common packages
