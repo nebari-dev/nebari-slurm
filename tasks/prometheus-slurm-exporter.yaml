@@ -1,12 +1,13 @@
 ---
- - name: Check that the node exporter binary exists
+ - name: Check that the slurm exporter binary exists
    stat:
      path: "/usr/local/bin/prometheus_slurm_exporter"
    register: _slurm_exporter_stat
 
- - name: Download prometheus-slurm-exporter binary to local folder
+ - name: Download prometheus-slurm-exporter tarball to local folder
    get_url:
      url: "https://github.com/vpenso/prometheus-slurm-exporter/archive/{{ prometheus_slurm_exporter.version }}.tar.gz"
+     checksum: "sha256:{{ prometheus_slurm_exporter.sha256 }}"
      dest: "/tmp/prometheus-slurm-exporter-{{ prometheus_slurm_exporter.version }}.tar.gz"
      force: false
      mode: 0755
@@ -21,19 +22,15 @@
    when: not _slurm_exporter_stat.stat.exists
 
  - name: Install go package
-   become: true
-   apt:
-     name: golang-go
-     state: latest
-     cache_valid_time: 3600
+   include_tasks: golang.yaml
    when: not _slurm_exporter_stat.stat.exists
 
  - name: Build prometheus_slurm_exporter
    shell:
      chdir: "/tmp/prometheus-slurm-exporter-{{ prometheus_slurm_exporter.version }}/"
      cmd: |
-       go mod download
-       go build -o bin/prometheus_slurm_exporter main.go accounts.go cpus.go nodes.go partitions.go queue.go scheduler.go users.go
+       /opt/go/bin/go mod download
+       /opt/go/bin/go build -o bin/prometheus_slurm_exporter main.go accounts.go cpus.go nodes.go partitions.go queue.go scheduler.go users.go
      creates: "/tmp/prometheus-slurm-exporter-{{ prometheus_slurm_exporter.version }}/bin/prometheus_slurm_exporter"
    when: not _slurm_exporter_stat.stat.exists
 

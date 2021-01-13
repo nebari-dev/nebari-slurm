@@ -7,6 +7,7 @@
  - name: Download prometheus binary to local folder
    get_url:
      url: "https://github.com/prometheus/prometheus/releases/download/v{{ prometheus.version }}/prometheus-{{ prometheus.version }}.linux-amd64.tar.gz"
+     checksum: "sha256:{{ prometheus.sha256 }}"
      dest: "/tmp/prometheus-{{ prometheus.version }}.linux-amd64.tar.gz"
      force: false
      mode: 0755

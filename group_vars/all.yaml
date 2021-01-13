@@ -1,13 +1,20 @@
+golang:
+  version: "1.15.6"
+  sha256: 3918e6cc85e7eaaa6f859f1bdbaac772e7a825b0eb423c63d3ae68b21f84b844
+
 node_exporter:
   version: "1.0.1"
+  sha256: 3369b76cd2b0ba678b6d618deab320e565c3d93ccb5c2a0d5db51a53857768ae
   port: "9100"
 
 prometheus:
   version: "2.23.0"
+  sha256: 0f54cefdb946852947e35d4db8cfce394911ff586486f927c3887db4183cb643
   port: "9090"
 
 prometheus_slurm_exporter:
   version: "0.15"
+  sha256: 77893b595093427c6d9be12af8b340d1a22c0017855d570b3d422338853b855c
   port: "9341"
 
 grafana:
@@ -15,6 +22,7 @@ grafana:
 
 traefik:
   version: "1.7.25"
+  sha256: 5bc2eee92596174de3f73e37d68539ea3d4c6f827086d9e0315a6ce6bfe68af2
 
 jupyterhub:
   port: 8000
@@ -65,11 +73,6 @@ slurm:
     LogFile: /var/log/slurm-llnl/slurmdbd.log
     PidFile: /var/lib/slurm-llnl/slurmdbd.pid
 
-installed_packages:
-  - openmpi-doc
-  - openmpi-bin
-  - openmpi-common
-
 enabled_users:
   - username: example-user
     uid: 10000
@@ -89,3 +92,5 @@ enabled_groups:
 
 disabled_users: []
 disabled_groups: []
+
+installed_packages: []
