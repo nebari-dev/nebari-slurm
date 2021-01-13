@@ -26,7 +26,7 @@
      group: grafana
      mode: 0440
 
- - name: Copy grafana datasource provision file
+ - name: Copy grafana dashboard provision file
    become: true
    template:
      src: templates/grafana-dashboards.yaml.j2
