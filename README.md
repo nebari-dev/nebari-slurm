@@ -36,7 +36,8 @@ effective control over configuration. Currently the `Vagrantfile` only
 has support for `libvirt`.
 
 ```shell
-cd tests
+cd tests/ubuntu1804
+# cd tests/ubuntu2004
 vagrant up --provider=<provider-name>
 ```
 

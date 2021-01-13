@@ -22,7 +22,7 @@ c.JupyterHub.spawner_class = SlurmSpawner
 c.SlurmSpawner.default_url = '/lab'
 c.SlurmSpawner.req_memory = '1G'
 c.SlurmSpawner.req_prologue = '''
-export PATH={{ miniforge.home }}/envs/{{ jupyterhub.lab_environment }}/bin:$PATH
+export PATH={{ miniforge.home }}/condabin:{{ miniforge.home }}/envs/{{ jupyterhub.lab_environment }}/bin:$PATH
 '''
 
 {% raw %}
