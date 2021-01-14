@@ -7,6 +7,8 @@ dependencies:
   # jupyterhub menu https://github.com/jupyterlab/jupyterlab/issues/9428
   - jupyterlab>=3.0.4
   - ipywidgets>=7.6.0
+  # unpin when https://github.com/jupyter/nbformat/issues/206 resolved
+  - nbformat==5.0.8
   - ipyparallel
   - dask-gateway
   - dask-labextension>=5.0.0

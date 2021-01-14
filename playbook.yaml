@@ -59,6 +59,12 @@
      - name: Install slurm worker
        include_tasks: tasks/slurm-worker.yaml
 
+     - name: wait for hpc-master nfs server to start
+       wait_for:
+         host: "{{ groups['hpc-master'][0] }}"
+         port: 2049
+         timeout: 300
+
      - name: Install nfs client
        include_tasks: tasks/nfs-client.yaml
 
