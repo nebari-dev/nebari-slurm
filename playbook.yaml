@@ -34,6 +34,9 @@
      - name: Install nfs server
        include_tasks: tasks/nfs-server.yaml
 
+     - name: Share directory
+       include_tasks: tasks/share.yaml
+
      - name: Install jupyterhub
        include_tasks: tasks/jupyterhub.yaml
 
@@ -59,11 +62,13 @@
      - name: Install slurm worker
        include_tasks: tasks/slurm-worker.yaml
 
+     # conda environments can take a long time to install this may
+     # fail the first time
      - name: wait for hpc-master nfs server to start
        wait_for:
          host: "{{ groups['hpc-master'][0] }}"
          port: 2049
-         timeout: 300
+         timeout: 600
 
      - name: Install nfs client
        include_tasks: tasks/nfs-client.yaml

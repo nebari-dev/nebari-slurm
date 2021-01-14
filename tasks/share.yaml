@@ -1,0 +1,14 @@
+---
+ - name: Ensure that share directory exists
+   become: true
+   file:
+     path: /home/share/
+     state: directory
+     mode: '0755'
+
+ - name: Copy example notebooks
+   become: true
+   copy:
+     src: files/examples
+     dest: /home/share/
+     mode: '0755'

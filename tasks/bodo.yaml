@@ -24,4 +24,4 @@
      content: |
        export BODO_LICENSE={{ miniforge.home }}/envs/bodo/share/bodo/bodo.license
      dest: "/etc/profile.d/bodo.sh"
-     mode: '755'
+     mode: '0755'

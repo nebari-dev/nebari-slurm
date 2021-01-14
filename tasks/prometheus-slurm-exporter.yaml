@@ -10,7 +10,7 @@
      checksum: "sha256:{{ prometheus_slurm_exporter.sha256 }}"
      dest: "/tmp/prometheus-slurm-exporter-{{ prometheus_slurm_exporter.version }}.tar.gz"
      force: false
-     mode: 0755
+     mode: '0755'
    when: not _slurm_exporter_stat.stat.exists
 
  - name: Unpack prometheus slurm exporter
@@ -40,7 +40,7 @@
      src: "/tmp/prometheus-slurm-exporter-{{ prometheus_slurm_exporter.version }}/bin/prometheus_slurm_exporter"
      dest: "/usr/local/bin/prometheus_slurm_exporter"
      remote_src: true
-     mode: 0755
+     mode: '0755'
      owner: root
      group: root
    when: not _slurm_exporter_stat.stat.exists

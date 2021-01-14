@@ -22,6 +22,11 @@ c.JupyterHub.spawner_class = SlurmSpawner
 c.SlurmSpawner.default_url = '/lab'
 c.SlurmSpawner.req_memory = '1G'
 c.SlurmSpawner.req_prologue = '''
+# ensure user has link to shared directory
+if [ ! -L "$HOME/share" ]; then
+  ln -s /home/share "$HOME/share"
+fi
+
 export PATH={{ miniforge.home }}/condabin:{{ miniforge.home }}/envs/{{ jupyterhub.lab_environment }}/bin:$PATH
 '''
 
