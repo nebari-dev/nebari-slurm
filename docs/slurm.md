@@ -1,6 +1,9 @@
 # Slurm
 
-## Checking Health of Cluster
+For detailed slurm information please refer to the
+[documentation](https://slurm.schedmd.com/overview.html).
+
+## Checking Health of Slurm Cluster
 
 [sinfo](https://slurm.schedmd.com/sinfo.html) is your bread and butter
 and should be used to quickly check the health of the cluster.
@@ -15,16 +18,26 @@ general*     up   infinite      1    mix hpc02-test
 general*     up   infinite      2   idle hpc03-test,hpc04-test
 ```
 
-## Configuring Node Information
+## Configuring/Adding Node Information
 
 For each node create a `host_vars/<node-name>.yaml` and omit any
-fields if you want to use the default value.
+fields if you want to use the default value. Suppose the following
+configuration for `host_vars/hpc02-test.yaml`.
 
 ```yaml
 slurm_memory: 7976         # RealMemory (default 1024)
 slurm_cpus: 4              # CPUs (default 1)
+slurm_boards: 1            # Boards (default 1)
 slurm_sockets_per_board: 4 # SocketsPerBoard (default 1)
-slurm_boards: 1
+slurm_cores_per_socket: 1  # CoresPerSocket (default 1)
+slurm_threads_per_core: 1  # ThreadsPerCore (default 1)
+```
+
+Would result in the following slurm node configuration
+
+```init
+# Nodes
+NodeName=hpc02-test RealMemory=7976 CPUs=4 Boards=1 SocketsPerBoard=4 CoresPerSocket=1 ThreadsPerCore=1 State=UNKNOWN
 ```
 
 You can get the detailed node specs via slurmd and can be used to
@@ -69,4 +82,29 @@ some of the common ones.
  - IDLE :: node is idle and has no running jobs
  - DRAIN :: node is unable to schedule new jobs but running jobs will finish
 
- 
+## Adding Slurm Partitions
+
+Partitions in slurm can easily be created via ansible groups. Any
+group start starts with `partition-`. For example
+
+```ini
+[hpc-master]
+hpc01-test
+
+[hpc-worker]
+hpc02-test
+hpc03-test
+hpc04-test
+
+[partition-example]
+hpc02-test
+hpc04-test
+```
+
+Will create the following slurm partitions
+
+```ini
+# Partitions
+PartitionName=general Nodes=hpc02-test,hpc03-test,hpc04-test Default=YES MaxTime=INFINITE State=UP
+PartitionName=example Nodes=hpc02-test,hpc04-test Default=NO MaxTime=INFINITE State=UP
+```
