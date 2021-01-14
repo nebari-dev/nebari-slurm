@@ -26,6 +26,7 @@
      mode: '0600'
      owner: root
      group: root
+   register: _nfs_configuration
 
  - name: Ensure nfs server is started
    become: true
@@ -34,3 +35,4 @@
      name: nfs-kernel-server
      enabled: true
      state: restarted
+   when: _nfs_configuration.changed

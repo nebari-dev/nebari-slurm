@@ -25,6 +25,7 @@
      owner: root
      group: grafana
      mode: 0440
+   register: _grafana_provision_datasource
 
  - name: Copy grafana dashboard provision file
    become: true
@@ -34,6 +35,7 @@
      owner: root
      group: grafana
      mode: 0440
+   register: _grafana_provision_dashboard
 
  - name: Copy grafana dashboards
    become: true
@@ -47,6 +49,7 @@
      - jupyterhub
      - node_exporter
      - slurm_exporter
+   register: _grafana_dashboards
 
  - name: Copy Grafana Configuration
    become: true
@@ -56,13 +59,7 @@
      owner: root
      group: grafana
      mode: 0440
-
- - name: Allow grafana through firewall
-   become: true
-   community.general.ufw:
-     rule: allow
-     port: "{{ grafana.port }}"
-     proto: tcp
+   register: _grafana_configuration
 
  - name: Ensure granfana is started
    become: true
@@ -70,3 +67,11 @@
      name: grafana-server
      enabled: true
      state: restarted
+   when: _grafana_configuration.changed or _grafana_provision_dashboard.changed or _grafana_provision_datasource.changed or _grafana_dashboards.changed
+
+ - name: Allow grafana through firewall
+   become: true
+   community.general.ufw:
+     rule: allow
+     port: "{{ grafana.port }}"
+     proto: tcp
