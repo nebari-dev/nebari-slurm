@@ -1,0 +1,20 @@
+---
+ - name: Ensure that dask configuration directory exists
+   become: true
+   file:
+     path: /etc/dask
+     state: directory
+     mode: '0755'
+
+ - name: Copy the dask-gateway client configuration
+   become: true
+   copy:
+     content: |
+       gateway:
+         address: "http://{{ groups['hpc-master'][0] }}:{{ dask_gateway.api_port }}"
+         public-address:  "http://{{ hostvars[groups['hpc-master'][0]].ansible_host }}:{{ dask_gateway.api_port }}"
+         proxy-address: "tls://{{ groups['hpc-master'][0] }}:{{ dask_gateway.tcp_port }}"
+         auth:
+           type: jupyterhub
+     dest: "/etc/dask/gateway.yaml"
+     mode: '644'

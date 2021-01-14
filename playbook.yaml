@@ -67,3 +67,6 @@
 
      - name: Install conda
        include_tasks: tasks/conda.yaml
+
+     - name: Dask configuration
+       include_tasks: tasks/dask.yaml
