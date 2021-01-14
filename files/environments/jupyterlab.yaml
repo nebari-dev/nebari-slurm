@@ -4,7 +4,8 @@ channels:
 dependencies:
   - pip
   - nb_conda_kernels
-  - jupyterlab==2.2.9
+  # jupyterhub menu https://github.com/jupyterlab/jupyterlab/issues/9428
+  - jupyterlab>=3.0.4
   - ipywidgets
   - ipyparallel
   - dask-gateway
