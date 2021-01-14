@@ -16,24 +16,24 @@ Vagrant.configure("2") do |config|
   config.vm.define "hpc02-test", primary: true do |hpc02|
     hpc02.vm.hostname = "hpc02-test"
     hpc02.vm.provider "libvirt" do |libvirthpc02|
-      libvirthpc02.memory = 4096
-      libvirthpc02.cpus = 2
+      libvirthpc02.memory = 8192
+      libvirthpc02.cpus = 4
     end
   end
 
   config.vm.define "hpc03-test", primary: true do |hpc03|
     hpc03.vm.hostname = "hpc03-test"
     hpc03.vm.provider "libvirt" do |libvirthpc03|
-      libvirthpc03.memory = 4096
-      libvirthpc03.cpus = 2
+      libvirthpc03.memory = 8192
+      libvirthpc03.cpus = 4
     end
   end
 
   config.vm.define "hpc04-test", primary: true do |hpc04|
     hpc04.vm.hostname = "hpc04-test"
     hpc04.vm.provider "libvirt" do |libvirthpc04|
-      libvirthpc04.memory = 4096
-      libvirthpc04.cpus = 2
+      libvirthpc04.memory = 8192
+      libvirthpc04.cpus = 4
     end
   end
 

@@ -58,15 +58,17 @@ slurm:
     SlurmctldLogFile: /var/log/slurm-llnl/slurmctld.log
     SlurmctldPidFile: /var/lib/slurm-llnl/slurmctld.pid
     StateSaveLocation: /var/lib/slurm-llnl/slurmctld
+    SwitchType: switch/none
+    TaskPlugin: task/affinity
+    # slurmctld scheduler
+    SchedulerType: sched/backfill
+    SelectType: select/cons_res
+    SelectTypeParameters: CR_CPU_Memory
     # slurmd options
     SlurmdPort: 6818
     SlurmdLogFile: /var/log/slurm-llnl/slurmd.log
     SlurmdPidFile: /var/lib/slurm-llnl/slurmd.pid
     SlurmdSpoolDir: /var/lib/slurm-llnl/slurmd
-    # jobs consume cpus not nodes
-    # https://slurm.schedmd.com/cons_res_share.html
-    SelectType: select/cons_res
-    SelectTypeParameters: CR_CPU_MEMORY
   dbd:
     # slurmdbd options
     DbdPort: 6819

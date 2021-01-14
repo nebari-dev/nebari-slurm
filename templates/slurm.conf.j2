@@ -11,8 +11,7 @@ ControlMachine={{ groups['hpc-master'][0] }}
 # Automatically add new/unexpected restarted nodes to cluster
 ReturnToService=2
 
-# default is proctrack/cgroup which is the best but also less than 100% chance of working e.g. in docker
-ProctrackType=proctrack/pgid
+ProctrackType=proctrack/cgroup
 
 # Configuration options
 {% for key in slurm.config | sort %}
@@ -30,7 +29,7 @@ JobAcctGatherFrequency=30
 
 # Nodes
 {% for item in groups['hpc-worker'] %}
-NodeName={{ item }} CPUs={{ hostvars[item].slurm_cpus | default(1)}} RealMemory={{ hostvars[item].slurm_memory | default(1024) }} State=UNKNOWN
+NodeName={{ item }} RealMemory={{ hostvars[item].slurm_memory | default(1024) }} CPUs={{ hostvars[item].slurm_cpus | default(1)}} Boards={{ hostvars[item].slurm_boards | default(1) }} SocketsPerBoard={{ hostvars[item].slurm_sockets_per_board | default(1) }} CoresPerSocket={{ hostvars[item].slurm_cores_per_socket | default(1) }} ThreadsPerCore={{ hostvars[item].slurm_threads_per_core | default(1) }} State=UNKNOWN
 {% endfor %}
 
 # Partitions

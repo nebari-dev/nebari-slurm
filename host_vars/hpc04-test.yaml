@@ -1,2 +1,3 @@
-slurm_cpus: 1
-slurm_memory: 1024
+slurm_cpus: 4
+slurm_sockets_per_board: 4
+slurm_memory: 7976
