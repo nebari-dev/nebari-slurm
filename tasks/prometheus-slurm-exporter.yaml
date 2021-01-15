@@ -29,6 +29,7 @@
    shell:
      chdir: "/tmp/prometheus-slurm-exporter-{{ prometheus_slurm_exporter.version }}/"
      cmd: |
+       export GOPATH=/tmp/
        /opt/go/bin/go mod download
        /opt/go/bin/go build -o bin/prometheus_slurm_exporter main.go accounts.go cpus.go nodes.go partitions.go queue.go scheduler.go users.go
      creates: "/tmp/prometheus-slurm-exporter-{{ prometheus_slurm_exporter.version }}/bin/prometheus_slurm_exporter"
