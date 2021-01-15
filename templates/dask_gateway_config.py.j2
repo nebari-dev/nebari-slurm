@@ -14,3 +14,23 @@ c.Proxy.tcp_address = ':{{ dask_gateway.tcp_port }}'
 c.DaskGateway.authenticator_class = "dask_gateway_server.auth.JupyterHubAuthenticator"
 c.JupyterHubAuthenticator.jupyterhub_api_token = "{{ jupyterhub.services.dask_gateway }}"
 c.JupyterHubAuthenticator.jupyterhub_api_url = "http://localhost:{{ jupyterhub.port }}/hub/api"
+
+# Example below:
+
+from dask_gateway_server.options import Options, Integer, Float
+
+def options_handler(options):
+    return {
+        "worker_cores": options.worker_cores,
+        "worker_memory": int(options.worker_memory * 2 ** 30),
+        "scheduler_cores": options.scheduler_cores,
+        "scheduler_memory": int(options.scheduler_memory * 2 ** 30),
+    }
+
+c.Backend.cluster_options = Options(
+    Integer("worker_cores", default=1, min=1, max=4, label="Worker Cores"),
+    Float("worker_memory", default=1, min=1, max=8, label="Worker Memory (GiB)"),
+    Integer("scheduler_cores", default=1, min=1, max=2, label="Scheduler Cores"),
+    Float("scheduler_memory", default=1, min=1, max=4, label="Scheduler Memory (GiB)"),    
+    handler=options_handler,
+)
