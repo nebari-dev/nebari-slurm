@@ -1,7 +1,7 @@
 # Overview
 
 QHub-HPC is an on-prem deployment of HPC with
-[jupyterhub](https://jupyterhub.readthedocs.io/en/stable/) he we talk
+[jupyterhub](https://jupyterhub.readthedocs.io/en/stable/) here we talk
 about the services that run and how they are connected. The
 architecture is based off of the typical hpc setup of a master/login
 node with `N` worker nodes. The worker nodes are designed to have
