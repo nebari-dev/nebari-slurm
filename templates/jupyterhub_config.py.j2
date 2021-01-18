@@ -2,9 +2,13 @@
 ## This file is maintained by Ansible - ALL MODIFICATIONS WILL BE REVERTED
 ## https://jupyterhub.readthedocs.io/en/stable/getting-started/config-basics.html
 ##
+import subprocess
+import json
+import os
 
 from jupyterhub_traefik_proxy import TraefikTomlProxy
 from batchspawner import SlurmSpawner
+from traitlets import Unicode
 
 # Don't kill servers when JupyterHub restarts
 c.JupyterHub.cleanup_servers = False
@@ -18,23 +22,29 @@ c.PAMAuthenticator.open_sessions = False
 # Listen on all interfaces, since hub should be reachable from spawned nodes
 c.JupyterHub.hub_ip = '0.0.0.0'
 
-c.JupyterHub.spawner_class = SlurmSpawner
-c.SlurmSpawner.default_url = '/lab'
+class QHubHPCSpawner(SlurmSpawner):
+    req_conda_environment_prefix = Unicode('',
+        help="Conda environment prefix to launch jupyterlab"
+    ).tag(config=True)
+
+c.JupyterHub.spawner_class = QHubHPCSpawner
+c.QHubHPCSpawner.default_url = '/lab'
 
 # default values for batch spawner
-c.SlurmSpawner.req_memory = '1' # GB
-c.SlurmSpawner.req_nprocs = '1'
-c.SlurmSpawner.req_prologue = '''
+c.QHubHPCSpawner.req_memory = '1' # GB
+c.QHubHPCSpawner.req_nprocs = '1'
+c.QHubHPCSpawner.req_conda_environment_prefix = '{{ miniforge.home }}/envs/{{ jupyterhub.lab_environment }}'
+c.QHubHPCSpawner.req_prologue = '''
 # ensure user has link to shared directory
 if [ ! -L "$HOME/share" ]; then
   ln -s /home/share "$HOME/share"
 fi
 
-export PATH={{ miniforge.home }}/condabin:{{ miniforge.home }}/envs/{{ jupyterhub.lab_environment }}/bin:$PATH
+export PATH={{ miniforge.home }}/condabin:$PATH
 '''
 
 {% raw %}
-c.SlurmSpawner.batch_script = """#!/bin/bash
+c.QHubHPCSpawner.batch_script = """#!/bin/bash
 #SBATCH --output={{homedir}}/.jupyterhub_slurmspawner_%j.log
 #SBATCH --error={{homedir}}/.jupyterhub_slurmspawner_%j.log
 #SBATCH --job-name=spawner-jupyterhub
@@ -51,6 +61,8 @@ c.SlurmSpawner.batch_script = """#!/bin/bash
 set -euo pipefail
 trap 'echo SIGTERM received' TERM
 {{prologue}}
+export PATH={{ conda_environment_prefix }}/bin:$PATH
+
 which jupyterhub-singleuser
 echo "running command {{cmd}}"
 {% if srun %}{{srun}} {% endif %}{{cmd}}
@@ -59,14 +71,25 @@ echo "jupyterhub-singleuser ended gracefully"
 """
 {% endraw %}
 
+# Find all conda environments that have dask jupyterlab, batchspawner, and jupyterhub installed
+def jupyterlab_environments():
+    _environments = []
+    output = subprocess.check_output(['conda', 'env', 'list', '--json'])
+    environments = json.loads(output)['envs']
+    for environment in environments:
+        output = subprocess.check_output(['conda', 'list', '-p', environment, '--json'])
+        if {'jupyterlab', 'batchspawner', 'jupyterhub'} <= {_['name'] for _ in json.loads(output)}:
+            _environments.append((os.path.basename(environment), environment))
+    return _environments
+
 # data from form submission is {key: [value]}
 # we need to convert the formdata to a key value dict
 def handle_form_data_options(data):
     return {key: value[0] for key, value in data.items()}
 
-c.SlurmSpawner.options_from_form = handle_form_data_options
+c.QHubHPCSpawner.options_from_form = handle_form_data_options
 
-c.SlurmSpawner.options_form = '''
+c.QHubHPCSpawner.options_form = f'''
 <div class="form-group row">
   <label for="memory" class="col-2 col-form-label">JupyterLab Memory (GB)</label>
   <div class="col-10">
@@ -92,6 +115,16 @@ c.SlurmSpawner.options_form = '''
      </select>
   </div>
 </div>
+{% raw %}
+<div class="form-group row">
+  <label for="conda_environment_prefix" class="col-2 col-form-label">Conda Environment</label>
+  <div class="col-10">
+     <select class="form-select" aria-label="Conda Environment" id="conda_environment_prefix" name="conda_environment_prefix">
+{''.join([f'<option value="{_[1]}">{_[0]}</option>' for _ in jupyterlab_environments()])}
+     </select>
+  </div>
+</div>
+{% endraw %}
 '''
 
 # ===== adding api tokens for external services =======

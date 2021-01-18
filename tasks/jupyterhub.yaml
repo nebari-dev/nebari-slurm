@@ -36,7 +36,7 @@
        # By default, $PATH is pretty bare (thanks, systemd)
        # We add the conda dir & /bin
        # batchspawner uses sudo, which is in /bin (at least on CentOS)
-       Environment=PATH={{ miniforge.home }}/envs/{{ jupyterhub.hub_environment }}/bin:$PATH:/bin:/usr/bin:/usr/local/bin
+       Environment=PATH={{ miniforge.home }}/condabin:{{ miniforge.home }}/envs/{{ jupyterhub.hub_environment }}/bin:$PATH:/bin:/usr/bin:/usr/local/bin
        ExecStart={{ miniforge.home }}/envs/{{ jupyterhub.hub_environment }}/bin/jupyterhub --config /etc/jupyterhub/jupyterhub_config.py --upgrade-db
 
        [Install]
