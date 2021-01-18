@@ -60,7 +60,7 @@
        # By default, $PATH is pretty bare (thanks, systemd)
        # We add the conda dir & /bin
        # batchspawner uses sudo, which is in /bin (at least on CentOS)
-       Environment=PATH={{ miniforge.home }}/envs/{{ dask_gateway.environment }}/bin:$PATH:/bin:/usr/bin:/usr/local/bin
+       Environment=PATH={{ miniforge.home }}/condabin:{{ miniforge.home }}/envs/{{ dask_gateway.environment }}/bin:$PATH:/bin:/usr/bin:/usr/local/bin
        ExecStart={{ miniforge.home }}/envs/{{ dask_gateway.environment }}/bin/dask-gateway-server -f /etc/dask-gateway/dask_gateway_config.py
        Restart=always
        WorkingDirectory=/var/lib/dask-gateway
