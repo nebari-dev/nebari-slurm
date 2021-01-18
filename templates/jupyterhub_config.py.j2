@@ -20,7 +20,10 @@ c.JupyterHub.hub_ip = '0.0.0.0'
 
 c.JupyterHub.spawner_class = SlurmSpawner
 c.SlurmSpawner.default_url = '/lab'
-c.SlurmSpawner.req_memory = '1G'
+
+# default values for batch spawner
+c.SlurmSpawner.req_memory = '1' # GB
+c.SlurmSpawner.req_nprocs = '1'
 c.SlurmSpawner.req_prologue = '''
 # ensure user has link to shared directory
 if [ ! -L "$HOME/share" ]; then
@@ -40,7 +43,7 @@ c.SlurmSpawner.batch_script = """#!/bin/bash
 #SBATCH --get-user-env=L
 {% if partition  %}#SBATCH --partition={{partition}}
 {% endif %}{% if runtime    %}#SBATCH --time={{runtime}}
-{% endif %}{% if memory     %}#SBATCH --mem={{memory}}
+{% endif %}{% if memory     %}#SBATCH --mem={{memory}}G
 {% endif %}{% if gres       %}#SBATCH --gres={{gres}}
 {% endif %}{% if nprocs     %}#SBATCH --cpus-per-task={{nprocs}}
 {% endif %}{% if reservation%}#SBATCH --reservation={{reservation}}
@@ -56,6 +59,42 @@ echo "jupyterhub-singleuser ended gracefully"
 """
 {% endraw %}
 
+# data from form submission is {key: [value]}
+# we need to convert the formdata to a key value dict
+def handle_form_data_options(data):
+    return {key: value[0] for key, value in data.items()}
+
+c.SlurmSpawner.options_from_form = handle_form_data_options
+
+c.SlurmSpawner.options_form = '''
+<div class="form-group row">
+  <label for="memory" class="col-2 col-form-label">JupyterLab Memory (GB)</label>
+  <div class="col-10">
+    <input class="form-control" type="number" value="1" id="memory" name="memory">
+  </div>
+</div>
+<div class="form-group row">
+  <label for="nprocs" class="col-2 col-form-label">JupyterLab CPUs</label>
+  <div class="col-10">
+    <input class="form-control" type="number" value="1" id="nprocs" name="nprocs">
+  </div>
+</div>
+<div class="form-group row">
+  <label for="partition" class="col-2 col-form-label">Slurm Partition</label>
+  <div class="col-10">
+     <select class="form-select" aria-label="Slurm Queue" id="partition" name="partition">
+       <option value="general">general</option>
+{% for item in groups %}
+{% if item.startswith('partition-')%}
+       <option value="{{ item[10:] }}">{{ item[10:] }}</option>
+{% endif %}
+{% endfor %}
+     </select>
+  </div>
+</div>
+'''
+
+# ===== adding api tokens for external services =======
 c.JupyterHub.services = [
 {% for service_name in jupyterhub.services %}
    {
