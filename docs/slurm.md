@@ -18,6 +18,47 @@ general*     up   infinite      1    mix hpc02-test
 general*     up   infinite      2   idle hpc03-test,hpc04-test
 ```
 
+## Get current job queue including running jobs
+
+```shell
+squeue
+```
+
+## Getting information about a job
+
+```shell
+scontrol show job <job-id>
+```
+
+```
+JobId=37 JobName=spawner-jupyterhub
+   UserId=vagrant(1000) GroupId=vagrant(1000) MCS_label=N/A
+   Priority=4294901724 Nice=0 Account=(null) QOS=normal
+   JobState=RUNNING Reason=None Dependency=(null)
+   Requeue=1 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0
+   RunTime=00:01:16 TimeLimit=UNLIMITED TimeMin=N/A
+   SubmitTime=2021-01-19T14:27:24 EligibleTime=2021-01-19T14:27:24
+   AccrueTime=2021-01-19T14:27:24
+   StartTime=2021-01-19T14:27:24 EndTime=Unknown Deadline=N/A
+   SuspendTime=None SecsPreSuspend=0 LastSchedEval=2021-01-19T14:27:24
+   Partition=general AllocNode:Sid=localhost:135266
+   ReqNodeList=(null) ExcNodeList=(null)
+   NodeList=hpc02-test
+   BatchHost=hpc02-test
+   NumNodes=1 NumCPUs=1 NumTasks=1 CPUs/Task=1 ReqB:S:C:T=0:0:*:*
+   TRES=cpu=1,mem=1G,node=1,billing=1
+   Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=*
+   MinCPUsNode=1 MinMemoryNode=1G MinTmpDiskNode=0
+   Features=(null) DelayBoot=00:00:00
+   OverSubscribe=OK Contiguous=0 Licenses=(null) Network=(null)
+   Command=(null)
+   WorkDir=/home/vagrant
+   StdErr=/home/vagrant/.jupyterhub_slurmspawner_37.log
+   StdIn=/dev/null
+   StdOut=/home/vagrant/.jupyterhub_slurmspawner_37.log
+   Power=
+```
+
 ## Configuring/Adding Node Information
 
 For each node create a `host_vars/<node-name>.yaml` and omit any
