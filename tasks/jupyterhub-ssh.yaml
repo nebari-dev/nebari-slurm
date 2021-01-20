@@ -1,0 +1,51 @@
+---
+# jupyterhub-ssh uses the jupyterhub conda environment
+ - name: Ensure that jupyterhub-ssh configuration directory exists
+   become: true
+   file:
+     path: /etc/jupyterhub-ssh
+     state: directory
+     mode: '0700'
+
+ - name: Copy the jupyterhub_ssh configuration
+   become: true
+   template:
+     src: templates/jupyterhub_ssh_config.py.j2
+     dest: /etc/jupyterhub-ssh/jupyterhub_ssh_config.py
+     owner: root
+     group: root
+     mode: 0644
+   register: _jupyterhub_ssh_config
+
+ - name: Setup JupyterHub-SSH systemd unit
+   become: true
+   copy:
+     content: |
+       [Service]
+       User=root
+       Restart=always
+       WorkingDirectory=/etc/jupyterhub-ssh
+       Environment=PATH={{ miniforge.home }}/envs/{{ jupyterhub.hub_environment }}/bin:$PATH:/bin:/usr/bin:/usr/local/bin
+       ExecStart={{ miniforge.home }}/envs/{{ jupyterhub.hub_environment }}/bin/python -m jupyterhub_ssh
+
+       [Install]
+       WantedBy=multi-user.target
+     dest: /etc/systemd/system/jupyterhub-ssh.service
+     mode: '0544'
+   register: _jupyterhub_ssh_service
+
+ - name: Restart JupyterHub SSH
+   become: true
+   systemd:
+     name: jupyterhub-ssh
+     enabled: true
+     state: restarted
+     daemon_reload: true
+   when: _jupyterhub_ssh_service.changed or _jupyterhub_ssh_config.changed
+
+ - name: Allow jupyterhub ssh through firewall
+   become: true
+   community.general.ufw:
+     rule: allow
+     port: "{{ jupyterhub_ssh.port }}"
+     proto: tcp

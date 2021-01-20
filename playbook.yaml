@@ -40,6 +40,9 @@
      - name: Install jupyterhub
        include_tasks: tasks/jupyterhub.yaml
 
+     - name: Install jupyterhub ssh
+       include_tasks: tasks/jupyterhub-ssh.yaml
+
      - name: Install dask-gateway
        include_tasks: tasks/dask-gateway.yaml
 
