@@ -49,3 +49,4 @@
      rule: allow
      port: "{{ jupyterhub_ssh.port }}"
      proto: tcp
+   when: firewall.enabled

@@ -81,3 +81,19 @@
      enabled: true
      state: restarted
    when: _dask_gateway_configuration.changed or _dask_gateway_service.changed
+
+ - name: Allow dask-gateway api through firewall
+   become: true
+   community.general.ufw:
+     rule: allow
+     port: "{{ prometheus_slurm_exporter.port }}"
+     proto: tcp
+   when: firewall.enabled
+
+ - name: Allow dask-gateway proxy through firewall
+   become: true
+   community.general.ufw:
+     rule: allow
+     port: "{{ prometheus_slurm_exporter.port }}"
+     proto: tcp
+   when: firewall.enabled

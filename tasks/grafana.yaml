@@ -75,3 +75,4 @@
      rule: allow
      port: "{{ grafana.port }}"
      proto: tcp
+   when: firewall.enabled

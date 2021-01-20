@@ -88,10 +88,3 @@
      enabled: true
      state: started
    when: _node_exporter_service.changed
-
- - name: Allow node_exporter through firewall
-   become: true
-   community.general.ufw:
-     rule: allow
-     port: "{{ node_exporter.port }}"
-     proto: tcp

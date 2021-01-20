@@ -60,3 +60,4 @@
      rule: allow
      port: "{{ jupyterhub.port }}"
      proto: tcp
+   when: firewall.enabled

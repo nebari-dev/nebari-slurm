@@ -1,6 +1,10 @@
 ---
  - hosts: hpc-master
    tasks:
+     - name: Install firewall
+       include_tasks: tasks/firewall.yaml
+       when: firewall.enabled
+
      - name: Install common packages
        include_tasks: tasks/apt-packages.yaml
 
@@ -42,6 +46,7 @@
 
      - name: Install jupyterhub ssh
        include_tasks: tasks/jupyterhub-ssh.yaml
+       when: jupyterhub_ssh.enabled
 
      - name: Install dask-gateway
        include_tasks: tasks/dask-gateway.yaml
@@ -53,6 +58,10 @@
 
  - hosts: hpc-worker
    tasks:
+     - name: Install firewall
+       include_tasks: tasks/firewall.yaml
+       when: firewall.enabled
+
      - name: Install common packages
        include_tasks: tasks/apt-packages.yaml
 

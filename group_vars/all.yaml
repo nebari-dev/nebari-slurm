@@ -24,9 +24,6 @@ traefik:
   version: "1.7.25"
   sha256: 5bc2eee92596174de3f73e37d68539ea3d4c6f827086d9e0315a6ce6bfe68af2
 
-jupyterhub_ssh:
-  port: 8022
-
 jupyterhub:
   port: 8000
   hub_environment: jupyterhub
@@ -101,6 +98,14 @@ disabled_groups: []
 installed_packages: []
 
 # On/Off Features
+jupyterhub_ssh:
+  enabled: true
+  port: 8022
+
+firewall:
+  enabled: true
+  internal_ip_range: "192.168.121.1/24"
+
 bodo:
   enabled: false
   conda_username: ...

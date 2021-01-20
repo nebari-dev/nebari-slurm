@@ -94,10 +94,3 @@
      enabled: true
      state: restarted
    when: _slurm_exporter_service.changed
-
- - name: Allow prometheus_slurm_exporter through firewall
-   become: true
-   community.general.ufw:
-     rule: allow
-     port: "{{ prometheus_slurm_exporter.port }}"
-     proto: tcp

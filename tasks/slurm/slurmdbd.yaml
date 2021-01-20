@@ -70,10 +70,3 @@
      enabled: true
      state: restarted
    when: _slurmdbd_config.changed or _slurmdbd_service.changed or _slurmdbd_package.changed
-
- - name: Allow slurmdbd through firewall
-   become: true
-   community.general.ufw:
-     rule: allow
-     port: "{{ slurm.dbd.DbdPort }}"
-     proto: tcp
