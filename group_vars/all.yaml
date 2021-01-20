@@ -35,7 +35,7 @@ jupyterhub:
     prometheus: dpsZlpwaAhi9K8kKf4ZPvCJCuL7D25k1
     dask_gateway: CStgn1NN8DogQR1KajuoQfye1qNRqx6zsh
   template_vars:
-    hub_title: "This is QHub-HPC"
+    hub_title: "This is QHub-onprem"
     hub_subtitle: "your scalable open source data science laboratory."
     welcome: "have fun."
     logo: "/hub/custom/images/jupyter_qhub_logo.svg"

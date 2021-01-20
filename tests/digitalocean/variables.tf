@@ -1,7 +1,7 @@
 variable "name" {
   description = "Prefix name to assign to digital ocean resources"
   type        = string
-  default     = "qhub-hpc-test"
+  default     = "qhub-onprem-test"
 }
 
 variable "ssh-public-key" {

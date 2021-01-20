@@ -1,10 +1,10 @@
-**EXPERIMENTAL** Note that QHub-hpc is currently experimental
+**EXPERIMENTAL** Note that QHub-onprem is currently experimental
 
-# qhub-hpc
+# QHub-onprem
 
-QHub HPC is an opinionated open source deployment of
+QHub-onprem is an opinionated open source deployment of
 [jupyterhub](https://jupyterhub.readthedocs.io/en/stable/) on on-prem
-resources. QHub-hpc is a "distribution" of these
+resources. QHub-onprem is a "distribution" of these
 packages much like [Debian](https://www.debian.org/) and
 [Ubuntu](https://ubuntu.com/) are distributions of
 [Linux](https://en.wikipedia.org/wiki/Linux). The high level goal of
@@ -61,7 +61,7 @@ Grafana is accessible via `<master node ip>:3000`
 
 # License
 
-[QHub-hpc is BSD3 licensed](LICENSE).
+[QHub-onprem is BSD3 licensed](LICENSE).
 
 
 # Contributing
