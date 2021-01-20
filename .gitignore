@@ -1,2 +1,12 @@
 # vagrant
 .vagrant
+
+# terraform
+.terraform
+terraform.tfstate
+terraform.tfstate.backup
+.terraform.tfstate.lock.info
+
+# ssh
+id_rsa
+id_rsa.pub
