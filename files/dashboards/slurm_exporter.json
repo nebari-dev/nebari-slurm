@@ -92,18 +92,25 @@
           "refId": "A"
         },
         {
+          "expr": "slurm_nodes_mix + slurm_nodes_drain",
+          "format": "time_series",
+          "intervalFactor": 2,
+          "legendFormat": "Mixed-or-Draining Nodes",
+          "refId": "B"
+        },
+        {
           "expr": "slurm_nodes_comp",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "Completing Nodes",
-          "refId": "B"
+          "refId": "C"
         },
         {
           "expr": "slurm_nodes_idle",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "Idle Nodes",
-          "refId": "C"
+          "refId": "D"
         },
         {
           "expr": "slurm_nodes_alloc + slurm_nodes_down + slurm_nodes_drain + slurm_nodes_idle + slurm_nodes_mix + slurm_nodes_comp + slurm_nodes_maint",
@@ -111,7 +118,7 @@
           "instant": false,
           "intervalFactor": 2,
           "legendFormat": "Total Nodes",
-          "refId": "D"
+          "refId": "E"
         }
       ],
       "thresholds": [],
