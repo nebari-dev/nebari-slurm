@@ -1,11 +1,11 @@
-**EXPERIMENTAL** Note that QHub-onprem is currently experimental
+**EXPERIMENTAL** Note that QHub OnPrem is currently experimental
 
-# QHub-onprem
+# QHub OnPrem
 
-QHub-onprem is an opinionated open source deployment of
-[jupyterhub](https://jupyterhub.readthedocs.io/en/stable/) on on-prem
-resources. QHub-onprem is a "distribution" of these
-packages much like [Debian](https://www.debian.org/) and
+QHub OnPrem is an opinionated open source deployment of
+[jupyterhub](https://jupyterhub.readthedocs.io/en/stable/) based on an
+HPC jobscheduler. QHub OnPrem is a "distribution" of these packages
+much like [Debian](https://www.debian.org/) and
 [Ubuntu](https://ubuntu.com/) are distributions of
 [Linux](https://en.wikipedia.org/wiki/Linux). The high level goal of
 this distribution is to form a cohesive set of tools that enable:
@@ -15,7 +15,7 @@ this distribution is to form a cohesive set of tools that enable:
    [jupyterlab](https://jupyterlab.readthedocs.io/en/stable/) and
    [dask](https://dask.org/)
  - deployment of jupyterhub on prem without requiring deep devops
-   knowledge of the hpc and jupyter ecosystem
+   knowledge of the Slurm/HPC and jupyter ecosystem
 
 # Dependencies
 
@@ -30,6 +30,11 @@ ansible-galaxy collection install -r requirements.yaml
 
 # Testing
 
+There are tests for deploying QHub OnPrem on a virtual machine
+provisioner and in the cloud.
+
+## Virtual Machines
+
 Vagrant is a tool responsible for creating and provisioning vms. It
 has convenient integration with ansible which allows for easy
 effective control over configuration. Currently the `Vagrantfile` only
@@ -43,6 +48,10 @@ vagrant up --provider=<provider-name>
 
 Notebook for testing functionality
  - `tests/assets/notebook/test-dask-gateway.ipynb`
+
+## Cloud
+
+ - [Digital Ocean Test Deployment](./tests/digitalocean/README.md)
 
 # Services
 
@@ -61,7 +70,7 @@ Grafana is accessible via `<master node ip>:3000`
 
 # License
 
-[QHub-onprem is BSD3 licensed](LICENSE).
+[QHub OnPrem is BSD3 licensed](LICENSE).
 
 
 # Contributing
