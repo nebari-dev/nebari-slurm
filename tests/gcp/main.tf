@@ -6,17 +6,6 @@ resource "google_compute_network" "vpc_network" {
   auto_create_subnetworks = "true"
 }
 
-resource "google_compute_firewall" "ssh-rule" {
-  name = "${var.name}-ssh-port-22"
-  network = google_compute_network.vpc_network.name
-  allow {
-    protocol = "tcp"
-    ports = ["22"]
-  }
-  target_tags = [google_compute_instance.master-node.name]
-  source_ranges = ["0.0.0.0/0"]
-}
-
 resource "google_compute_address" "vm_static_ip" {
   name = "${var.name}-static-ip"
 }
@@ -32,9 +21,10 @@ resource "google_compute_instance" "master-node" {
   }
 
   network_interface {
-    network = google_compute_network.vpc_network.self_link
+    # network = google_compute_network.vpc_network.self_link
+    network="default"
     access_config {
-           nat_ip = google_compute_address.vm_static_ip.address
+      nat_ip = google_compute_address.vm_static_ip.address
     }
   }
   
@@ -60,7 +50,7 @@ resource "google_compute_instance" "worker-nodes" {
   }
   
   network_interface {
-    network = google_compute_network.vpc_network.self_link
+    network = "default"
     access_config {
     }
   }
