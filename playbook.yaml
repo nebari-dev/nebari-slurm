@@ -1,4 +1,24 @@
 ---
+ - name: Populate /etc/hosts with internal interface ip addresses
+   hosts: all
+   gather_facts: true
+   pre_tasks:
+     - name: Gather facts from ALL hosts (regardless of limit or tags)
+       setup:
+       delegate_to: "{{ item }}"
+       delegate_facts: True
+       when: hostvars[item]['ansible_default_ipv4'] is not defined
+       with_items: "{{ groups['all'] }}"
+   tasks:
+     - name: Build hosts file on nodes
+       become: true
+       lineinfile:
+         dest: /etc/hosts
+         regexp: '.*{{ item }}$'
+         line: '{{ hostvars[item]["ansible_" + internal_interface].ipv4.address }} {{item}}'
+         state: present
+       with_items: '{{ groups["all"] }}'
+
  - hosts: hpc-master
    tasks:
      - name: Install firewall

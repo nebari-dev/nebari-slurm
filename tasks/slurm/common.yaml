@@ -11,15 +11,6 @@
        - slurm-client
        - slurm-wlm-doc
 
- - name: Build hosts file on slurm nodes
-   become: true
-   lineinfile:
-     dest: /etc/hosts
-     regexp: '.*{{ item }}$'
-     line: '{{ hostvars[item].ansible_host }} {{item}}'
-     state: present
-   with_items: '{{ groups["all"] }}'
-
  - name: ensure that slurm configuration directory exists
    become: true
    file:
