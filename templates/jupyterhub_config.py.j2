@@ -13,9 +13,6 @@ from traitlets import Unicode
 # Don't kill servers when JupyterHub restarts
 c.JupyterHub.cleanup_servers = False
 
-# We run traefik under JupyterHub. Makes things simpler in this case
-c.JupyterHub.proxy_class = TraefikTomlProxy
-
 # Turn sessions off - we don't use them, since we pass through to slurm
 c.PAMAuthenticator.open_sessions = False
 
