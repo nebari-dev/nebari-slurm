@@ -49,6 +49,7 @@
      - jupyterhub
      - node_exporter
      - slurm_exporter
+     - traefik
    register: _grafana_dashboards
 
  - name: Copy Grafana Configuration

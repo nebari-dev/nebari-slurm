@@ -10,6 +10,9 @@ from jupyterhub_traefik_proxy import TraefikTomlProxy
 from batchspawner import SlurmSpawner
 from traitlets import Unicode
 
+# JupyterHub base url
+c.JupyterHub.base_url = '{{ jupyterhub.base_url }}'
+
 # Don't kill servers when JupyterHub restarts
 c.JupyterHub.cleanup_servers = False
 

@@ -1,0 +1,22 @@
+http:
+  services:
+    jupyterhub:
+      loadBalancer:
+        servers:
+          - url: "http://localhost:{{ jupyterhub.port }}/"
+    grafana:
+      loadBalancer:
+        servers:
+          - url: "http://localhost:{{ grafana.port }}/"
+
+  routers:
+    jupyterhub:
+      rule: "Host(`192.168.121.50`) && PathPrefix(`{{ jupyterhub.base_url }}`)"
+      entryPoints:
+        - "web"
+      service: "jupyterhub"
+    grafana:
+      rule: "Host(`192.168.121.50`) && PathPrefix(`{{ grafana.base_url }}`)"
+      entryPoints:
+        - "web"
+      service: "grafana"
