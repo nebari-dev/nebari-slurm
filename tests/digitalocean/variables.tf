@@ -25,7 +25,7 @@ variable "region" {
 variable "ip_range" {
   description = "Range of ip addresses to assign to compute nodes"
   type        = string
-  default     = "10.10.10.0/24"
+  default     = "10.20.30.0/24"
 }
 
 variable "master-image" {
