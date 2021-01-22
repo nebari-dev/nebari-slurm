@@ -8,7 +8,12 @@ variable "ssh-public-key" {
   description = "Path to ssh public key for access to machines"
   type        = string
   default    = "./id_rsa.pub"
-  
+}
+
+variable "ssh-private-key" {
+  description = "Path to ssh private key for access to machines"
+  type        = string
+  default    = "./id_rsa"
 }
 
 variable "tags" {
