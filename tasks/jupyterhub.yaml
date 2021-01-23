@@ -53,11 +53,3 @@
      state: restarted
      daemon_reload: true
    when: _jupyterhub_service.changed or _jupyterhub_config.changed
-
- - name: Allow jupyterhub through firewall in local network
-   become: true
-   community.general.ufw:
-     rule: allow
-     port: "{{ jupyterhub.port }}"
-     proto: tcp
-   when: firewall.enabled
