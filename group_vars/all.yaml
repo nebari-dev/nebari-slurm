@@ -21,7 +21,7 @@ prometheus_slurm_exporter:
 
 grafana:
   port: "3000"
-  base_url: "/monitoring/"
+  base_url: "/monitoring"
 
 traefik:
   version: "2.4.0"
