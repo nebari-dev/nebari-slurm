@@ -21,7 +21,7 @@ prometheus_slurm_exporter:
 
 grafana:
   port: "3000"
-  base_url: "/grafana/"
+  base_url: "/monitoring/"
 
 traefik:
   version: "2.4.0"
@@ -30,7 +30,7 @@ traefik:
 
 jupyterhub:
   port: 8000
-  base_url: "/jupyter/"
+  base_url: "/"
   hub_environment: jupyterhub
   lab_environment: jupyterlab
   services:

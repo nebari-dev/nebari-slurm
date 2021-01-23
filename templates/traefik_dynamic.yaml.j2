@@ -8,6 +8,10 @@ http:
       loadBalancer:
         servers:
           - url: "http://localhost:{{ grafana.port }}/"
+    dask-gateway:
+      loadBalancer:
+        servers:
+          - url: "http://localhost:{{ dask_gateway.api_port }}/"
 
   routers:
     jupyterhub:
@@ -20,3 +24,8 @@ http:
       entryPoints:
         - "web"
       service: "grafana"
+    grafana:
+      rule: "Host(`192.168.121.50`) && PathPrefix(`/clusters`)"
+      entryPoints:
+        - "web"
+      service: "dask-gateway"
