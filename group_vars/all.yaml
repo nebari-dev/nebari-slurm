@@ -21,13 +21,16 @@ prometheus_slurm_exporter:
 
 grafana:
   port: "3000"
+  base_url: "/monitoring"
 
 traefik:
-  version: "1.7.25"
-  sha256: 5bc2eee92596174de3f73e37d68539ea3d4c6f827086d9e0315a6ce6bfe68af2
+  version: "2.4.0"
+  sha256: 1e8cd14a0c09ba44ba8b44a94441caaf1edc3e043a65a7d43f9c870be47f70aa
+  metrics_port: 8082
 
 jupyterhub:
   port: 8000
+  base_url: "/"
   hub_environment: jupyterhub
   lab_environment: jupyterlab
   services:

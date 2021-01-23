@@ -49,6 +49,7 @@
      - jupyterhub
      - node_exporter
      - slurm_exporter
+     - traefik
    register: _grafana_dashboards
 
  - name: Copy Grafana Configuration
@@ -68,11 +69,3 @@
      enabled: true
      state: restarted
    when: _grafana_configuration.changed or _grafana_provision_dashboard.changed or _grafana_provision_datasource.changed or _grafana_dashboards.changed
-
- - name: Allow grafana through firewall
-   become: true
-   community.general.ufw:
-     rule: allow
-     port: "{{ grafana.port }}"
-     proto: tcp
-   when: firewall.enabled

@@ -1,0 +1,51 @@
+http:
+  middlewares:
+    https-redirect:
+      redirectscheme:
+        scheme: "https"
+
+  services:
+    dummy: # never reacher due to middleware http -> https redirect
+      loadBalancer:
+        servers:
+          - url: "localhost"
+
+    jupyterhub:
+      loadBalancer:
+        servers:
+          - url: "http://localhost:{{ jupyterhub.port }}/"
+    grafana:
+      loadBalancer:
+        servers:
+          - url: "http://localhost:{{ grafana.port }}/"
+    dask-gateway:
+      loadBalancer:
+        servers:
+          - url: "http://localhost:{{ dask_gateway.api_port }}/"
+
+  routers:
+    https-redirect:
+      rule: "HostRegexp(`{any:.*}`)"
+      middlewares: ["https-redirect"]
+      entryPoints:
+        - "web"
+      service: "dummy"
+
+    jupyterhub:
+      rule: "Host(`{{ hostvars[groups['hpc-master'][0]].ansible_host }}`) && PathPrefix(`{{ jupyterhub.base_url }}`)"
+      entryPoints:
+        - "websecure"
+      service: "jupyterhub"
+      tls: {}
+    grafana:
+      rule: "Host(`{{ hostvars[groups['hpc-master'][0]].ansible_host }}`) && PathPrefix(`{{ grafana.base_url }}`)"
+      entryPoints:
+        - "websecure"
+      service: "grafana"
+      tls: {}
+    dask-gateway:
+      rule: "Host(`{{ hostvars[groups['hpc-master'][0]].ansible_host }}`) && PathPrefix(`/clusters`)"
+      entryPoints:
+        - "websecure"
+      service: "dask-gateway"
+      tls: {}
