@@ -10,6 +10,8 @@ dependencies:
   - ipyparallel
   - dask-gateway
   - dask-labextension>=5.0.0
+  # panel
+  - jupyter-panel-proxy
   # required to launch jupterlab from jupyterhub
   - jupyterhub
   - pip:
