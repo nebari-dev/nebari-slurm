@@ -25,6 +25,10 @@ this distribution is to form a cohesive set of tools that enable:
  - Ansible based provisioning on Ubuntu 18.04 and Ubuntu 20.04 nodes
    to deploy one master server and `N` workers. These workers can be
    pre-existing nodes in your compute environment
+ - Customizable Themes for JupyterHub
+ 
+![jupyterhub-theme](docs/images/qhub-landing-page.png)
+
  - JupyterHub integration allowing users to select the memory, cpus,
    and environment that jupyterlab instances for users are launched in
 
