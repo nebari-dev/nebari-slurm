@@ -129,3 +129,19 @@
      enabled: true
      state: restarted
    when: _traefik_service.changed or _traefik_configuration.changed or _traefik_dynamic_configuration.changed
+
+ - name: Allow traefik http through firewall
+   become: true
+   community.general.ufw:
+     rule: allow
+     port: "80"
+     proto: tcp
+   when: firewall.enabled
+
+ - name: Allow traefik https through firewall
+   become: true
+   community.general.ufw:
+     rule: allow
+     port: "443"
+     proto: tcp
+   when: firewall.enabled

@@ -17,6 +17,21 @@ this distribution is to form a cohesive set of tools that enable:
  - deployment of jupyterhub on prem without requiring deep devops
    knowledge of the Slurm/HPC and jupyter ecosystem
 
+# Features
+
+ - Scalable compute environment based on the
+   [Slurm](https://slurm.schedmd.com/overview.html) workload manger to
+   take advantage of entire fleet of nodes
+ - Ansible based provisioning on Ubuntu 18.04 and Ubuntu 20.04 nodes
+   to deploy one master server and `N` workers. These workers can be
+   pre-existing nodes in your compute environment
+ - JupyterHub integration allowing users to select the memory, cpus,
+   and environment that jupyterlab instances for users are launched in
+ - Dask Gateway integration allowing users to selct the memory, cpus,
+   and environment that dask schedule/workers use
+ - Monitoring of entire cluster via [grafana](https://grafana.com/) to
+   monitor the nodes, jupyterhub, slurm, and traefik
+
 # Dependencies
 
  - [ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html)
