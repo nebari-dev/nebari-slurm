@@ -13,10 +13,14 @@ resource "google_compute_address" "vm_static_ip" {
 resource "google_compute_instance" "master-node" {
   name   = "${var.name}-master"
   machine_type   = var.master-instance
-
+  allow_stopping_for_update = true
+  
   boot_disk {
     initialize_params {
       image = var.master-image
+      size = var.disk-size
+      type = var.disk-type
+      
     }
   }
 
@@ -33,7 +37,7 @@ resource "google_compute_instance" "master-node" {
   }
   
   tags = concat([
-    "qhub-onprem", "master"
+    "http-server", "https-server", "qhub-onprem", "master"
   ], var.tags)
 }
 
@@ -42,10 +46,14 @@ resource "google_compute_instance" "worker-nodes" {
 
   name   = "${var.name}-worker-${count.index}"
   machine_type   = var.worker-instance
+  allow_stopping_for_update = true
   
   boot_disk {
     initialize_params {
       image = var.worker-image
+      size = var.disk-size
+      type = var.disk-type
+
     }
   }
   

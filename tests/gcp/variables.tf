@@ -1,5 +1,5 @@
 variable "name" {
-  description = "Prefix name to assign to digital ocean resources"
+  description = "Prefix name to assign to google cloud resources"
   type        = string
   default     = "qhub-hpc-test"
 }
@@ -23,7 +23,7 @@ variable "tags" {
 }
 
 variable "zone" {
-  description = "Region to deploy digital ocean resources"
+  description = "Region to deploy google cloud resources"
   type        = string
   default     = "us-central1"
 }
@@ -31,35 +31,47 @@ variable "zone" {
 variable "ip_range" {
   description = "Range of ip addresses to assign to compute nodes"
   type        = string
-  default     = "10.10.10.0/24"
+  default     = "10.0.0.0/8"
 }
 
 variable "master-image" {
-  description = "Image to use for digital ocean deployment for hpc master"
+  description = "Image to use for google cloud deployment for hpc master"
   type        = string
   default     = "ubuntu-2004-lts"
 }
 
 variable "master-instance" {
-  description = "Compute instance to use for digital ocean deployment for hpc master"
+  description = "Compute instance to use for google cloud deployment for hpc master"
   type        = string
   default     = "c2-standard-4"
 }
 
 variable "worker-image" {
-  description = "Image to use for digital ocean deployment for hpc workers"
+  description = "Image to use for google cloud deployment for hpc workers"
   type        = string
   default     = "ubuntu-2004-lts"
 }
 
 variable "worker-instance" {
-  description = "Compute instance to use for digital ocean deployment for hpc workers"
+  description = "Compute instance to use for google cloud deployment for hpc workers"
   type        = string
   default     = "c2-standard-4"
+}
+
+variable "disk-size" {
+  description = "Size of boot drive instance uses"
+  type        = string
+  default     = 100
+}
+
+variable "disk-type" {
+  description = "Disk type compute instance uses"
+  type        = string
+  default     = "pd-ssd"
 }
 
 variable "worker-count" {
   description = "Number of worker nodes to spawn"
   type        = string
-  default     = 2
+  default     = 1
 }
