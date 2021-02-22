@@ -6,6 +6,7 @@ dependencies:
   - jupyterhub
   - jupyterhub-idle-culler
   - jupyterhub-systemdspawner
+  - cdsdashboards
   - pip:
       - qhub_jupyterhub_theme
       - jupyterhub-traefik-proxy

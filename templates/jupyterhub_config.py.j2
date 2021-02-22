@@ -22,12 +22,44 @@ c.PAMAuthenticator.open_sessions = False
 # Listen on all interfaces, since hub should be reachable from spawned nodes
 c.JupyterHub.hub_ip = '0.0.0.0'
 
+# Assign Qhub Spawner
 class QHubHPCSpawner(SlurmSpawner):
     req_conda_environment_prefix = Unicode('',
         help="Conda environment prefix to launch jupyterlab"
     ).tag(config=True)
 
+{% if cdsdashboards.enabled %}
+from cdsdashboards.app import CDS_TEMPLATE_PATHS
+from cdsdashboards.hubextension import cds_extra_handlers
+from cdsdashboards.hubextension.spawners.variablemixin import VariableMixin, MetaVariableMixin
+
+c.VariableMixin.extra_presentation_launchers = {'qhub-bokeh': {
+       'cmd': ['/opt/conda/envs/jupyterlab/bin/jhsingle-native-proxy'],            
+       'args': ['--destport=0', '/opt/conda/envs/jupyterlab/bin/python',
+               '{-}m','bokeh_root_cmd.main',
+               '{presentation_path}',
+                '{--}port={port}',
+                '{--}allow-websocket-origin={origin_host}',
+                '--ready-check-path=/ready-check']
+        }
+}
+c.CDSDashboardsConfig.extra_presentation_types = ['qhub-bokeh']
+
+class QHubHPCSpawner(QHubHPCSpawner, VariableMixin, metaclass=MetaVariableMixin):
+    pass
+
+c.JupyterHub.allow_named_servers = True
+
+c.CDSDashboardsConfig.builder_class = 'cdsdashboards.builder.rocessbuilder.ProcessBuilder'
+
+c.JupyterHub.template_paths += CDS_TEMPLATE_PATHS
+c.JupyterHub.extra_handlers += cds_extra_handlers
+
+{% endif %}
 c.JupyterHub.spawner_class = QHubHPCSpawner
+
+
+c.SlurmSpawner.start_timeout = {{ jupyterhub.spawner.start_timeout }}
 c.QHubHPCSpawner.default_url = '/lab'
 
 # default values for batch spawner
@@ -142,11 +174,11 @@ c.JupyterHub.services = [
 import tornado.web
 import qhub_jupyterhub_theme
 
-c.JupyterHub.extra_handlers = [
+c.JupyterHub.extra_handlers += [
     (r'/custom/(.*)', tornado.web.StaticFileHandler, {"path": qhub_jupyterhub_theme.STATIC_PATH}),
 ]
 
-c.JupyterHub.template_paths = [
+c.JupyterHub.template_paths += [
     qhub_jupyterhub_theme.TEMPLATE_PATH
 ]
 
