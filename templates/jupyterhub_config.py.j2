@@ -52,8 +52,8 @@ c.JupyterHub.allow_named_servers = True
 
 c.CDSDashboardsConfig.builder_class = 'cdsdashboards.builder.rocessbuilder.ProcessBuilder'
 
-c.JupyterHub.template_paths += CDS_TEMPLATE_PATHS
-c.JupyterHub.extra_handlers += cds_extra_handlers
+c.JupyterHub.template_paths = c.JupyterHub.template_paths + CDS_TEMPLATE_PATHS
+c.JupyterHub.extra_handlers = c.JupyterHub.extra_handlers + cds_extra_handlers
 
 {% endif %}
 c.JupyterHub.spawner_class = QHubHPCSpawner
