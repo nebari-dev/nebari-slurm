@@ -4,15 +4,18 @@ channels:
 dependencies:
   - pip
   - nb_conda_kernels
+  # required to launch jupterlab from jupyterhub
+  - jupyterhub
   # jupyterhub menu https://github.com/jupyterlab/jupyterlab/issues/9428
   - jupyterlab>=3.0.4
   - ipywidgets>=7.6.0
   - ipyparallel
+  # dask
   - dask-gateway
   - dask-labextension>=5.0.0
   # required to launch jupterlab from jupyterhub
   - jupyterhub
-  # visualization (versions specified to narrow conda solve space)
+  # dashboards (versions specified to narrow conda solve space)
   - cdsdashboards-singleuser
   - matplotlib >= 3.3.4
   - panel >= 0.10.3
