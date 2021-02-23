@@ -33,6 +33,8 @@ jupyterhub:
   base_url: "/"
   hub_environment: jupyterhub
   lab_environment: jupyterlab
+  spawner:
+    start_timeout: 60  # seconds
   services:
     prometheus: dpsZlpwaAhi9K8kKf4ZPvCJCuL7D25k1
     dask_gateway: CStgn1NN8DogQR1KajuoQfye1qNRqx6zsh
@@ -123,3 +125,6 @@ bodo:
   conda_username: ...
   conda_token: ...
   license: ...
+
+cdsdashboards:
+  enabled: true
