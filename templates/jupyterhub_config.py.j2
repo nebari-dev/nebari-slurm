@@ -28,6 +28,9 @@ class QHubHPCSpawner(SlurmSpawner):
         help="Conda environment prefix to launch jupyterlab"
     ).tag(config=True)
 
+c.JupyterHub.template_paths = []
+c.JupyterHub.extra_handlers = []
+
 {% if cdsdashboards.enabled %}
 from cdsdashboards.app import CDS_TEMPLATE_PATHS
 from cdsdashboards.hubextension import cds_extra_handlers
@@ -50,10 +53,10 @@ class QHubHPCSpawner(QHubHPCSpawner, VariableMixin, metaclass=MetaVariableMixin)
 
 c.JupyterHub.allow_named_servers = True
 
-c.CDSDashboardsConfig.builder_class = 'cdsdashboards.builder.rocessbuilder.ProcessBuilder'
+c.CDSDashboardsConfig.builder_class = 'cdsdashboards.builder.processbuilder.ProcessBuilder'
 
-c.JupyterHub.template_paths = c.JupyterHub.template_paths + CDS_TEMPLATE_PATHS
-c.JupyterHub.extra_handlers = c.JupyterHub.extra_handlers + cds_extra_handlers
+c.JupyterHub.template_paths += CDS_TEMPLATE_PATHS
+c.JupyterHub.extra_handlers += cds_extra_handlers
 
 {% endif %}
 c.JupyterHub.spawner_class = QHubHPCSpawner
