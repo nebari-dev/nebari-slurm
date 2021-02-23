@@ -8,7 +8,7 @@ Vagrant.configure("2") do |config|
   config.vm.define "hpc01-test", primary: true do |hpc01|
     hpc01.vm.hostname = "hpc01-test"
     hpc01.vm.provider "libvirt" do |libvirthpc01|
-      libvirthpc01.memory = 2048
+      libvirthpc01.memory = 4096
       libvirthpc01.cpus = 2
     end
   end
@@ -39,5 +39,8 @@ Vagrant.configure("2") do |config|
       "hpc-worker" => ["hpc02-test", "hpc03-test"],
       "partition-example" => ["hpc03-test"],
     }
+    ansible.raw_arguments = [
+      "-f 5",  # number of hosts to configure in parallel
+    ]
   end
 end

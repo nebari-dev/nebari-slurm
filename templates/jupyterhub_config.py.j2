@@ -34,23 +34,12 @@ c.JupyterHub.extra_handlers = []
 {% if cdsdashboards.enabled %}
 from cdsdashboards.app import CDS_TEMPLATE_PATHS
 from cdsdashboards.hubextension import cds_extra_handlers
-from cdsdashboards.hubextension.spawners.variablemixin import VariableMixin, MetaVariableMixin
-
-c.VariableMixin.extra_presentation_launchers = {'qhub-bokeh': {
-       'cmd': ['{{ miniforge.home }}/envs/{{ jupyterhub.lab_environment }}/bin/jhsingle-native-proxy'],            
-       'args': ['--destport=0', '{{ miniforge.home }}/envs/{{jupyterhub.lab_environment }}/bin/python',
-               '{-}m','bokeh_root_cmd.main',
-               '{presentation_path}',
-                '{--}port={port}',
-                '{--}allow-websocket-origin={origin_host}',
-                '--ready-check-path=/ready-check']
-        }
-}
-c.CDSDashboardsConfig.extra_presentation_types = ['qhub-bokeh']
+from cdsdashboards.hubextension.spawners.variablemixin import VariableMixin, MetaVariableMixin, Command
 
 class QHubHPCSpawner(QHubHPCSpawner, VariableMixin, metaclass=MetaVariableMixin):
     pass
 
+c. VariableMixin.default_presentation_cmd = ['jhsingle-native-proxy']
 c.JupyterHub.allow_named_servers = True
 
 c.CDSDashboardsConfig.builder_class = 'cdsdashboards.builder.processbuilder.ProcessBuilder'
