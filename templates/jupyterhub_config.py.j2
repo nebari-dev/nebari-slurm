@@ -37,8 +37,8 @@ from cdsdashboards.hubextension import cds_extra_handlers
 from cdsdashboards.hubextension.spawners.variablemixin import VariableMixin, MetaVariableMixin
 
 c.VariableMixin.extra_presentation_launchers = {'qhub-bokeh': {
-       'cmd': ['/opt/conda/envs/jupyterlab/bin/jhsingle-native-proxy'],            
-       'args': ['--destport=0', '/opt/conda/envs/jupyterlab/bin/python',
+       'cmd': ['{{ miniforge.home }}/envs/{{ jupyterhub.lab_environment }}/bin/jhsingle-native-proxy'],            
+       'args': ['--destport=0', '{{ miniforge.home }}/envs/{{jupyterhub.lab_environment }}/bin/python',
                '{-}m','bokeh_root_cmd.main',
                '{presentation_path}',
                 '{--}port={port}',
