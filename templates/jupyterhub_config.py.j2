@@ -34,22 +34,19 @@ c.JupyterHub.extra_handlers = []
 {% if cdsdashboards.enabled %}
 from cdsdashboards.app import CDS_TEMPLATE_PATHS
 from cdsdashboards.hubextension import cds_extra_handlers
-from cdsdashboards.hubextension.spawners.variablemixin import VariableMixin, MetaVariableMixin
-
-c.VariableMixin.extra_presentation_launchers = {'qhub-bokeh': {
-       'cmd': ['{{ miniforge.home }}/envs/{{ jupyterhub.lab_environment }}/bin/jhsingle-native-proxy'],            
-       'args': ['--destport=0', '{{ miniforge.home }}/envs/{{jupyterhub.lab_environment }}/bin/python',
-               '{-}m','bokeh_root_cmd.main',
-               '{presentation_path}',
-                '{--}port={port}',
-                '{--}allow-websocket-origin={origin_host}',
-                '--ready-check-path=/ready-check']
-        }
-}
-c.CDSDashboardsConfig.extra_presentation_types = ['qhub-bokeh']
+from cdsdashboards.hubextension.spawners.variablemixin import VariableMixin, MetaVariableMixin, Command
 
 class QHubHPCSpawner(QHubHPCSpawner, VariableMixin, metaclass=MetaVariableMixin):
-    pass
+    default_presentation_cmd = Command(
+        ['jhsingle-native-proxy'],
+        allow_none=False,
+        help="""
+        The command to run presentations through jhsingle-native-proxy, can be a string or list.
+        Default is ['jhsingle-native-proxy'].
+        """
+    ).tag(config=True)
+
+
 
 c.JupyterHub.allow_named_servers = True
 
