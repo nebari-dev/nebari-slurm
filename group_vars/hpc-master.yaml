@@ -6,6 +6,7 @@ miniforge:
     - jupyterhub
     - dask-gateway
     - jupyterlab
+    - dashboards
 
 nfs_server:
   exports:
