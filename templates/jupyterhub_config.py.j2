@@ -11,7 +11,7 @@ from batchspawner import SlurmSpawner
 from traitlets import Unicode
 # Find all conda environments that have dask jupyterlab, batchspawner, and jupyterhub installed
 jupyterlab_packages = ['jupyterlab', 'batchspawner', 'jupyterhub']
-def conda_envs_w_packages(packages, names_only=True):
+def conda_envs_w_packages(packages, names_only=False):
     _environments = []
     output = subprocess.check_output(['conda', 'env', 'list', '--json'])
     environments = json.loads(output)['envs']
@@ -113,11 +113,11 @@ if [ -n '{{ '{{ conda_env }}' }}' ]; then
 else
     export PATH={{ '{{ conda_environment_prefix }}' }}/bin:$PATH
 fi
+{% else %}
+export PATH={{ '{{ conda_environment_prefix }}' }}/bin:$PATH
 {% endif %}
 
 {% raw %}
-
-
 which jupyterhub-singleuser
 echo "running command {{cmd}}"
 {% if srun %}{{srun}} {% endif %}{{cmd}}
