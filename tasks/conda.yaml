@@ -41,12 +41,20 @@
      path: /etc/conda
      state: directory
 
+ - name: Remove implicit .condarc file installed by miniforge
+   become: yes
+   file:
+     path: "{{ miniforge.home }}/.condarc"
+     state: absent
+
  - name: Create default condarc for users
    become: yes
    copy:
      dest: /etc/conda/condarc
      mode: 644
      content: |
+       channels:
+         - conda-forge
        envs_dirs:
          - "~/.conda/envs"
        pkgs_dirs:
