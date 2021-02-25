@@ -9,6 +9,20 @@ import os
 from jupyterhub_traefik_proxy import TraefikTomlProxy
 from batchspawner import SlurmSpawner
 from traitlets import Unicode
+# Find all conda environments that have dask jupyterlab, batchspawner, and jupyterhub installed
+jupyterlab_packages = ['jupyterlab', 'batchspawner', 'jupyterhub']
+def conda_envs_w_packages(packages, names_only=False):
+    _environments = []
+    output = subprocess.check_output(['conda', 'env', 'list', '--json'])
+    environments = json.loads(output)['envs']
+    for environment in environments:
+        output = subprocess.check_output(['conda', 'list', '-p', environment, '--json'])
+        if set(packages)  <= {_['name'] for _ in json.loads(output)}:
+            _environments.append((os.path.basename(environment), environment))
+    if names_only:
+        return [env_name for env_name, path in _environments]
+    return _environments
+
 
 # JupyterHub base url
 c.JupyterHub.base_url = '{{ jupyterhub.base_url }}'
@@ -34,18 +48,21 @@ c.JupyterHub.extra_handlers = []
 {% if cdsdashboards.enabled %}
 from cdsdashboards.app import CDS_TEMPLATE_PATHS
 from cdsdashboards.hubextension import cds_extra_handlers
-from cdsdashboards.hubextension.spawners.variablemixin import VariableMixin, MetaVariableMixin, Command
+from cdsdashboards.hubextension.spawners.variablemixin import VariableMixin, MetaVariableMixin
+
+dashboard_packages = ['cdsdashboards-singleuser']
 
 class QHubHPCSpawner(QHubHPCSpawner, VariableMixin, metaclass=MetaVariableMixin):
     pass
 
-c. VariableMixin.default_presentation_cmd = ['jhsingle-native-proxy']
+c.VariableMixin.default_presentation_cmd = ['jhsingle-native-proxy']
 c.JupyterHub.allow_named_servers = True
 
 c.CDSDashboardsConfig.builder_class = 'cdsdashboards.builder.processbuilder.ProcessBuilder'
 
 c.JupyterHub.template_paths += CDS_TEMPLATE_PATHS
 c.JupyterHub.extra_handlers += cds_extra_handlers
+c.CDSDashboardsConfig.conda_envs = conda_envs_w_packages(jupyterlab_packages + dashboard_packages, names_only=True) 
 
 {% endif %}
 c.JupyterHub.spawner_class = QHubHPCSpawner
@@ -67,8 +84,9 @@ fi
 export PATH={{ miniforge.home }}/condabin:$PATH
 '''
 
-{% raw %}
+
 c.QHubHPCSpawner.batch_script = """#!/bin/bash
+{% raw %}
 #SBATCH --output={{homedir}}/.jupyterhub_slurmspawner_%j.log
 #SBATCH --error={{homedir}}/.jupyterhub_slurmspawner_%j.log
 #SBATCH --job-name=spawner-jupyterhub
@@ -85,8 +103,21 @@ c.QHubHPCSpawner.batch_script = """#!/bin/bash
 set -euo pipefail
 trap 'echo SIGTERM received' TERM
 {{prologue}}
-export PATH={{ conda_environment_prefix }}/bin:$PATH
+{% endraw %}
 
+{% if cdsdashboards.enabled %}
+MINIFORGE_HOME={{miniforge.home}}
+# Overwrite conda_environment_prefix when using cdsdashboards
+if [ -n '{{ '{{ conda_env }}' }}' ]; then
+    export PATH=$MINIFORGE_HOME/envs/{{ '{{ conda_env }}' }}/bin:$PATH
+else
+    export PATH={{ '{{ conda_environment_prefix }}' }}/bin:$PATH
+fi
+{% else %}
+export PATH={{ '{{ conda_environment_prefix }}' }}/bin:$PATH
+{% endif %}
+
+{% raw %}
 which jupyterhub-singleuser
 echo "running command {{cmd}}"
 {% if srun %}{{srun}} {% endif %}{{cmd}}
@@ -95,16 +126,6 @@ echo "jupyterhub-singleuser ended gracefully"
 """
 {% endraw %}
 
-# Find all conda environments that have dask jupyterlab, batchspawner, and jupyterhub installed
-def jupyterlab_environments():
-    _environments = []
-    output = subprocess.check_output(['conda', 'env', 'list', '--json'])
-    environments = json.loads(output)['envs']
-    for environment in environments:
-        output = subprocess.check_output(['conda', 'list', '-p', environment, '--json'])
-        if {'jupyterlab', 'batchspawner', 'jupyterhub'} <= {_['name'] for _ in json.loads(output)}:
-            _environments.append((os.path.basename(environment), environment))
-    return _environments
 
 # data from form submission is {key: [value]}
 # we need to convert the formdata to a key value dict
@@ -144,7 +165,7 @@ c.QHubHPCSpawner.options_form = f'''
   <label for="conda_environment_prefix" class="col-2 col-form-label">Conda Environment</label>
   <div class="col-10">
      <select class="form-select" aria-label="Conda Environment" id="conda_environment_prefix" name="conda_environment_prefix">
-{''.join([f'<option value="{_[1]}">{_[0]}</option>' for _ in jupyterlab_environments()])}
+{''.join([f'<option value="{_[1]}">{_[0]}</option>' for _ in conda_envs_w_packages(jupyterlab_packages)])}
      </select>
   </div>
 </div>

@@ -1,18 +1,22 @@
-name: jupyterlab
+name: dashboards
 channels:
   - conda-forge
 dependencies:
   - pip
   - nb_conda_kernels
   # required to launch jupterlab from jupyterhub
-  - jupyterhub>=1.3.0
+  - jupyterhub
   # jupyterhub menu https://github.com/jupyterlab/jupyterlab/issues/9428
   - jupyterlab>=3.0.4
   - ipywidgets>=7.6.0
   - ipyparallel
-  # dask
-  - dask-gateway
-  - dask-labextension>=5.0.0
+  # dashboards (versions specified to narrow conda solve space)
+  - cdsdashboards-singleuser
+  - matplotlib >= 3.3.4
+  - panel >= 0.10.3
+  - voila >= 0.2.7
+  - streamlit >= 0.76
+  - dash >= 1.19
   - pip:
       # batchspawner latest slurm fixes
       - https://github.com/jupyterhub/batchspawner/archive/129951ad11e3049567b94adb8c9725dc22225a1a.tar.gz
