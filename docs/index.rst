@@ -10,6 +10,16 @@ Welcome to QHub OnPrem's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   overview
+   architecture
+   conda
+   ansible
+   benchmark
+   dashboards
+   dask
+   jupyterhub
+   slurm
+   faq
 
 
 Indices and tables
