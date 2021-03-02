@@ -42,10 +42,269 @@ class QHubHPCSpawner(SlurmSpawner):
         help="Conda environment prefix to launch jupyterlab"
     ).tag(config=True)
 
-c.JupyterHub.template_paths = []
+c.JupyterHub.template_paths = ['/etc/jupyterhub/cdsdashboards/templates']
 c.JupyterHub.extra_handlers = []
 
 {% if cdsdashboards.enabled %}
+# START---------------------------------------------------------------------------------------------------------------
+import sys, re
+
+from tornado.web import authenticated
+
+from jupyterhub.handlers.base import BaseHandler
+from jupyterhub.orm import Group, User
+
+from cdsdashboards.orm import Dashboard
+from cdsdashboards.hubextension.base import DashboardBaseMixin, check_database_upgrade, spawner_to_dict
+from cdsdashboards.util import DefaultObjDict, url_path_join, maybe_future
+
+from cdsdashboards import hookimpl
+from cdsdashboards.pluggymanager import pm
+from cdsdashboards.app import BuildersStore, CDSConfigStore
+
+from cdsdashboards.hubextension.main import BasicDashboardEditHandler
+
+class QhubDashboardEditHandler(BasicDashboardEditHandler):
+    @authenticated
+    @check_database_upgrade
+    async def post(self, dashboard_urlname=None):
+        """Most of this method is taken straight from cdsdashboards, the lines that changed have "#  QHUB" on them."""
+
+        current_user = await self.get_current_user()
+
+        if not self.can_user_spawn(current_user):
+            return self.send_error(403)
+
+        dashboard = None
+        group = None
+
+        if dashboard_urlname is not None:
+            # Edit (not new)
+
+            dashboard = Dashboard.find(db=self.db, urlname=dashboard_urlname, user=current_user)
+
+            if dashboard is None:
+                return self.send_error(404)
+
+            if current_user.name != dashboard.user.name:
+                return self.send_error(403)
+
+            group = dashboard.group
+
+        dashboard_name = self.get_argument('name').strip()
+
+        dashboard_description = self.get_argument('description').strip()
+
+        dashboard_presentation_type = self.get_argument('presentation_type').strip()
+
+        dashboard_start_path = self.get_argument('start_path').strip()
+
+        errors = DefaultObjDict()
+
+        # Presentation basics
+
+        if dashboard_name == '':
+            errors.name = 'Please enter a name'
+        elif not self.name_regex.match(dashboard_name):
+            errors.name = 'Please use letters and digits (start with one of these), and then spaces or these characters _-!@$()*+?<>\'". Max 100 chars.'
+
+        if '..' in dashboard_start_path:
+            errors.start_path = 'Path must not contain ..'
+        elif len(dashboard_start_path) and dashboard_start_path[0] == '/':
+            errors.start_path = 'Path must be relative to Jupyter tree home or Git repo root (not starting with /)'
+        elif not self.start_path_regex.match(dashboard_start_path):
+            errors.start_path = 'Please enter valid URL path characters'
+
+        cdsconfig = CDSConfigStore.get_instance(self.settings['config'])
+
+        merged_presentation_types = cdsconfig.merged_presentation_types
+        all_conda_envs = cdsconfig.conda_envs
+        allow_custom_conda_env = cdsconfig.allow_custom_conda_env
+        
+        if not dashboard_presentation_type in merged_presentation_types:
+            errors.presentation_type = 'Framework {} invalid - it must be one of the allowed types: {}'.format(
+                dashboard_presentation_type, ', '.join(merged_presentation_types)
+                )
+
+        # Visitors allowed
+        selected_users = self.get_arguments('selected_users[]')
+
+        selected_users_orm = self.db.query(User).filter(User.name.in_(selected_users)).all()
+
+        user_permissions = self.get_argument('user_permissions', cdsconfig.default_allow_all and 'anyusers' or 'selectedusers').strip()
+
+        if user_permissions not in ('anyusers', 'selectedusers'):
+            user_permissions = cdsconfig.default_allow_all and 'anyusers' or 'selectedusers'
+            errors.user_permissions = 'You must choose either anyusers or selectedusers'
+
+        # Dashboard options
+        dashboard_options = {}
+
+        git_repo = ''
+        git_repo_branch = ''
+        source_type = self.get_argument('source_type', '').strip()
+
+        if cdsconfig.show_source_git and source_type == 'gitrepo':
+            git_repo = self.get_argument('git_repo', '').strip()
+            git_repo_branch = self.get_argument('git_repo_branch', '').strip()
+
+            if git_repo != '':
+                if not re.match('^((git|ssh|http(s)?)|(git@[\w\.]+))(:(//)?)([\w\.@\:/\-~]+)(/)?$', git_repo):
+                    errors.git_repo = 'Please enter a valid git repo URL'
+        else:
+            source_type = 'jupytertree'
+
+        conda_env = self.get_argument('conda_env', '').strip()
+        memory = self.get_argument('memory', '').strip()  # QHUB
+        nprocs = self.get_argument('nprocs', '').strip()  # QHUB
+        partition = self.get_argument('partition', '').strip()  # QHUB
+
+        if conda_env != '':
+            if allow_custom_conda_env:
+                if not self.conda_env_regex.match(conda_env):
+                    errors.conda_env = 'Please use letters and digits, spaces or these characters _-!@$()*+?<>/\\\'".'
+                    conda_env = ''
+            elif conda_env not in all_conda_envs:
+                errors.conda_env = 'Please select a valid Conda env (\'{}\' is not in the allowed list)'.format(conda_env)
+                conda_env = ''
+
+        dashboard_options['source_type'] = source_type
+        dashboard_options['git_repo'] = git_repo
+        dashboard_options['git_repo_branch'] = git_repo_branch
+        dashboard_options['conda_env'] = conda_env
+        dashboard_options['memory'] = memory  # CHANGED FOR QHUB
+        dashboard_options['nprocs'] = nprocs  # CHANGED FOR QHUB
+        dashboard_options['partition'] = partition  # CHANGED FOR QHUB
+
+        spawners = []
+        spawner = None
+        spawner_id = ''
+
+        if cdsconfig.show_source_servers:
+            spawners = self.get_source_spawners(current_user)
+            spawner, spawner_id = self.read_spawner(dashboard, spawners, dashboard_options, errors, cdsconfig.require_source_server)
+ 
+        if len(errors) == 0:
+            db = self.db
+
+            try:
+
+                orm_spawner = None
+                if spawner:
+                    orm_spawner = spawner.orm_spawner
+
+                if dashboard is None:
+
+                    urlname = self.calc_urlname(dashboard_name)    
+
+                    self.log.debug('Final urlname is '+urlname)  
+
+                    dashboard = Dashboard(
+                        name=dashboard_name, urlname=urlname, user=current_user.orm_user, 
+                        description=dashboard_description, start_path=dashboard_start_path, 
+                        presentation_type=dashboard_presentation_type,
+                        source_spawner=orm_spawner,
+                        options=dashboard_options,
+                        allow_all=user_permissions=='anyusers'
+                        )
+                    self.log.debug('dashboard urlname '+dashboard.urlname+', main name '+dashboard.name)
+
+                else:
+                    dashboard.name = dashboard_name
+                    dashboard.description = dashboard_description
+                    dashboard.start_path = dashboard_start_path
+                    dashboard.presentation_type = dashboard_presentation_type
+                    dashboard.source_spawner = orm_spawner
+                    dashboard.options = dashboard_options
+                    allow_all=user_permissions=='anyusers'
+                    dashboard.allow_all=allow_all
+                    
+                if group is None:
+                    group = Group.find(db, dashboard.groupname)
+                    if group is None:
+                        group = Group(name=dashboard.groupname)
+                        self.db.add(group)
+                    dashboard.group = group
+
+                db.add(dashboard)
+
+                if self.sync_group(group, selected_users_orm):
+                    db.add(group)
+                    
+                db.commit()
+
+                # Now cancel any existing build and force a rebuild
+                # TODO delete existing final_spawner
+                builders_store = BuildersStore.get_instance(self.settings['config'])
+                builder = builders_store[dashboard]
+
+                async def do_restart_build(_):
+                    await self.maybe_start_build(dashboard, current_user, True)
+                    self.log.debug('Force build start')
+
+                if builder.pending and builder._build_future and not builder._build_future.done():
+
+                    self.log.debug('Cancelling build')
+                    builder._build_future.add_done_callback(do_restart_build)
+                    builder._build_future.cancel()
+
+                else:
+                    await do_restart_build(None)
+
+
+            except Exception as e:
+                errors.all = str(e)
+
+        if len(errors):
+
+            git_repo = dashboard_options['git_repo'] = dashboard_options.get('git_repo', '')
+            git_repo_branch = dashboard_options['git_repo_branch'] = dashboard_options.get('git_repo_branch', '')
+            conda_env = dashboard_options['conda_env'] = dashboard_options.get('conda_env', '')
+            all_users_tuples = self.get_visitor_tuples(current_user.id, selected_users_orm)
+
+            html = await self.render_template(
+                "editdashboard.html",
+                **self.template_vars(dict(
+                base_url=self.settings['base_url'],
+                dashboard=dashboard,
+                dashboard_name=dashboard_name,
+                dashboard_description=dashboard_description,
+                dashboard_start_path=dashboard_start_path,
+                dashboard_presentation_type=dashboard_presentation_type,
+                dashboard_options=dashboard_options,
+                user_permissions=user_permissions,
+                git_repo=git_repo,
+                git_repo_branch=git_repo_branch,
+                source_type=source_type,
+                conda_env=conda_env,
+                presentation_types=merged_presentation_types,
+                all_conda_envs=all_conda_envs,
+                allow_custom_conda_env=allow_custom_conda_env,
+                spawner_id=spawner_id,
+                spawners=spawners,
+                show_source_servers=cdsconfig.show_source_servers,
+                show_source_git=cdsconfig.show_source_git,
+                require_source_server=cdsconfig.require_source_server,
+                all_users_tuples=all_users_tuples,
+                errors=errors,
+                current_user=current_user))
+            )
+            return self.write(html)
+        
+        self.redirect("{}hub/dashboards/{}".format(self.settings['base_url'], dashboard.urlname))
+
+from cdsdashboards.builder.processbuilder import ProcessBuilder
+class QHubBuilder(ProcessBuilder):
+    async def prespawn_server_options(self, dashboard, dashboard_user, ns):
+        result = {}
+        for spawn_attr in ['memory', 'nprocs', 'partition']:
+            if dashboard.options.get(spawn_attr):
+                result.update([(spawn_attr, dashboard.options[spawn_attr])])
+        return result
+
+# END-----------------------------------------------------------------------------------------------------------------
+
+
 from cdsdashboards.app import CDS_TEMPLATE_PATHS
 from cdsdashboards.hubextension import cds_extra_handlers
 from cdsdashboards.hubextension.spawners.variablemixin import VariableMixin, MetaVariableMixin
@@ -58,10 +317,11 @@ class QHubHPCSpawner(QHubHPCSpawner, VariableMixin, metaclass=MetaVariableMixin)
 c.VariableMixin.default_presentation_cmd = ['jhsingle-native-proxy']
 c.JupyterHub.allow_named_servers = True
 
-c.CDSDashboardsConfig.builder_class = 'cdsdashboards.builder.processbuilder.ProcessBuilder'
+c.CDSDashboardsConfig.builder_class = QHubBuilder  #'cdsdashboards.builder.processbuilder.ProcessBuilder'
 
 c.JupyterHub.template_paths += CDS_TEMPLATE_PATHS
 c.JupyterHub.extra_handlers += cds_extra_handlers
+c.JupyterHub.extra_handlers[1] = (r'dashboards-new', QhubDashboardEditHandler)
 c.CDSDashboardsConfig.conda_envs = conda_envs_w_packages(jupyterlab_packages + dashboard_packages, names_only=True) 
 
 {% endif %}
@@ -106,10 +366,9 @@ trap 'echo SIGTERM received' TERM
 {% endraw %}
 
 {% if cdsdashboards.enabled %}
-MINIFORGE_HOME={{miniforge.home}}
 # Overwrite conda_environment_prefix when using cdsdashboards
 if [ -n '{{ '{{ conda_env }}' }}' ]; then
-    export PATH=$MINIFORGE_HOME/envs/{{ '{{ conda_env }}' }}/bin:$PATH
+    export PATH={{miniforge.home}}/envs/{{ '{{ conda_env }}' }}/bin:$PATH
 else
     export PATH={{ '{{ conda_environment_prefix }}' }}/bin:$PATH
 fi
@@ -187,9 +446,9 @@ c.JupyterHub.services = [
 import tornado.web
 import qhub_jupyterhub_theme
 
-c.JupyterHub.extra_handlers += [
+c.JupyterHub.extra_handlers = [
     (r'/custom/(.*)', tornado.web.StaticFileHandler, {"path": qhub_jupyterhub_theme.STATIC_PATH}),
-]
+] + c.JupyterHub.extra_handlers
 
 c.JupyterHub.template_paths += [
     qhub_jupyterhub_theme.TEMPLATE_PATH

@@ -76,6 +76,10 @@
        include_tasks: tasks/bodo.yaml
        when: bodo.enabled
 
+     - name: Install CDS Dashboards
+       include_tasks: tasks/cdsdashboards.yaml
+       when: cdsdashboards.enabled
+
  - hosts: hpc-worker
    tasks:
      - name: Install firewall
