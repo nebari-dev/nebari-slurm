@@ -42,11 +42,14 @@ class QHubHPCSpawner(SlurmSpawner):
         help="Conda environment prefix to launch jupyterlab"
     ).tag(config=True)
 
-c.JupyterHub.template_paths = ['/etc/jupyterhub/cdsdashboards/templates']
+c.JupyterHub.template_paths = []
 c.JupyterHub.extra_handlers = []
 
 {% if cdsdashboards.enabled %}
-# START---------------------------------------------------------------------------------------------------------------
+# -------------------- Specify Dashboard Instance Size --------------------
+# There will likely be a better way to specify instance size when https://github.com/ideonate/cdsdashboards/issues/58 is resolved.
+c.JupyterHub.template_paths += ['/etc/jupyterhub/cdsdashboards/templates']
+
 import sys, re
 
 from tornado.web import authenticated
@@ -302,7 +305,7 @@ class QHubBuilder(ProcessBuilder):
                 result.update([(spawn_attr, dashboard.options[spawn_attr])])
         return result
 
-# END-----------------------------------------------------------------------------------------------------------------
+# --------------------End of Specify Dashboard Instance Size --------------------
 
 
 from cdsdashboards.app import CDS_TEMPLATE_PATHS
@@ -321,12 +324,12 @@ c.CDSDashboardsConfig.builder_class = QHubBuilder  #'cdsdashboards.builder.proce
 
 c.JupyterHub.template_paths += CDS_TEMPLATE_PATHS
 c.JupyterHub.extra_handlers += cds_extra_handlers
-c.JupyterHub.extra_handlers[1] = (r'dashboards-new', QhubDashboardEditHandler)
+dashboards_new_index = [handler[0] for handler in c.JupyterHub.extra_handlers].index(r'dashboards-new')
+c.JupyterHub.extra_handlers[dashboards_new_index] = (r'dashboards-new', QhubDashboardEditHandler)
 c.CDSDashboardsConfig.conda_envs = conda_envs_w_packages(jupyterlab_packages + dashboard_packages, names_only=True) 
 
 {% endif %}
 c.JupyterHub.spawner_class = QHubHPCSpawner
-
 
 c.SlurmSpawner.start_timeout = {{ jupyterhub.spawner.start_timeout }}
 c.QHubHPCSpawner.default_url = '/lab'

@@ -221,6 +221,11 @@
                     <div class="col-10">
                         <select class="form-select" aria-label="Slurm Queue" id="partition" name="partition">
                             <option value="general">general</option>
+                            {% for item in groups %}
+                            {% if item.startswith('partition-')%}
+                                <option value="{{ item[10:] }}">{{ item[10:] }}</option>
+                            {% endif %}
+                            {% endfor %}
                         </select>
                     </div>
                 </div>
