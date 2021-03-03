@@ -1,3 +1,5 @@
+<!-- This template is defined here in order to dashboard specify instance size. 
+     There will likely be a better way to do this when https://github.com/ideonate/cdsdashboards/issues/58 is resolved. -->
 {% extends "page.html" %}
 
 {% block main %}
@@ -200,20 +202,21 @@
                 <p><input type="text" name="start_path" value="{{ dashboard_start_path | escape }}" id="dashboard-start-path" /></p>
                 <p> <i>Relative to your Jupyter tree or Git root</i></p>
                 
-                <!-- INSERT THE JUPYTERLAB SPAWNER OPTIONS HERE! -->
-                <div class="form-group row">
+                <!-- JupyterHub Spawner Options -->
+                <h3>Server Options</h3>
+                <div>
                     <label for="memory" class="col-2 col-form-label">JupyterLab Memory (GB)</label>
                     <div class="col-10">
-                        <input class="form-control" type="number" value="1" id="memory" name="memory">
+                        <input type="number" value="1" id="memory" name="memory">
                     </div>
                 </div>
-                <div class="form-group row">
+                <div>
                     <label for="nprocs" class="col-2 col-form-label">JupyterLab CPUs</label>
                     <div class="col-10">
-                        <input class="form-control" type="number" value="1" id="nprocs" name="nprocs">
+                        <input type="number" value="1" id="nprocs" name="nprocs">
                     </div>
                 </div>
-                <div class="form-group row">
+                <div>
                     <label for="partition" class="col-2 col-form-label">Slurm Partition</label>
                     <div class="col-10">
                         <select class="form-select" aria-label="Slurm Queue" id="partition" name="partition">
@@ -221,7 +224,7 @@
                         </select>
                     </div>
                 </div>
-                <!-- END OF INSERT THE JUPYTERLAB SPAWNER OPTIONS HERE! -->
+                <!-- End JupyterHub Spawner Options -->
                 {% if errors.start_path %}
     
                 <p class="error">{{ errors.start_path | escape }}</p>
