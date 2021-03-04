@@ -27,22 +27,22 @@ this distribution is to form a cohesive set of tools that enable:
    pre-existing nodes in your compute environment
  - Customizable Themes for JupyterHub
  
-![jupyterhub-theme](docs/images/qhub-landing-page.png)
+![jupyterhub-theme](docs/_static/images/qhub-landing-page.png)
 
  - JupyterHub integration allowing users to select the memory, cpus,
    and environment that jupyterlab instances for users are launched in
 
-![jupyterhub](docs/images/qhub-jupyterlab-profile.png)
+![jupyterhub](docs/_static/images/qhub-jupyterlab-profile.png)
 
  - Dask Gateway integration allowing users to selct the memory, cpus,
    and environment that dask schedule/workers use
    
-![dask-gateway](docs/images/qhub-dask-gateway.png)
+![dask-gateway](docs/_static/images/qhub-dask-gateway.png)
    
  - Monitoring of entire cluster via [grafana](https://grafana.com/) to
    monitor the nodes, jupyterhub, slurm, and traefik
    
-![grafana](docs/images/qhub-grafana-node-exporter.png)   
+![grafana](docs/_static/images/qhub-grafana-node-exporter.png)
    
  - Shared directories between all users for collaborative compute
 

@@ -1,15 +1,25 @@
-# Panel Dashboarding
+# ContainDS Dashboards
 
-Currently the simplest solution
-[jupyter-panel-proxy](https://github.com/holoviz/jupyter-panel-proxy)
-is being used which exposes all jupyter notebooks that are panel
-applications in your home directory. Not recursive so it will have to
-be in your current directory. Also the panel applications do not
-reload unless you restart your jupyterlab server.
+ContainDS Dashboards is a dashboard publishing colution that has been
+integrated with Qhub-onprem. Refer to the [main
+documentation](https:// cdsdashboards.readthedocs.io/en/stable/) for
+additional info.
 
-Panel applications can be visited going to
-`/user/<username>/panel`. Your jupyterlab url should look something
-like `/user/<username>/lab`.
+## Necessary Steps to use ContainDS Dashboards with Qhub-onprem
+- Add `cdsdashboards` to your jupyterhub environment
+- Add `cdsdashboards-singleuser` as well as the desired supported
+  visualization libraries (panel, bokeh, voila, streamlit, plotlydash,
+  rshiny, etc.) to one of your user environments.  Note, each user
+  environment also requires `jupyterlab`, `jupyterhub`, and
+  `batchspawner` to function properly on qhub-onprem.
+- Set `cdsdashboards.enabled` to true in `group_vars/all.yaml`
+- Rerun ansible-playbook after adding the new environment.
 
-With some additional work it should be easy enough to expose
-additional directories for panel to serve.
+## Restarting a Stopped Dashboard
+
+If you stop your dashboard from the Home tab of Jupyterhub, and wish
+to restart it then click the dashboard name, scroll to the bottom of
+the form, and push Save to retart. Do **not** click on the start
+button on the Home tab of Jupyterhub.  This option does **not** work
+currently.  ![Click Green Highlighted Region to Restart
+Dashboard](_static/images/qhub-dashboards-bug.png)
