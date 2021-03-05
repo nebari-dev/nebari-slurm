@@ -1,0 +1,8 @@
+---
+- name: Copy cdsdashboard_templates directory
+  become: true
+  copy:
+    src: files/dashboards/cdsdashboards
+    dest: /etc/jupyterhub/
+    mode: '0755'
+  register: _cdsdashboards_template
