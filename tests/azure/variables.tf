@@ -6,7 +6,7 @@ variable "name" {
 variable "resource-location" {
   description = "azure location to deploy the resources"
   type        = string
-  default     = "eastus"
+  default     = "centralus"
 }
 variable "environment" {
   type        = string
