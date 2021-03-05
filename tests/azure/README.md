@@ -60,7 +60,7 @@ Adjust the following terraform variables:
   - `worker-count`
   - `os-disk-size`
 
-You might want to change the these variables according to your requirements
+You might want to change these variables according to your requirements
 ## Destroying the resources
 
 ```shell
