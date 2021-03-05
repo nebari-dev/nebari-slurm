@@ -1,6 +1,8 @@
 # Dependencies
 
- - [Terraform v0.14.4](https://releases.hashicorp.com/terraform/0.14.4/)
+ - Terraform v0.14.4
+   - [Download link](https://releases.hashicorp.com/terraform/0.14.4/)
+   - [Instruction to install link](https://learn.hashicorp.com/tutorials/terraform/install-cli)
 
 # Testing
 
