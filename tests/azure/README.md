@@ -62,7 +62,7 @@ Adjust the following terraform variables:
 
 You might want to change these variables according to your requirements
 
-## Access the master node
+## Access the azure vms
 ```shell
 ssh -i id_rsa ubuntu@<public_ip_of_master_node>
 ## If you want to access the worker node copy the id_rsa inside the master node
