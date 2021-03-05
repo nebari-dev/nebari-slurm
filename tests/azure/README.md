@@ -61,6 +61,21 @@ Adjust the following terraform variables:
   - `os-disk-size`
 
 You might want to change these variables according to your requirements
+
+## Access the master node
+```shell
+ssh -i id_rsa ubuntu@<public_ip_of_master_node>
+## If you want to access the worker node copy the id_rsa inside the master node
+## and access it through ssh. Run below command from your local machine
+scp -i id_rsa id_rsa ubuntu@<public_ip_of_master_node>:/home/ubuntu/
+ssh -i id_rsa ubuntu@<public_ip_of_master_node>
+## Inside master node
+chmod 600 id_rsa
+ssh -i id_rsa ubuntu@<private_ip_of_worker_node_1>
+## Above same ssh command goes for accessing other nodes.
+```
+
+
 ## Destroying the resources
 
 ```shell
