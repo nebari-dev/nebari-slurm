@@ -6,7 +6,6 @@ dependencies:
   - jupyterhub
   - jupyterhub-idle-culler
   - jupyterhub-systemdspawner
-  - cdsdashboards
   - pip:
       - qhub_jupyterhub_theme
       - jupyterhub-traefik-proxy
@@ -14,3 +13,5 @@ dependencies:
       - git+https://github.com/yuvipanda/jupyterhub-ssh.git
       # batchspawner latest slurm fixes
       - https://github.com/jupyterhub/batchspawner/archive/129951ad11e3049567b94adb8c9725dc22225a1a.tar.gz
+      # cdsdashboards
+      - https://github.com/ideonate/cdsdashboards/archive/e5ad52f47bc9d9b1fcf7597561afe23f0cdc2c75.tar.gz
