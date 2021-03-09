@@ -67,12 +67,14 @@ provisioner and in the cloud.
 Vagrant is a tool responsible for creating and provisioning vms. It
 has convenient integration with ansible which allows for easy
 effective control over configuration. Currently the `Vagrantfile` only
-has support for `libvirt`.
+has support for `libvirt` and `virtualbox`.
 
 ```shell
 cd tests/ubuntu1804
 # cd tests/ubuntu2004
 vagrant up --provider=<provider-name>
+# vagrant up --provider=libvirt
+# vagrant up --provider=virtualbox
 ```
 
 Notebook for testing functionality
