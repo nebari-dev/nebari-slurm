@@ -12,7 +12,7 @@ Vagrant.configure("2") do |config|
       libvirthpc01.cpus = 2
     end
 
-    hpc01.vm.provider "virtualbox" do |vboxhpc02|
+    hpc01.vm.provider "virtualbox" do |vboxhpc01|
       vboxhpc01.memory = 4096
       vboxhpc01.cpus = 2
       vboxhpc01.gui = true
