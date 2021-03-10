@@ -16,8 +16,8 @@ backup:
   environment:
     RESTIC_REPOSITORY: "s3:s3.amazonaws.com/bucket_name"
     RESTIC_PASSWORD: "thisismyencryptionkey"
-    AWS_ACCESS_KEY_ID=accesskey
-    AWS_SECRET_ACCESS_KEY=mylongsecretaccesskey
+    AWS_ACCESS_KEY_ID: accesskey
+    AWS_SECRET_ACCESS_KEY: mylongsecretaccesskey
 ```
 
  - enabled :: determines whether backups are enabled
