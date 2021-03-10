@@ -95,6 +95,14 @@ Current testing environment spins up four nodes:
 
 Jupyterhub is accessible via `<master node ip>:8000`
 
+You may need to find a way to port-forward, e.g. over ssh:
+
+```
+vagrant ssh hpc01-test -- -N -L localhost:8000:localhost:8000
+```
+
+then access http://localhost:8000/ on the host.
+
 ## Grafana
 
 Grafana is accessible via `<master node ip>:3000`
