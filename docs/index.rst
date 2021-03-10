@@ -68,6 +68,7 @@ Table of Contents
    dask
    jupyterhub
    slurm
+   backup
    faq
 
 

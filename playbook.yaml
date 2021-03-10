@@ -80,6 +80,10 @@
        include_tasks: tasks/cdsdashboards.yaml
        when: cdsdashboards.enabled
 
+     - name: Enable backups
+       include_tasks: tasks/backup.yaml
+       when: backup.enabled
+
  - hosts: hpc-worker
    tasks:
      - name: Install firewall
