@@ -15,22 +15,22 @@ variable "environment" {
 variable "vnet-address-space" {
   description = "Virtual network address space"
   type        = string
-  default     = "10.0.0.0/16"
+  default     = "192.168.0.0/16"
 }
 variable "subnet-1-address-prefix" {
   description = "Subnet address space"
   type    = string
-  default = "10.0.0.0/24"
+  default = "192.168.0.0/24"
 }
 variable "whitelist_port" {
   description = "Port to whitelist for the master node"
   type        = list
-  default     = ["22","8080"]
+  default     = ["22","8080", "6818", "6819", "80", "443"]
 }
 variable "master-machine-size" {
   description = "master node configuration"
   type    = string
-  default = "Standard_F4"
+  default = "Standard_F1"
 }
 variable "master-machine-username" {
   description = "master node admin username"
@@ -65,7 +65,7 @@ variable "os_disk_storage_account_type" {
 variable "node-machine-size" {
   description = "worker node configuration"
   type        = string
-  default     = "Standard_F4"
+  default     = "Standard_F1"
 }
 variable "node-machine-username" {
   description = "master node admin username"
@@ -80,5 +80,5 @@ variable "worker-count" {
 variable "os-disk-size" {
   description = "os disk size"
   type    = string
-  default = "2"
+  default = "100"
 }

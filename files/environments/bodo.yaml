@@ -1,8 +1,7 @@
 name: bodo
 channels:
-  - https://{{ bodo.conda_username }}:{{ bodo.conda_token }}@bodo.jfrog.io/artifactory/api/conda/bodo.ai
+  - bodo.ai
   - conda-forge
-  - pytorch
   - default
 dependencies:
   - bodo
@@ -20,7 +19,6 @@ dependencies:
   - pip
   - pytest
   - python
-  - pytorch >=1.5
   - scipy
   - scikit-learn
   - torchvision >=0.6
@@ -28,4 +26,3 @@ dependencies:
   - pytest
   - pip:
     - nbmake==0.1.post1
-    - horovod[pytorch]

@@ -43,14 +43,14 @@ resource "azurerm_network_security_group" "network-sg-2" {
 }
 
 resource "azurerm_network_security_rule" "sg-rule-1" {
-  count                       = "${length(var.whitelist_port)}"
+  count                       = length(var.whitelist_port)
   name                        = "sg-rule-${count.index}"
   priority                    = (100 + (count.index))
   direction                   = "Inbound"
   access                      = "Allow"
   protocol                    = "Tcp"
   source_port_range           = "*"
-  destination_port_range      = "${element(var.whitelist_port, count.index)}"
+  destination_port_range      = element(var.whitelist_port, count.index)
   source_address_prefix       = "*"
   destination_address_prefix  = "*"
   resource_group_name         = azurerm_resource_group.rg.name
@@ -61,7 +61,7 @@ resource "azurerm_subnet" "subnet" {
   name                 = "${var.name}-subnet-1"
   resource_group_name  = azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.vnet.name
-  address_prefix       = var.subnet-1-address-prefix
+  address_prefixes      = [var.subnet-1-address-prefix]
 }
 
 resource "azurerm_network_interface" "ni" {
