@@ -116,6 +116,12 @@ vagrant provision
 Or it may be easier just to edit/copy the jupyterhub_config.py file to /etc/jupyterhub directly.
 Similarly with source files, or it should also be possible to only run the relevant ansible steps.
 
+To run ansible directly only on tasks tagged 'conda' and 'jupyterhub' on the master node, run this within the nix shell on the gpu2 machine:
+
+```
+ansible-playbook -i .vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory --private-key=~/.vagrant.d/insecure_private_key -u vagrant -l hpc-master --tags="conda,jupyterhub" ../../playbook.yaml
+```
+
 For debugging:
 
 ```
@@ -125,4 +131,4 @@ systemctl restart jupyterhub
 journalctl -u jupyterhub
 ```
 
-SlurmSpawner logs are in a file in a home folder (maybe not vagrant user), in a file called .slurmspawner or similar.
+SlurmSpawner logs are stored in the worker nodes in the home folder of the user running JupyterLab, eg. /home/example-user/.jupyterhub_slurmspawner_9.log

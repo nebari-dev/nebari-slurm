@@ -36,92 +36,100 @@ c.PAMAuthenticator.open_sessions = False
 # Listen on all interfaces, since hub should be reachable from spawned nodes
 c.JupyterHub.hub_ip = '0.0.0.0'
 
-# Assign Qhub Spawner
-class QHubHPCSpawner(SlurmSpawner):
-    req_conda_environment_prefix = Unicode('',
+
+# -------------------- Base Spawner --------------------
+
+class QHubHPCSpawnerBase(SlurmSpawner):
+
+  req_conda_environment_prefix = Unicode('',
         help="Conda environment prefix to launch jupyterlab"
     ).tag(config=True)
-    options_from_form = Callable(
-        help="""
-        Interpret HTTP form data
-        Form data will always arrive as a dict of lists of strings.
-        Override this function to understand single-values, numbers, etc.
-        This should coerce form data into the structure expected by self.user_options,
-        which must be a dict, and should be JSON-serializeable,
-        though it can contain bytes in addition to standard JSON data types.
-        This method should not have any side effects.
-        Any handling of `user_options` should be done in `.start()`
-        to ensure consistent behavior across servers
-        spawned via the API and form submission page.
-        Instances will receive this data on self.user_options, after passing through this function,
-        prior to `Spawner.start`.
-        .. versionchanged:: 1.0
-            user_options are persisted in the JupyterHub database to be reused
-            on subsequent spawns if no options are given.
-            user_options is serialized to JSON as part of this persistence
-            (with additional support for bytes in case of uploaded file data),
-            and any non-bytes non-jsonable values will be replaced with None
-            if the user_options are re-used.
-        """,
-    ).tag(config=True)
 
-c.JupyterHub.template_paths = []
-c.JupyterHub.extra_handlers = []
+  # data from form submission is {key: [value]}
+  # we need to convert the formdata to a key value dict
+  def options_from_form(self, data):
+      return {key: value[0] for key, value in data.items()}
+
+  #c.QHubHPCSpawner.options_from_form = handle_form_data_options
+
+c.QHubHPCSpawnerBase.options_form = f'''
+<div class="form-group row">
+  <label for="memory" class="col-2 col-form-label">JupyterLab Memory (GB)</label>
+  <div class="col-10">
+    <input class="form-control" type="number" value="1" id="memory" name="memory">
+  </div>
+</div>
+<div class="form-group row">
+  <label for="nprocs" class="col-2 col-form-label">JupyterLab CPUs</label>
+  <div class="col-10">
+    <input class="form-control" type="number" value="1" id="nprocs" name="nprocs">
+  </div>
+</div>
+<div class="form-group row">
+  <label for="partition" class="col-2 col-form-label">Slurm Partition</label>
+  <div class="col-10">
+     <select class="form-select" aria-label="Slurm Queue" id="partition" name="partition">
+       <option value="general">general</option>
+{% for item in groups %}
+{% if item.startswith('partition-')%}
+       <option value="{{ item[10:] }}">{{ item[10:] }}</option>
+{% endif %}
+{% endfor %}
+     </select>
+  </div>
+</div>
+{% raw %}
+<div class="form-group row">
+  <label for="conda_environment_prefix" class="col-2 col-form-label">Conda Environment</label>
+  <div class="col-10">
+     <select class="form-select" aria-label="Conda Environment" id="conda_environment_prefix" name="conda_environment_prefix">
+{''.join([f'<option value="{_[1]}">{_[0]}</option>' for _ in conda_envs_w_packages(jupyterlab_packages)])}
+     </select>
+  </div>
+</div>
+{% endraw %}
+'''
+
 
 {% if cdsdashboards.enabled %}
 # -------------------- Specify Dashboard Instance Size --------------------
-# There will likely be a better way to specify instance size when https://github.com/ideonate/cdsdashboards/issues/58 is resolved.
-# c.JupyterHub.template_paths += ['/etc/jupyterhub/cdsdashboards/templates']
-
-import sys, re
-
-from tornado.web import authenticated
-
-from jupyterhub.handlers.base import BaseHandler
-from jupyterhub.orm import Group, User
-
-from cdsdashboards.orm import Dashboard
-from cdsdashboards.hubextension.base import DashboardBaseMixin, check_database_upgrade, spawner_to_dict
-from cdsdashboards.util import DefaultObjDict, url_path_join, maybe_future
-
-from cdsdashboards import hookimpl
-from cdsdashboards.pluggymanager import pm
-from cdsdashboards.app import BuildersStore, CDSConfigStore
-
-from cdsdashboards.builder.processbuilder import ProcessBuilder
-class QHubBuilder(ProcessBuilder):
-    _needs_user_options = True
-    
-#    async def prespawn_server_options(self, dashboard, dashboard_user, ns):
-#        result = {}
-#        for spawn_attr in ['memory', 'nprocs', 'partition']:
-#            if dashboard.options.get(spawn_attr):
-#                result.update([(spawn_attr, dashboard.options[spawn_attr])])
-#        return result
-# --------------------End of Specify Dashboard Instance Size --------------------
-
-
 from cdsdashboards.app import CDS_TEMPLATE_PATHS
 from cdsdashboards.hubextension import cds_extra_handlers
+
 from cdsdashboards.hubextension.spawners.variablemixin import VariableMixin, MetaVariableMixin
 
 dashboard_packages = ['cdsdashboards-singleuser']
 
-class QHubHPCSpawner(QHubHPCSpawner, VariableMixin, metaclass=MetaVariableMixin):
-    pass
+class QHubHPCSpawner(QHubHPCSpawnerBase, VariableMixin, metaclass=MetaVariableMixin):
+  pass
 
 c.VariableMixin.default_presentation_cmd = ['jhsingle-native-proxy']
+
 c.JupyterHub.allow_named_servers = True
 
-c.CDSDashboardsConfig.builder_class = QHubBuilder  #'cdsdashboards.builder.processbuilder.ProcessBuilder'
+c.CDSDashboardsConfig.builder_class = 'cdsdashboards.builder.processbuilder.ProcessBuilder'
 
-c.JupyterHub.template_paths += CDS_TEMPLATE_PATHS
-c.JupyterHub.extra_handlers += cds_extra_handlers
-# dashboards_new_index = [handler[0] for handler in c.JupyterHub.extra_handlers].index(r'dashboards-new')
-# c.JupyterHub.extra_handlers[dashboards_new_index] = (r'dashboards-new', QhubDashboardEditHandler)
+c.JupyterHub.template_paths = CDS_TEMPLATE_PATHS
+c.JupyterHub.extra_handlers = cds_extra_handlers
+
 c.CDSDashboardsConfig.conda_envs = conda_envs_w_packages(jupyterlab_packages + dashboard_packages, names_only=True) 
 
+# Force dashboard creator to select an instance size
+c.CDSDashboardsConfig.spawn_default_options = False
+
+c.JupyterHub.default_url = '/hub/home'
+
+{% else %}
+
+# Assign Qhub Spawner
+class QHubHPCSpawner(QHubHPCSpawnerBase):
+    pass
+
+c.JupyterHub.template_paths = []
+c.JupyterHub.extra_handlers = []
+
 {% endif %}
+
 c.JupyterHub.spawner_class = QHubHPCSpawner
 
 c.SlurmSpawner.start_timeout = {{ jupyterhub.spawner.start_timeout }}
@@ -182,51 +190,6 @@ echo "jupyterhub-singleuser ended gracefully"
 {% endraw %}
 
 
-# data from form submission is {key: [value]}
-# we need to convert the formdata to a key value dict
-def handle_form_data_options(data):
-    return {key: value[0] for key, value in data.items()}
-
-c.QHubHPCSpawner.options_from_form = handle_form_data_options
-
-c.QHubHPCSpawner.options_form = f'''
-<div class="form-group row">
-  <label for="memory" class="col-2 col-form-label">JupyterLab Memory (GB)</label>
-  <div class="col-10">
-    <input class="form-control" type="number" value="1" id="memory" name="memory">
-  </div>
-</div>
-<div class="form-group row">
-  <label for="nprocs" class="col-2 col-form-label">JupyterLab CPUs</label>
-  <div class="col-10">
-    <input class="form-control" type="number" value="1" id="nprocs" name="nprocs">
-  </div>
-</div>
-<div class="form-group row">
-  <label for="partition" class="col-2 col-form-label">Slurm Partition</label>
-  <div class="col-10">
-     <select class="form-select" aria-label="Slurm Queue" id="partition" name="partition">
-       <option value="general">general</option>
-{% for item in groups %}
-{% if item.startswith('partition-')%}
-       <option value="{{ item[10:] }}">{{ item[10:] }}</option>
-{% endif %}
-{% endfor %}
-     </select>
-  </div>
-</div>
-{% raw %}
-<div class="form-group row">
-  <label for="conda_environment_prefix" class="col-2 col-form-label">Conda Environment</label>
-  <div class="col-10">
-     <select class="form-select" aria-label="Conda Environment" id="conda_environment_prefix" name="conda_environment_prefix">
-{''.join([f'<option value="{_[1]}">{_[0]}</option>' for _ in conda_envs_w_packages(jupyterlab_packages)])}
-     </select>
-  </div>
-</div>
-{% endraw %}
-'''
-
 # ===== adding api tokens for external services =======
 c.JupyterHub.services = [
 {% for service_name in jupyterhub.services %}
@@ -239,6 +202,7 @@ c.JupyterHub.services = [
 ]
 
 #==================== THEMING =====================#
+
 import tornado.web
 import qhub_jupyterhub_theme
 
@@ -246,12 +210,13 @@ c.JupyterHub.extra_handlers = [
     (r'/custom/(.*)', tornado.web.StaticFileHandler, {"path": qhub_jupyterhub_theme.STATIC_PATH}),
 ] + c.JupyterHub.extra_handlers
 
-c.JupyterHub.template_paths += [
+c.JupyterHub.template_paths = [
     qhub_jupyterhub_theme.TEMPLATE_PATH
-]
+] + c.JupyterHub.template_paths
 
 c.JupyterHub.template_vars = {
 {% for key, value in jupyterhub.template_vars.items() %}
     '{{ key }}': '{{ value }}',
 {% endfor %}
+{% if cdsdashboards.enabled %}'cdsdashboards_enabled': True{% endif %}
 }

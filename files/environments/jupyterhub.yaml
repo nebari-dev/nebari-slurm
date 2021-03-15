@@ -14,4 +14,4 @@ dependencies:
       # batchspawner latest slurm fixes
       - https://github.com/jupyterhub/batchspawner/archive/129951ad11e3049567b94adb8c9725dc22225a1a.tar.gz
       # cdsdashboards
-      - https://github.com/ideonate/cdsdashboards/archive/e5ad52f47bc9d9b1fcf7597561afe23f0cdc2c75.tar.gz
+      - cdsdashboards==0.5.0b2

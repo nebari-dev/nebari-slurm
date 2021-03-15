@@ -3,7 +3,8 @@
    stat:
      path: "{{ miniforge.home }}/bin/conda"
    register: stat_conda
-
+   tags: conda
+   
  - name: download miniconda installer
    get_url:
      url: "https://github.com/conda-forge/miniforge/releases/download/{{ miniforge.version }}/Miniforge3-{{ miniforge.version }}-Linux-x86_64.sh"
@@ -12,6 +13,7 @@
      force: false
      mode: 0755
    when: not stat_conda.stat.exists
+   tags: conda
 
  - name: install miniforge
    become: yes
@@ -20,6 +22,7 @@
      cmd: |
        /tmp/miniforge.sh -b -p "{{ miniforge.home }}"
    when: not stat_conda.stat.exists
+   tags: conda
 
  - name: ensure conda.sh activated in shell
    become: yes
@@ -27,6 +30,7 @@
      src: "{{ miniforge.home }}/etc/profile.d/conda.sh"
      dest: "/etc/profile.d/conda.sh"
      state: link
+   tags: conda
 
  - name: Ensure conda activate directory exists
    become: true
@@ -34,12 +38,14 @@
      path: "{{ miniforge.home }}/etc/conda/activate.d"
      state: directory
      mode: '0755'
+   tags: conda
 
  - name: create conda configuration directory
    become: yes
    file:
      path: /etc/conda
      state: directory
+   tags: conda
 
  - name: Create default condarc for users
    become: yes
@@ -51,7 +57,9 @@
          - "~/.conda/envs"
        pkgs_dirs:
          - "~/.conda/pkgs"
+   tags: conda
 
  - name: Install conda environments
    include_tasks: conda/environment.yaml
    with_items: "{{ miniforge.environments | default([]) }}"
+   tags: conda
