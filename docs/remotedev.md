@@ -135,6 +135,13 @@ journalctl -u jupyterhub -e
 
 SlurmSpawner logs are stored in the worker nodes in the home folder of the user running JupyterLab, eg. /home/example-user/.jupyterhub_slurmspawner_9.log
 
+Conda troubles:
+To completely remove and reinstall:
+```
+sudo rm -rf /opt/conda/envs/jupyterhub
+sudo /opt/conda/bin/conda env update -f /opt/conda-environments/jupyterhub.yaml --prefix /opt/conda/envs/jupyterhub
+```
+
 ## KVM and libvirt
 
 If you find vagrant is in an inconsistent state and cannot access the VMs, you can destroy manually:

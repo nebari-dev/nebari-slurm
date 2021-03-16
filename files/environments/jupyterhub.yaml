@@ -7,7 +7,7 @@ dependencies:
   - jupyterhub-idle-culler
   - jupyterhub-systemdspawner
   - pip:
-      - https://github.com/Quansight/qhub-jupyterhub-theme/archive/b78749053d5ddd094c684cf48a0b4e227880ea65.tar.gz
+      - qhub-jupyterhub-theme==0.3.1
       - jupyterhub-traefik-proxy
       # jupyterhub-ssh has not made a release yet
       - git+https://github.com/yuvipanda/jupyterhub-ssh.git
