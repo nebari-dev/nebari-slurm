@@ -156,3 +156,12 @@ virsh undefine <THE_MACHINE>
 virsh vol-list default
 
 virsh vol-delete --pool default <THE_VOLUME>
+
+## SQLite
+
+To inspect the database, `ssh vm` then:
+
+```
+sudo apt install sqlite3
+sqlite3 /var/lib/jupyterhub/jupyterhub.sqlite
+```
