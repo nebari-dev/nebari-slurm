@@ -50,9 +50,7 @@ class QHubHPCSpawnerBase(SlurmSpawner):
   def options_from_form(self, data):
       return {key: value[0] for key, value in data.items()}
 
-  #c.QHubHPCSpawner.options_from_form = handle_form_data_options
-
-c.QHubHPCSpawnerBase.options_form = f'''
+  main_options_form = f'''
 <div class="form-group row">
   <label for="memory" class="col-2 col-form-label">JupyterLab Memory (GB)</label>
   <div class="col-10">
@@ -78,6 +76,9 @@ c.QHubHPCSpawnerBase.options_form = f'''
      </select>
   </div>
 </div>
+'''
+
+  conda_options_form = f'''
 {% raw %}
 <div class="form-group row">
   <label for="conda_environment_prefix" class="col-2 col-form-label">Conda Environment</label>
@@ -89,6 +90,17 @@ c.QHubHPCSpawnerBase.options_form = f'''
 </div>
 {% endraw %}
 '''
+
+  def options_form(self, spawner):
+    self.log.info("In options_form")
+    self.log.info(spawner)
+    if spawner.user_options and 'presentation_type' in spawner.user_options:
+      print('Spawner options form presentation type: '+spawner.user_options['presentation_type'])
+      if spawner.user_options['presentation_type']:
+        return self.main_options_form # Omit the conda env dropdown since that is chosen per dashboard
+    
+    # Display full form including conda env dropdown
+    return ''.join([self.main_options_form, self.conda_options_form])
 
 
 {% if cdsdashboards.enabled %}

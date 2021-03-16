@@ -49,7 +49,9 @@ vagrant up --provider=libvirt
 ```
 
 Note that if someone else has already done this on the same machine, there may be a naming conflict. Either try 
-ubuntu2004 instead, or (if that's in use too) you would have to change the names inside Vagrantfile.
+ubuntu2004 instead, or add your own prefix to avoid a conflict.
+
+For tests/ubuntu1804, this can be achieved by setting `export HPC_VM_PREFIX='-<my initials>'` before running any vagrant commands.
 
 ### Connect to hpc01-test VM
 
@@ -77,7 +79,7 @@ Host gpu2
   User dlester
   IdentityFile ~/.ssh/id_rsa
   Port 2222
-  LocalForward 8000 192.168.121.171:8000
+  LocalForward 8687 192.168.121.171:8000
 
 Host vm
   HostName 192.168.121.171
@@ -92,7 +94,7 @@ again in the second section (vm).
 You should now be able to:
 
 1. Connect direct to the master node (hpc01-test) from your Mac using `ssh vm`
-2. Visit http://127.0.0.1:8000/ to view JupyterHub on the master node through the port forward
+2. Visit http://127.0.0.1:8687/ to view JupyterHub on the master node through the port forward
 
 ## Development in VSCode
 
@@ -128,7 +130,22 @@ For debugging:
 # Restart JupyterHub to read latest config changes:
 systemctl restart jupyterhub
 # Inspect logs
-journalctl -u jupyterhub
+journalctl -u jupyterhub -e
 ```
 
 SlurmSpawner logs are stored in the worker nodes in the home folder of the user running JupyterLab, eg. /home/example-user/.jupyterhub_slurmspawner_9.log
+
+## KVM and libvirt
+
+If you find vagrant is in an inconsistent state and cannot access the VMs, you can destroy manually:
+
+virsh list --all
+# get the machine name
+
+virsh destroy <THE_MACHINE>
+virsh undefine <THE_MACHINE>
+
+# get the volume name
+virsh vol-list default
+
+virsh vol-delete --pool default <THE_VOLUME>

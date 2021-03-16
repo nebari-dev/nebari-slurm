@@ -4,7 +4,7 @@
    file:
      path: /opt/conda-environments
      state: directory
-     tags: conda
+   tags: conda
 
  - name: copy environments files
    become: yes
