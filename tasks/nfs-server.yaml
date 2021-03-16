@@ -23,7 +23,7 @@
        {{ export }}     *(rw,sync,no_root_squash,no_subtree_check)
        {% endfor %}
      dest: /etc/exports
-     mode: '0600'
+     mode: '0644'
      owner: root
      group: root
    register: _nfs_configuration

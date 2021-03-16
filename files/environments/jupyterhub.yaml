@@ -3,7 +3,7 @@ channels:
   - conda-forge
 dependencies:
   - pip
-  - jupyterhub
+  - jupyterhub>=1.3.0
   - jupyterhub-idle-culler
   - jupyterhub-systemdspawner
   - pip:

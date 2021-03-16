@@ -27,22 +27,22 @@ this distribution is to form a cohesive set of tools that enable:
    pre-existing nodes in your compute environment
  - Customizable Themes for JupyterHub
  
-![jupyterhub-theme](docs/images/qhub-landing-page.png)
+![jupyterhub-theme](docs/_static/images/qhub-landing-page.png)
 
  - JupyterHub integration allowing users to select the memory, cpus,
    and environment that jupyterlab instances for users are launched in
 
-![jupyterhub](docs/images/qhub-jupyterlab-profile.png)
+![jupyterhub](docs/_static/images/qhub-jupyterlab-profile.png)
 
  - Dask Gateway integration allowing users to selct the memory, cpus,
    and environment that dask schedule/workers use
    
-![dask-gateway](docs/images/qhub-dask-gateway.png)
+![dask-gateway](docs/_static/images/qhub-dask-gateway.png)
    
  - Monitoring of entire cluster via [grafana](https://grafana.com/) to
    monitor the nodes, jupyterhub, slurm, and traefik
    
-![grafana](docs/images/qhub-grafana-node-exporter.png)   
+![grafana](docs/_static/images/qhub-grafana-node-exporter.png)
    
  - Shared directories between all users for collaborative compute
 
@@ -67,12 +67,14 @@ provisioner and in the cloud.
 Vagrant is a tool responsible for creating and provisioning vms. It
 has convenient integration with ansible which allows for easy
 effective control over configuration. Currently the `Vagrantfile` only
-has support for `libvirt`.
+has support for `libvirt` and `virtualbox`.
 
 ```shell
 cd tests/ubuntu1804
 # cd tests/ubuntu2004
 vagrant up --provider=<provider-name>
+# vagrant up --provider=libvirt
+# vagrant up --provider=virtualbox
 ```
 
 Notebook for testing functionality
@@ -92,6 +94,14 @@ Current testing environment spins up four nodes:
 ## Jupyterhub
 
 Jupyterhub is accessible via `<master node ip>:8000`
+
+You may need to find a way to port-forward, e.g. over ssh:
+
+```
+vagrant ssh hpc01-test -- -N -L localhost:8000:localhost:8000
+```
+
+then access http://localhost:8000/ on the host.
 
 ## Grafana
 

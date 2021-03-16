@@ -128,3 +128,11 @@ bodo:
 
 cdsdashboards:
   enabled: true
+
+backup:
+  enabled: false
+  on_calendar: "daily"
+  randomized_delay: "3600"
+  environment:
+    RESTIC_REPOSITORY: ...
+    RESTIC_PASSWORD: ...

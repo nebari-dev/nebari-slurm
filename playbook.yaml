@@ -78,6 +78,10 @@
        include_tasks: tasks/bodo.yaml
        when: bodo.enabled
 
+     - name: Enable backups
+       include_tasks: tasks/backup.yaml
+       when: backup.enabled
+
  - hosts: hpc-worker
    tasks:
      - name: Install firewall
