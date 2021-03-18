@@ -30,7 +30,7 @@ variable "whitelist_port" {
 variable "master-machine-size" {
   description = "master node configuration"
   type    = string
-  default = "Standard_F1"
+  default = "Standard_F4s_v2" # 2 physical cores, 4 threads, 8GB RAM
 }
 variable "master-machine-username" {
   description = "master node admin username"
@@ -65,7 +65,7 @@ variable "os_disk_storage_account_type" {
 variable "node-machine-size" {
   description = "worker node configuration"
   type        = string
-  default     = "Standard_F1"
+  default     = "Standard_F4s_v2"
 }
 variable "node-machine-username" {
   description = "master node admin username"
