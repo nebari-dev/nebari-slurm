@@ -56,6 +56,14 @@ dask_gateway:
   tcp_port: 8011
   environment: dask-gateway
 
+ipyparallel:
+  enable_mpi: False
+  environment: jupyterlab
+  controller_memory: "1G"
+  controller_cpus: 1
+  engine_worker_memory: "1G"
+  engine_worker_cpus: 2
+
 mysql:
   database: slurm
   users:

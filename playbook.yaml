@@ -118,5 +118,8 @@
        include_tasks: tasks/conda.yaml
        tags: conda
 
+     - name: IPyParallel configuration
+       include_tasks: tasks/ipyparallel.yaml
+
      - name: Dask configuration
        include_tasks: tasks/dask.yaml
