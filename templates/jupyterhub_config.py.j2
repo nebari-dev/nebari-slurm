@@ -91,15 +91,15 @@ class QHubHPCSpawnerBase(SlurmSpawner):
 {% endraw %}
 '''
 
-  def options_form(self, spawner):  
+  def options_form(self, spawner):
 
     ## Not currently working - idea is to omit conda env from spawner form
-    ## for dashboards, since already selected a conda env 
+    ## for dashboards, since already selected a conda env
     #if spawner.orm_spawner.user_options and 'presentation_type' in spawner.orm_spawner.user_options:
     #  self.log.info("In options_form")
     #  if spawner.user_options['presentation_type']:
     #    return self.main_options_form # Omit the conda env dropdown since that is chosen per dashboard
-    
+
     # Display full form including conda env dropdown
     return ''.join([self.main_options_form, self.conda_options_form])
 
@@ -125,7 +125,7 @@ c.CDSDashboardsConfig.builder_class = 'cdsdashboards.builder.processbuilder.Proc
 c.JupyterHub.template_paths = CDS_TEMPLATE_PATHS
 c.JupyterHub.extra_handlers = cds_extra_handlers
 
-c.CDSDashboardsConfig.conda_envs = conda_envs_w_packages(jupyterlab_packages + dashboard_packages, names_only=True) 
+c.CDSDashboardsConfig.conda_envs = conda_envs_w_packages(jupyterlab_packages + dashboard_packages, names_only=True)
 
 # Force dashboard creator to select an instance size
 c.CDSDashboardsConfig.spawn_default_options = False
@@ -157,6 +157,9 @@ c.QHubHPCSpawner.req_prologue = '''
 if [ ! -L "$HOME/share" ]; then
   ln -s /home/share "$HOME/share"
 fi
+
+# ensure ipyparallel configuration profiles
+cp -r /etc/jupyter/profile_default $HOME/.ipython/
 
 export PATH={{ miniforge.home }}/condabin:$PATH
 '''
