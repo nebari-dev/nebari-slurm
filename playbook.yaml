@@ -54,6 +54,7 @@
 
      - name: Install conda
        include_tasks: tasks/conda.yaml
+       tags: conda
 
      - name: Install nfs server
        include_tasks: tasks/nfs-server.yaml
@@ -63,6 +64,7 @@
 
      - name: Install jupyterhub
        include_tasks: tasks/jupyterhub.yaml
+       tags: jupyterhub
 
      - name: Install jupyterhub ssh
        include_tasks: tasks/jupyterhub-ssh.yaml
@@ -75,10 +77,6 @@
      - name: Install bodo
        include_tasks: tasks/bodo.yaml
        when: bodo.enabled
-
-     - name: Install CDS Dashboards
-       include_tasks: tasks/cdsdashboards.yaml
-       when: cdsdashboards.enabled
 
      - name: Enable backups
        include_tasks: tasks/backup.yaml
@@ -118,6 +116,7 @@
 
      - name: Install conda
        include_tasks: tasks/conda.yaml
+       tags: conda
 
      - name: Dask configuration
        include_tasks: tasks/dask.yaml

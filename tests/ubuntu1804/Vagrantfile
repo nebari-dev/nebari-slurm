@@ -1,3 +1,9 @@
+
+HPC01_TEST = "hpc01-test" + (ENV['HPC_VM_PREFIX'] || '')
+HPC02_TEST = "hpc02-test" + (ENV['HPC_VM_PREFIX'] || '')
+HPC03_TEST = "hpc03-test" + (ENV['HPC_VM_PREFIX'] || '')
+
+
 Vagrant.configure("2") do |config|
   config.vm.box = "generic/ubuntu1804"
 
@@ -5,8 +11,8 @@ Vagrant.configure("2") do |config|
   # ssh key to be the same when /home get mounted on nfs
   config.ssh.insert_key = false
 
-  config.vm.define "hpc01-test", primary: true do |hpc01|
-    hpc01.vm.hostname = "hpc01-test"
+  config.vm.define HPC01_TEST, primary: true do |hpc01|
+    hpc01.vm.hostname = HPC01_TEST
     hpc01.vm.provider "libvirt" do |libvirthpc01|
       libvirthpc01.memory = 4096
       libvirthpc01.cpus = 2
@@ -19,8 +25,8 @@ Vagrant.configure("2") do |config|
     end
   end
 
-  config.vm.define "hpc02-test" do |hpc02|
-    hpc02.vm.hostname = "hpc02-test"
+  config.vm.define HPC02_TEST do |hpc02|
+    hpc02.vm.hostname = HPC02_TEST
     hpc02.vm.provider "libvirt" do |libvirthpc02|
       libvirthpc02.memory = 8192
       libvirthpc02.cpus = 4
@@ -33,8 +39,8 @@ Vagrant.configure("2") do |config|
     end
   end
 
-  config.vm.define "hpc03-test" do |hpc03|
-    hpc03.vm.hostname = "hpc03-test"
+  config.vm.define HPC03_TEST do |hpc03|
+    hpc03.vm.hostname = HPC03_TEST
     hpc03.vm.provider "libvirt" do |libvirthpc03|
       libvirthpc03.memory = 8192
       libvirthpc03.cpus = 4
@@ -53,12 +59,22 @@ Vagrant.configure("2") do |config|
   config.vm.provision "ansible" do |ansible|
     ansible.playbook = "../../playbook.yaml"
     ansible.groups = {
-      "hpc-master" => ["hpc01-test"],
-      "hpc-worker" => ["hpc02-test", "hpc03-test"],
-      "partition-example" => ["hpc03-test"],
+      "hpc-master" => [HPC01_TEST],
+      "hpc-worker" => [HPC02_TEST, HPC03_TEST],
+      "partition-example" => [HPC03_TEST],
     }
     ansible.raw_arguments = [
       "-f 5",  # number of hosts to configure in parallel
     ]
+    ansible.extra_vars = {
+      nfs_client: {
+        mounts: [
+          { path: '/home' ,
+            host: HPC01_TEST },
+          { path: '/opt/conda' ,
+            host: HPC01_TEST }
+        ]
+      }
+    }
   end
 end
