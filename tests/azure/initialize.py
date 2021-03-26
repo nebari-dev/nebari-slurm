@@ -95,10 +95,15 @@ def write_host_vars_file(
     """
     with open(f"{relative_directory}/{worker_hostname}.yaml", "w") as f:
         f.write(
-            f"""slurm_cpus: {int(lscpu_dict['Core(s) per socket:']) * int(lscpu_dict['Thread(s) per core:'])}
-slurm_sockets_per_board: {lscpu_dict['Core(s) per socket:']}
-slurm_memory: {slurm_memory}
+            f"""slurm_cpus: {
+            int(lscpu_dict['Socket(s):']) *
+            int(lscpu_dict['Core(s) per socket:']) *
+            int(lscpu_dict['Thread(s) per core:'])
+            }
+slurm_sockets_per_board: {lscpu_dict['Socket(s):']}
+slurm_cores_per_socket: {lscpu_dict['Core(s) per socket:']}
 slurm_threads_per_core: {lscpu_dict['Thread(s) per core:']}
+slurm_memory: {slurm_memory}
 """
         )
 
