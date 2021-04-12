@@ -145,3 +145,7 @@
      port: "443"
      proto: tcp
    when: firewall.enabled
+
+   tags:
+     - firewall   
+

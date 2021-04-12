@@ -7,10 +7,13 @@ terraform.tfstate
 terraform.tfstate.backup
 .terraform.tfstate.lock.info
 
+# Environment/key files
+.envrc
+*.json
+
 # ssh
 id_rsa
 id_rsa.pub
-
 # ansible
 inventory
 
