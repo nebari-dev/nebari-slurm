@@ -5,8 +5,12 @@ let pkgs = import (builtins.fetchTarball {
 in
 pkgs.mkShell {
   buildInputs = [
+    pkgs.docker-compose
     pkgs.vagrant
     pkgs.ansible
+
+    # development
+    pkgs.python3Packages.sphinx
 
     # keep this line if you use bash
     pkgs.bashInteractive

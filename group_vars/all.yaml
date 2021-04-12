@@ -33,6 +33,8 @@ jupyterhub:
   base_url: "/"
   hub_environment: jupyterhub
   lab_environment: jupyterlab
+  spawner:
+    start_timeout: 60  # seconds
   services:
     prometheus: dpsZlpwaAhi9K8kKf4ZPvCJCuL7D25k1
     dask_gateway: CStgn1NN8DogQR1KajuoQfye1qNRqx6zsh
@@ -54,6 +56,14 @@ dask_gateway:
   tcp_port: 8011
   environment: dask-gateway
 
+ipyparallel:
+  enable_mpi: False
+  environment: jupyterlab
+  controller_memory: "1G"
+  controller_cpus: 1
+  engine_worker_memory: "1G"
+  engine_worker_cpus: 2
+
 mysql:
   database: slurm
   users:
@@ -72,6 +82,7 @@ slurm:
     StateSaveLocation: /var/lib/slurm-llnl/slurmctld
     SwitchType: switch/none
     TaskPlugin: task/affinity
+    MpiDefault: pmi_v2
     # slurmctld scheduler
     SchedulerType: sched/backfill
     SelectType: select/cons_res
@@ -116,10 +127,21 @@ jupyterhub_ssh:
 
 firewall:
   enabled: true
-  internal_ip_range: "192.0.0.0/8"
+  internal_ip_range: "192.168.0.0/24"
 
 bodo:
   enabled: false
   conda_username: ...
   conda_token: ...
   license: ...
+
+cdsdashboards:
+  enabled: true
+
+backup:
+  enabled: false
+  on_calendar: "daily"
+  randomized_delay: "3600"
+  environment:
+    RESTIC_REPOSITORY: ...
+    RESTIC_PASSWORD: ...

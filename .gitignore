@@ -16,3 +16,6 @@ id_rsa
 id_rsa.pub
 # ansible
 inventory
+
+# idea
+.idea
