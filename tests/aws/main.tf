@@ -13,7 +13,7 @@ provider "aws" {
 }
 
 resource "aws_vpc" "vpc_network" {
-  cidr_block = var.ip_range.
+  cidr_block = var.ip_range
 
   tags = {
     Name = "${var.name}-network"
