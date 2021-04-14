@@ -1,5 +1,5 @@
 variable "name" {
-  description = "Prefix name to assign to google cloud resources"
+  description = "Prefix name to assign to aws resources"
   type        = string
   default     = "qhub-hpc-test"
 }
@@ -23,39 +23,49 @@ variable "tags" {
 }
 
 variable "zone" {
-  description = "Region to deploy google cloud resources"
+  description = "Region to deploy aws resources"
   type        = string
-  default     = "us-central1"
+  default     = "us-west-2"
 }
 
-variable "ip_range" {
+variable "availability-zone" {
+  description = "Availability zone to deploy aws resources"
+  type        = string
+  default     = "us-west-2a"
+}
+
+variable "subnet" {
   description = "Range of ip addresses to assign to compute nodes"
   type        = string
-  default     = "192.168.0.0/16"
+  default     = "192.168.0.0/24"
+}
+
+variable "cidr_block" {
+  default = "192.168.0.0/16"
 }
 
 variable "master-image" {
-  description = "Image to use for google cloud deployment for hpc master"
+  description = "Image to use for aws deployment for hpc master"
   type        = string
   default     = "ubuntu-2004-lts"
 }
 
 variable "master-instance" {
-  description = "Compute instance to use for google cloud deployment for hpc master"
+  description = "Compute instance to use for aws deployment for hpc master"
   type        = string
-  default     = "c2-standard-4"
+  default     = "c5.18xlarge"
 }
 
 variable "worker-image" {
-  description = "Image to use for google cloud deployment for hpc workers"
+  description = "Image to use for aws deployment for hpc workers"
   type        = string
   default     = "ubuntu-2004-lts"
 }
 
 variable "worker-instance" {
-  description = "Compute instance to use for google cloud deployment for hpc workers"
+  description = "Compute instance to use for aws deployment for hpc workers"
   type        = string
-  default     = "c2-standard-4"
+  default     = "c5.18xlarge"
 }
 
 variable "disk-size" {
@@ -73,5 +83,5 @@ variable "disk-type" {
 variable "worker-count" {
   description = "Number of worker nodes to spawn"
   type        = string
-  default     = 1
+  default     = 16
 }
