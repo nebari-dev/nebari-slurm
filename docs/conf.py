@@ -1,6 +1,6 @@
 # -- Project information -----------------------------------------------------
 
-project = 'QHub OnPrem'
+project = 'QHub HPC'
 copyright = '2021, Chris Ostrouchov'
 author = 'Chris Ostrouchov'
 
@@ -20,11 +20,11 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 # https://github.com/bashtage/sphinx-material/
 
 html_theme = 'sphinx_material'
-html_title = 'QHub OnPrem'
+html_title = 'QHub HPC'
 html_static_path = ['_static']
 
 html_theme_options = {
-    'nav_title': 'QHub OnPrem',
+    'nav_title': 'QHub HPC',
 
     # Specify a base_url used to generate sitemap.xml. If not
     # specified, then no sitemap will be built.
@@ -35,8 +35,8 @@ html_theme_options = {
     'color_accent': '#32C574',
 
     # Set the repo location to get a badge with stats
-    'repo_url': 'https://github.com/quansight/qhub-onprem/',
-    'repo_name': 'QHub OnPrem',
+    'repo_url': 'https://github.com/quansight/qhub-hpc/',
+    'repo_name': 'QHub HPC',
 
     # Visible levels of the global TOC; -1 means unlimited
     'globaltoc_depth': 3,

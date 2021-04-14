@@ -1,9 +1,9 @@
-QHub OnPrem
+QHub HPC
 -----------
 
-QHub OnPrem is an opinionated open source deployment of
+QHub HPC is an opinionated open source deployment of
 `jupyterhub <https://jupyterhub.readthedocs.io/en/stable/>`_ based on an
-HPC jobscheduler. QHub OnPrem is a "distribution" of these packages
+HPC jobscheduler. QHub HPC is a "distribution" of these packages
 much like `Debian <https://www.debian.org/>`_ and
 `Ubuntu <https://ubuntu.com/>`_ are distributions of
 `Linux <https://en.wikipedia.org/wiki/Linux>`_. The high level goal of

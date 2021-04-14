@@ -1,6 +1,6 @@
 # Overview
 
-QHub OnPrem is a deployment of HPC with
+QHub HPC is a deployment of HPC with
 [jupyterhub](https://jupyterhub.readthedocs.io/en/stable/) here we
 talk about the services that run and how they are connected. The
 architecture is based off of the typical hpc setup of a master/login

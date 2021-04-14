@@ -28,8 +28,8 @@ ssh gpu
 Inside the remote:
 
 ```
-git clone https://github.com/Quansight/qhub-onprem
-cd qhub-onprem
+git clone https://github.com/Quansight/qhub-hpc
+cd qhub-hpc
 nix-shell
 
 # Install some ansible addons
@@ -100,7 +100,7 @@ You should now be able to:
 
 In VSCode on your Mac, you can install the [Remote SSH](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-ssh) extension.
 
-Cmd+Shift+P to load command palette, select `Remote - SSH: Connect to Host` and `gpu2` should show up. You can browse the remote file system and open the qhub-onprem folder.
+Cmd+Shift+P to load command palette, select `Remote - SSH: Connect to Host` and `gpu2` should show up. You can browse the remote file system and open the qhub-hpc folder.
 
 During development, if you make changes then you may need to re-provision using:
 
@@ -108,7 +108,7 @@ During development, if you make changes then you may need to re-provision using:
 ssh gpu2
 
 # On remote:
-cd qhub-onprem
+cd qhub-hpc
 nix-shell
 
 cd tests/ubuntu1804

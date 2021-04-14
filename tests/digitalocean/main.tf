@@ -23,7 +23,7 @@ resource "digitalocean_droplet" "master-node" {
   ssh_keys = [digitalocean_ssh_key.main.fingerprint]
 
   tags = concat([
-    "qhub-onprem", "master"
+    "qhub-hpc", "master"
   ], var.tags)
 }
 
@@ -39,7 +39,7 @@ resource "digitalocean_droplet" "worker-nodes" {
   ssh_keys = [digitalocean_ssh_key.main.fingerprint]
 
   tags = concat([
-    "qhub-onprem", "worker"
+    "qhub-hpc", "worker"
   ], var.tags)
 }
 

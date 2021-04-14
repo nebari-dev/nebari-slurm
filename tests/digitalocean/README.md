@@ -51,7 +51,7 @@ After `terraform apply` and `inventory` file will be created
 Adjust the following terraform variables:
   - `group_vars/all.yaml` `internal_interface` -> `eth1`
   - `group_vars/all.yaml` `firewall.internal_ip_range` -> `10.20.30.0/24`
-  - `group_vars/hpc-worker.yaml` `nfs_client.mounts.*.host` -> `qhub-onprem-test-master`
+  - `group_vars/hpc-worker.yaml` `nfs_client.mounts.*.host` -> `qhub-hpc-test-master`
   
 You may have a different internal_ip address range is you changed
 `var.ip_range` in terraform.

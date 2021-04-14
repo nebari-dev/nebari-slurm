@@ -1,6 +1,6 @@
 # Backup
 
-Backups are performed in QHub OnPrem via [restic](https://restic.net/)
+Backups are performed in QHub HPC via [restic](https://restic.net/)
 an open source backup tool. It is extremely flexible on where backups
 are performed as well as supporting encrypted, incremental backups.
 
