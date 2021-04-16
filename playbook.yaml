@@ -123,3 +123,8 @@
 
      - name: Dask configuration
        include_tasks: tasks/dask.yaml
+
+     # On/Off Features
+     - name: Install bodo
+       include_tasks: tasks/bodo.yaml
+       when: bodo.enabled
