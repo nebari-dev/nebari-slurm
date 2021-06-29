@@ -9,12 +9,12 @@ In this example, using a Mac laptop.
 In ~/.ssh/config add:
 
 ```
-Host gpu2
+Host gpu
   HostName gpu.quansight.dev
   User dlester
   IdentityFile ~/.ssh/id_rsa
   Port 2222
-#  LocalForward 8000 192.168.121.171:8000
+#  LocalForward 8687 192.168.121.171:443
 ```
 
 Connect to that machine:
@@ -74,38 +74,38 @@ This could be 192.168.121.171 for example.
 To be able to connect all the way through, back on the host Mac add/update to ~/.ssh/config:
 
 ```
-Host gpu2
+Host gpu
   HostName gpu.quansight.dev
   User dlester
   IdentityFile ~/.ssh/id_rsa
   Port 2222
-  LocalForward 8687 192.168.121.171:8000
+  LocalForward 8687 192.168.121.171:443
 
 Host vm
   HostName 192.168.121.171
   user vagrant
   Port 22
-  ProxyJump gpu2 
+  ProxyJump gpu 
 ```
 
-Note the IP address we obtained for the VM appears twice - once in the (now uncommented LocalForward in gpu2), and 
+Note the IP address we obtained for the VM appears twice - once in the (now uncommented LocalForward in gpu), and 
 again in the second section (vm).
 
 You should now be able to:
 
 1. Connect direct to the master node (hpc01-test) from your Mac using `ssh vm`
-2. Visit http://127.0.0.1:8687/ to view JupyterHub on the master node through the port forward
+2. Visit https://127.0.0.1:8687/ to view JupyterHub on the master node through the port forward
 
 ## Development in VSCode
 
 In VSCode on your Mac, you can install the [Remote SSH](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-ssh) extension.
 
-Cmd+Shift+P to load command palette, select `Remote - SSH: Connect to Host` and `gpu2` should show up. You can browse the remote file system and open the qhub-hpc folder.
+Cmd+Shift+P to load command palette, select `Remote - SSH: Connect to Host` and `gpu` should show up. You can browse the remote file system and open the qhub-hpc folder.
 
 During development, if you make changes then you may need to re-provision using:
 
 ```
-ssh gpu2
+ssh gpu
 
 # On remote:
 cd qhub-hpc
@@ -118,7 +118,7 @@ vagrant provision
 Or it may be easier just to edit/copy the jupyterhub_config.py file to /etc/jupyterhub directly.
 Similarly with source files, or it should also be possible to only run the relevant ansible steps.
 
-To run ansible directly only on tasks tagged 'conda' and 'jupyterhub' on the master node, run this within the nix shell on the gpu2 machine:
+To run ansible directly only on tasks tagged 'conda' and 'jupyterhub' on the master node, run this within the nix shell on the gpu machine:
 
 ```
 ansible-playbook -i .vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory --private-key=~/.vagrant.d/insecure_private_key -u vagrant -l hpc-master --tags="conda,jupyterhub" ../../playbook.yaml
