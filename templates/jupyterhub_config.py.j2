@@ -242,5 +242,8 @@ c.JupyterHub.template_vars = {
 {% for key, value in jupyterhub.template_vars.items() %}
     '{{ key }}': '{{ value }}',
 {% endfor %}
-{% if cdsdashboards.enabled %}'cdsdashboards_enabled': True{% endif %}
+{% if cdsdashboards.enabled %}'cdsdashboards_enabled': True,
+    'cds_hide_user_named_servers': True,
+    'cds_hide_user_dashboard_servers': True,
+{% endif %}
 }
