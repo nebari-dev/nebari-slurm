@@ -1,5 +1,3 @@
-**EXPERIMENTAL** Note that QHub HPC is currently experimental
-
 # QHub HPC
 
 QHub HPC is an opinionated open source deployment of
