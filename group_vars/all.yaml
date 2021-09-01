@@ -82,7 +82,7 @@ slurm:
     StateSaveLocation: /var/lib/slurm-llnl/slurmctld
     SwitchType: switch/none
     TaskPlugin: task/affinity
-    MpiDefault: pmi_v2
+    MpiDefault: pmi2
     # slurmctld scheduler
     SchedulerType: sched/backfill
     SelectType: select/cons_res
