@@ -18,6 +18,6 @@ dependencies:
   - dash >= 1.19
   # - cdsdashboards-singleuser
   - pip:
-      - cdsdashboards[user]==0.6.0b1
+      - cdsdashboards[user]==0.6.0b2
       # batchspawner latest slurm fixes
       - https://github.com/jupyterhub/batchspawner/archive/129951ad11e3049567b94adb8c9725dc22225a1a.tar.gz
