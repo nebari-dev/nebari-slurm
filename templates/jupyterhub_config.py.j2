@@ -48,7 +48,13 @@ class QHubHPCSpawnerBase(SlurmSpawner):
   # data from form submission is {key: [value]}
   # we need to convert the formdata to a key value dict
   def options_from_form(self, data):
-      return {key: value[0] for key, value in data.items()}
+    formdata = {key: value[0] for key, value in data.items()}
+    if hasattr(self, 'orm_spawner') and self.orm_spawner and hasattr(self.orm_spawner, 'user_options') \
+                    and isinstance(self.orm_spawner.user_options, dict):
+      existing_user_options = self.orm_spawner.user_options.copy()
+      existing_user_options.update(formdata)
+      formdata = existing_user_options
+    return formdata
 
   main_options_form = f'''
 <div class="form-group row">
