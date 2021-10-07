@@ -19,7 +19,7 @@
          state: present
        with_items: '{{ groups["all"] }}'
 
- - hosts: hpc-master
+ - hosts: hpc_master
    tasks:
      - name: Install firewall
        include_tasks: tasks/firewall.yaml
@@ -82,7 +82,7 @@
        include_tasks: tasks/backup.yaml
        when: backup.enabled
 
- - hosts: hpc-worker
+ - hosts: hpc_worker
    tasks:
      - name: Install firewall
        include_tasks: tasks/firewall.yaml
@@ -102,11 +102,11 @@
 
      # conda environments can take a long time to install this may
      # fail the first time
-     - name: wait for hpc-master nfs server to start
+     - name: wait for hpc_master nfs server to start
        wait_for:
-         host: "{{ groups['hpc-master'][0] }}"
+         host: "{{ groups['hpc_master'][0] }}"
          port: 2049
-         timeout: 600
+         timeout: 1200
 
      - name: Install nfs client
        include_tasks: tasks/nfs-client.yaml

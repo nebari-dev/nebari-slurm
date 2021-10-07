@@ -50,10 +50,10 @@ resource "local_file" "ansible_inventory" {
 ${var.name}-master ansible_host=${digitalocean_droplet.master-node.ipv4_address} ansible_user=root ansible_ssh_private_key_file=${var.ssh-private-key}
 ${join("\n", formatlist("%s ansible_host=%s ansible_user=root ansible_ssh_private_key_file=${var.ssh-private-key}", digitalocean_droplet.worker-nodes.*.name, digitalocean_droplet.worker-nodes.*.ipv4_address))}
 
-[hpc-master]
+[hpc_master]
 ${var.name}-master
 
-[hpc-worker]
+[hpc_worker]
 ${join("\n", formatlist("%s", digitalocean_droplet.worker-nodes.*.name))}
 EOT
 

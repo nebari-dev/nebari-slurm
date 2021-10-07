@@ -19,7 +19,7 @@ dependencies:
 
 Where we would add a file `files/environment/example.yaml`.
 
-You must then specify the environment in `group_vars/hpc-master.yaml`
+You must then specify the environment in `group_vars/hpc_master.yaml`
 in the list of `miniforge.environments`. E.g.
 
 ```

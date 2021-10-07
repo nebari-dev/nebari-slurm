@@ -82,7 +82,7 @@ slurm:
     StateSaveLocation: /var/lib/slurm-llnl/slurmctld
     SwitchType: switch/none
     TaskPlugin: task/affinity
-    MpiDefault: pmi_v2
+    # MpiDefault: pmi_v2
     # slurmctld scheduler
     SchedulerType: sched/backfill
     SelectType: select/cons_res
@@ -127,7 +127,7 @@ jupyterhub_ssh:
 
 firewall:
   enabled: true
-  internal_ip_range: "192.168.0.0/24"
+  internal_ip_range: "192.168.0.0/16"
 
 bodo:
   enabled: false
@@ -136,8 +136,8 @@ bodo:
   license: ...
 
 cdsdashboards:
-  enabled: true
-  spawn_as_viewer: false
+  enabled: true # false
+  spawn_as_viewer: true # false
   jupyter_startpath_regex: ""
 
 backup:
