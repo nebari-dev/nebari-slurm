@@ -19,9 +19,6 @@ jobs:
       run:
         shell: bash -l {0}
     steps:
-      - name: ls -lah
-        run: |
-          echo $(ls -lah)
       - name: 'QHUB_GH_BRANCH set for PR'
         if: ${{ github.event_name == 'pull_request' }}
         run: |
@@ -36,12 +33,13 @@ jobs:
           echo "QHUB_GH_BRANCH=${GITHUB_REF:11}" >> "$GITHUB_ENV"
       - name: 'Checkout Infrastructure'
         uses: actions/checkout@main
-      - name: install zstdcat
+      - name: ls -lah
+        run: |
+          ls -lah      
+      - name: install zstd for nixbuild/nix-quick-install-action@v7
         run: sudo apt-get update -y && sudo apt-get install zstd -y
       - uses: nixbuild/nix-quick-install-action@v7
       - run: nix-build --version
-      - name: nix version
-        run: nix-build --version
       - name: 'Checkout Infrastructure'
         uses: actions/checkout@main
       - name: Set up Python
