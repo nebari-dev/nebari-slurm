@@ -47,5 +47,6 @@ jobs:
       - name: 'Checkout Infrastructure'
         uses: actions/checkout@main
       - name: deploy qhub-hpc
-        run: cd tests/ubuntu2004
-             nix-shell ../../shell.nix --command "vagrant up --provision"
+        run: |
+          cd tests/ubuntu2004
+          nix-shell ../../shell.nix --command "vagrant up --provision"
