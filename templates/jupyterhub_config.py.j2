@@ -249,7 +249,7 @@ c.JupyterHub.template_vars = {
     '{{ key }}': '{{ value }}',
 {% endfor %}
 {% if cdsdashboards.enabled %}'cdsdashboards_enabled': True,
-    'cds_hide_user_named_servers': True,
-    'cds_hide_user_dashboard_servers': True,
+    'cds_hide_user_named_servers': False, # True,
+    'cds_hide_user_dashboard_servers': False, # True,
 {% endif %}
 }
