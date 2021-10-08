@@ -55,5 +55,5 @@ jobs:
       #     miniconda-version: "latest"
       # - name: activate nix environment
       #   run: nix-shell shell.nix
-      - name: deploy qhub
+      - name: deploy qhub-hpc
         run: nix-shell shell.nix && cd tests/ubuntu2004 && vagrant up --provision
