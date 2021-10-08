@@ -5,7 +5,7 @@ runners:
     # Cloud Provider: AWS
     cloud: aws
     # Instance Type has 8 vcpu, 32 GiB memory, Up to 5 Gbps Network Performance
-    instance_type: t3a.xlarge
+    instance_type: a1.metal # t3a.xlarge
     # Custom AMI with docker is pre-installed
     machine_image: ami-08939857cf6893cde
     # Region: Oregon
