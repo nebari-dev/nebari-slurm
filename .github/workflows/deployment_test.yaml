@@ -56,4 +56,5 @@ jobs:
       # - name: activate nix environment
       #   run: nix-shell shell.nix
       - name: deploy qhub-hpc
-        run: nix-shell shell.nix && cd tests/ubuntu2004 && vagrant up --provision
+        run: cd tests/ubuntu2004
+             nix-shell ../../shell.nix --command "vagrant up --provision"
