@@ -51,3 +51,7 @@ jobs:
       - name: deploy qhub-hpc
         run: |
           cd tests/ubuntu2004 && nix-shell ../../shell.nix --command "vagrant up --provision"
+      - name: Delete nix
+        if: always()
+        run: |
+          sudo rm -rf /nix
