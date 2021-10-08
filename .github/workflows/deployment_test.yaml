@@ -50,6 +50,7 @@ jobs:
         run: nix --version
       - name: add user to group
         run: |
+          sudo groupadd libvirt
           sudo useradd -g libvirt $USER
           groups
       - name: deploy qhub-hpc
