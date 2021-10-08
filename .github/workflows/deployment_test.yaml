@@ -34,8 +34,8 @@ jobs:
         # e.g. QHUB_GH_BRANCH="main"
         run: |
           echo "QHUB_GH_BRANCH=${GITHUB_REF:11}" >> "$GITHUB_ENV"
-      - name: Install Nix
-        uses: nixbuild/nix-quick-install-action@v7
+      - uses: nixbuild/nix-quick-install-action@v7
+      - run: nix-build --version
       - name: nix version
         run: nix-build --version
       - name: 'Checkout Infrastructure'
