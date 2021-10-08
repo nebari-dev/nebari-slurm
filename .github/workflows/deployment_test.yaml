@@ -52,7 +52,7 @@ jobs:
         with:
           python-version: 3.8
           miniconda-version: "latest"
-      - name: activate nix environment
-        run: nix-shell shell.nix
+      # - name: activate nix environment
+      #   run: nix-shell shell.nix
       - name: deploy qhub
-        run: cd tests/ubuntu2004 && vagrant up --provision
+        run: nix-shell shell.nix && cd tests/ubuntu2004 && vagrant up --provision
