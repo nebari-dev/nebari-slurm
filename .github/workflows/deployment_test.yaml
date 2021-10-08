@@ -34,8 +34,10 @@ jobs:
         # e.g. QHUB_GH_BRANCH="main"
         run: |
           echo "QHUB_GH_BRANCH=${GITHUB_REF:11}" >> "$GITHUB_ENV"
+      - name: 'Checkout Infrastructure'
+        uses: actions/checkout@main
       - name: install zstdcat
-        run: sudo apt-get update -y && sudo apt-get install zstdcat -y
+        run: sudo apt-get update -y && sudo apt-get install zstd -y
       - uses: nixbuild/nix-quick-install-action@v7
       - run: nix-build --version
       - name: nix version
