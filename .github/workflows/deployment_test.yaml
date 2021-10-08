@@ -38,6 +38,7 @@ jobs:
           ls -lah      
       - name: install zstd
         run: sudo apt-get update -y && sudo apt-get install zstd -y
+      - name: Install Nix
       - uses: nixbuild/nix-quick-install-action@v7
       - run: nix-build --version
       - name: nix version
