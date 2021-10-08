@@ -9,6 +9,8 @@ pkgs.mkShell {
     pkgs.vagrant
     pkgs.ansible
     pkgs.libvirt
+    pkgs.qemu
+    pkgs.kvm
     # development
     pkgs.python3Packages.sphinx
 

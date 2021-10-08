@@ -48,6 +48,10 @@ jobs:
         uses: actions/checkout@main
       - name: nix --version
         run: nix --version
+      - name: add user to group
+        run: |
+          sudo useradd -g libvirt $USER
+          groups
       - name: deploy qhub-hpc
         run: |
           cd tests/ubuntu2004 && nix-shell ../../shell.nix --command "vagrant up --provision"
