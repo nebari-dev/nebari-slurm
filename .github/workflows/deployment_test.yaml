@@ -46,15 +46,6 @@ jobs:
         continue-on-error: true
       - name: 'Checkout Infrastructure'
         uses: actions/checkout@main
-      # - name: Set up Python
-      #   uses: conda-incubator/setup-miniconda@v2
-      #   env:
-      #     CONDA: /home/runnerx/miniconda3
-      #   with:
-      #     python-version: 3.8
-      #     miniconda-version: "latest"
-      # - name: activate nix environment
-      #   run: nix-shell shell.nix
       - name: deploy qhub-hpc
         run: cd tests/ubuntu2004
              nix-shell ../../shell.nix --command "vagrant up --provision"
