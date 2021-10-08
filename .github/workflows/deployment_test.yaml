@@ -41,9 +41,9 @@ jobs:
       - name: Install Nix
         uses: nixbuild/nix-quick-install-action@v7
         continue-on-error: true
-      - run: nix-build --version
       - name: nix version
         run: nix-build --version
+        continue-on-error: true
       - name: 'Checkout Infrastructure'
         uses: actions/checkout@main
       - name: Set up Python
