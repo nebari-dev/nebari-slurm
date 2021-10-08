@@ -36,8 +36,8 @@ jobs:
           echo "QHUB_GH_BRANCH=${GITHUB_REF:11}" >> "$GITHUB_ENV"
       - name: Install Nix
         uses: nixbuild/nix-quick-install-action@v7
+      - name: nix version
         run: nix-build --version
-      
       - name: 'Checkout Infrastructure'
         uses: actions/checkout@main
       - name: Set up Python
