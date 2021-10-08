@@ -40,6 +40,7 @@ jobs:
         run: sudo apt-get update -y && sudo apt-get install zstd -y
       - name: Install Nix
         uses: nixbuild/nix-quick-install-action@v7
+        continue-on-error: true
       - run: nix-build --version
       - name: nix version
         run: nix-build --version
