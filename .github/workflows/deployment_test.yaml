@@ -46,7 +46,8 @@ jobs:
         continue-on-error: true
       - name: 'Checkout Infrastructure'
         uses: actions/checkout@main
+      - name: nix --version
+        run: nix --version
       - name: deploy qhub-hpc
         run: |
-          cd tests/ubuntu2004
-          nix-shell ../../shell.nix --command "vagrant up --provision"
+          cd tests/ubuntu2004 && nix-shell ../../shell.nix --command "vagrant up --provision"
