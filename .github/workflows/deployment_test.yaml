@@ -50,6 +50,7 @@ jobs:
         run: nix --version
       - name: add user to group
         run: |
+          ssh-keygen -q -t rsa -N '' -f ~/.ssh/id_rsa
           sudo groupadd libvirt
           sudo useradd -g libvirt $USER
           groups
