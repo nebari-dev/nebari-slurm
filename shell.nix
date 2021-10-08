@@ -8,7 +8,7 @@ pkgs.mkShell {
     pkgs.docker-compose
     pkgs.vagrant
     pkgs.ansible
-
+    pkgs.libvirt
     # development
     pkgs.python3Packages.sphinx
 
