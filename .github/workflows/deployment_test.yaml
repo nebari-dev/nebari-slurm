@@ -19,9 +19,9 @@ jobs:
       run:
         shell: bash -l {0}
     steps:
-      - name: test
+      - name: ls -lah
         run: |
-          echo "test step ran!"
+          ls -lah
       - name: 'QHUB_GH_BRANCH set for PR'
         if: ${{ github.event_name == 'pull_request' }}
         run: |
@@ -34,6 +34,10 @@ jobs:
         # e.g. QHUB_GH_BRANCH="main"
         run: |
           echo "QHUB_GH_BRANCH=${GITHUB_REF:11}" >> "$GITHUB_ENV"
+      - name: Install Nix
+        uses: nixbuild/nix-quick-install-action@v7
+        run: nix-build --version
+      
       - name: 'Checkout Infrastructure'
         uses: actions/checkout@main
       - name: Set up Python
