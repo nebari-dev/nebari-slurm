@@ -11,7 +11,7 @@ runners:
     # Region: Oregon
     region: us-west-2
     # Path of the relevant workflow file
-    workflow: .github/workflows/kubernetes_test.yaml
+    workflow: .github/workflows/deployment_test.yaml
     # Use Spot Instances for cost savings
     preemptible: true
     # Number of runners to provision on every trigger on Actions job

@@ -1,0 +1,62 @@
+name: "Deployment Tests"
+
+on:
+  pull_request: # Workflow only runs for PR against main anyway
+  push:
+    branches:
+      - '**'
+    tags:
+      - 'v*'
+    paths-ignore:
+      - "docs/**"
+      - "*.md"
+    workflow_dispatch:
+jobs:
+  ubuntu_20-04:
+    name: "Ubuntu 20.04 Deployment"
+    runs-on: self-hosted
+    defaults:
+      run:
+        shell: bash -l {0}
+    steps:
+      - name: test
+        run: |
+          echo "test step ran!"
+      - name: 'QHUB_GH_BRANCH set for PR'
+        if: ${{ github.event_name == 'pull_request' }}
+        run: |
+          echo "QHUB_GH_BRANCH=${GITHUB_HEAD_REF}" >> "$GITHUB_ENV"
+          echo "GITHUB_BASE_REF: ${GITHUB_BASE_REF}"
+          echo "GITHUB_HEAD_REF: ${GITHUB_HEAD_REF}"
+          echo "GITHUB_REF: ${GITHUB_REF}"
+      - name: 'QHUB_GH_BRANCH set for a branch (not a tag)'
+        if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/heads/') }}
+        # e.g. QHUB_GH_BRANCH="main"
+        run: |
+          echo "QHUB_GH_BRANCH=${GITHUB_REF:11}" >> "$GITHUB_ENV"
+      - name: 'Checkout Infrastructure'
+        uses: actions/checkout@main
+      - name: Set up Python
+        uses: conda-incubator/setup-miniconda@v2
+        env:
+          CONDA: /home/runnerx/miniconda3
+        with:
+          python-version: 3.8
+          miniconda-version: "latest"
+      - name: Install QHub
+        run: |
+          conda install -c anaconda pip
+          pip install .[dev]
+      - name: Download and Install Minikube and Kubectl
+        run: |
+          mkdir -p bin
+          pushd bin
+          curl -L https://github.com/kubernetes/minikube/releases/download/v1.22.0/minikube-linux-amd64 -o minikube
+          chmod +x minikube
+
+          curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.19.0/bin/linux/amd64/kubectl
+          chmod +x kubectl
+
+          echo "$PWD" >> $GITHUB_PATH
+          popd
+      
