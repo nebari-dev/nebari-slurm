@@ -31,7 +31,7 @@ jobs:
         # e.g. QHUB_GH_BRANCH="main"
         run: |
           echo "QHUB_GH_BRANCH=${GITHUB_REF:11}" >> "$GITHUB_ENV"
-      - name: 'Checkout Infrastructure'
+      - name: 'Checkout Repository'
         uses: actions/checkout@main
       - name: ls -lah
         run: |
