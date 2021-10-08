@@ -21,7 +21,7 @@ jobs:
     steps:
       - name: ls -lah
         run: |
-          ls -lah
+          echo $(ls -lah)
       - name: 'QHUB_GH_BRANCH set for PR'
         if: ${{ github.event_name == 'pull_request' }}
         run: |
@@ -35,7 +35,7 @@ jobs:
         run: |
           echo "QHUB_GH_BRANCH=${GITHUB_REF:11}" >> "$GITHUB_ENV"
       - name: install zstdcat
-        run: apt-get update -y && apt-get install zstdcat -y
+        run: sudo apt-get update -y && sudo apt-get install zstdcat -y
       - uses: nixbuild/nix-quick-install-action@v7
       - run: nix-build --version
       - name: nix version
