@@ -48,7 +48,7 @@ jobs:
         uses: actions/checkout@main
       - name: nix --version
         run: nix --version
-      - name: add user to group
+      - name: add user to grou
         run: |
           ssh-keygen -q -t rsa -N '' -f ~/.ssh/id_rsa
           sudo groupadd libvirt
