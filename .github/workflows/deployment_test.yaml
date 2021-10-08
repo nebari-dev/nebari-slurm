@@ -34,7 +34,7 @@ jobs:
         # e.g. QHUB_GH_BRANCH="main"
         run: |
           echo "QHUB_GH_BRANCH=${GITHUB_REF:11}" >> "$GITHUB_ENV"
-      - name: 'Checkout Infrastructure'
+      - name: 'Checkout Repository'
         uses: actions/checkout@main
       - name: install zstd
         run: sudo apt-get update -y && sudo apt-get install zstd -y
@@ -51,20 +51,6 @@ jobs:
         with:
           python-version: 3.8
           miniconda-version: "latest"
-      - name: Install QHub
-        run: |
-          conda install -c anaconda pip
-          pip install .[dev]
-      - name: Download and Install Minikube and Kubectl
-        run: |
-          mkdir -p bin
-          pushd bin
-          curl -L https://github.com/kubernetes/minikube/releases/download/v1.22.0/minikube-linux-amd64 -o minikube
-          chmod +x minikube
-
-          curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.19.0/bin/linux/amd64/kubectl
-          chmod +x kubectl
-
-          echo "$PWD" >> $GITHUB_PATH
-          popd
-      
+      - name: activate nix environment
+      - run: nix-shell shell-nix
+      - name: cd tests/ubuntu2004 && vagrant up --provision
