@@ -1,6 +1,6 @@
 miniforge:
-  version: "4.9.2-3"
-  sha256: de5b309312e9b2e3ad777262324865cbc40a61bfd1f497d7eb9925bf593b9d94
+  version: "4.11.0-0"
+  sha256: 49268ee30d4418be4de852dda3aa4387f8c95b55a76f43fb1af68dcbf8b205c3
   home: /opt/conda
 
 nfs_client:

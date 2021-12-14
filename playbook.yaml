@@ -62,6 +62,9 @@
      - name: Share directory
        include_tasks: tasks/share.yaml
 
+     - name: Install conda environments
+       include_tasks: tasks/environments.yaml
+
      - name: Install jupyterhub
        include_tasks: tasks/jupyterhub.yaml
        tags: jupyterhub

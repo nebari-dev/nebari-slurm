@@ -1,13 +1,13 @@
 ---
  - name: Check that the conda binary exists
    stat:
-     path: "{{ miniforge.home }}/bin/conda"
+     path: "{{ miniforge.home }}/bin/mamba"
    register: stat_conda
    tags: conda
-   
- - name: download miniconda installer
+
+ - name: download miniconda mambaforge installer
    get_url:
-     url: "https://github.com/conda-forge/miniforge/releases/download/{{ miniforge.version }}/Miniforge3-{{ miniforge.version }}-Linux-x86_64.sh"
+     url: "https://github.com/conda-forge/miniforge/releases/download/{{ miniforge.version }}/Mambaforge-{{ miniforge.version }}-Linux-x86_64.sh"
      checksum: "sha256:{{ miniforge.sha256 }}"
      dest: "/tmp/miniforge.sh"
      force: false
@@ -65,9 +65,4 @@
          - "~/.conda/envs"
        pkgs_dirs:
          - "~/.conda/pkgs"
-   tags: conda
-
- - name: Install conda environments
-   include_tasks: conda/environment.yaml
-   with_items: "{{ miniforge.environments | default([]) }}"
    tags: conda

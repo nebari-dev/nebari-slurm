@@ -1,0 +1,4 @@
+ - name: Install conda environments
+   include_tasks: conda/environment.yaml
+   with_items: "{{ miniforge.environments | default([]) }}"
+   tags: conda
