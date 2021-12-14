@@ -19,3 +19,7 @@ inventory
 
 # idea
 .idea
+
+# nix
+.direnv
+shell.nix
