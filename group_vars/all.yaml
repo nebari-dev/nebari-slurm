@@ -127,7 +127,7 @@ jupyterhub_ssh:
 
 firewall:
   enabled: true
-  internal_ip_range: "192.168.0.0/24"
+  internal_ip_range: "192.168.0.0/16"
 
 bodo:
   enabled: false
