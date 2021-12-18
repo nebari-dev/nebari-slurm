@@ -2,8 +2,8 @@
  - name: Copy arbitrary files onto nodes
    become: True
    copy:
-     src: "{{ item.src }}" # shell.nix
-     dest: "{{ item.dest }}" # /opt/shell-dest.nix
+     src: "{{ item.src }}" 
+     dest: "{{ item.dest }}" 
      owner: "{{ item.owner | default(omit) }}"
      group: "{{ item.group | default(omit) }}"
      mode: "{{ item.mode | default(omit) }}"
@@ -12,99 +12,4 @@
    when: (vars['copy_files_' + myhost]) is defined
    loop: "{{ vars['copy_files_' + myhost] }}"
 
-  #  with_items: "{{ vars['copy_files_' + myhost] }}"
-
-  #  copy:
-  #    src: "{{ item.key }}" # shell.nix
-  #    dest: "{{ item.value  }}" # /opt/shell-dest.nix
-  #   #  owner: "{{ item.value.get('owner', None) }}"
-  #   #  group: "{{ item.value.get('group', None) }}"
-  #   #  mode: "{{ item.value.get('mode', None) }}"
-  #   #  directory_mode: "{{ item.value.get('directory_mode', None) }}"
-  #  when: (vars['copy_files_' + myhost]) is defined
-  #  with_dict: "{{ vars['copy_files_' + myhost] }}"
-
-
-#  - name: Copy arbitrary files onto nodes
-#    become: True
-#  #  include_tasks
-#    copy:
-#      owner: vagrant
-#      group: vagrant
-#      src: "{{ item.key }}" # shell.nix
-#      dest: "{{ item.value }}" # /opt/shell-dest.nix
-#    # when: "{{ vars['copy_files_' + myhost] }}" is defined
-#    with_dict: "{{ vars['copy_files_' + inventory_hostname] }}"
-
-#  - name: Check that the conda binary exists
-#    stat:
-#      path: "{{ miniforge.home }}/bin/conda"
-#    register: stat_conda
-#    tags: conda
-   
-#  - name: download miniconda installer
-#    get_url:
-#      url: "https://github.com/conda-forge/miniforge/releases/download/{{ miniforge.version }}/Miniforge3-{{ miniforge.version }}-Linux-x86_64.sh"
-#      checksum: "sha256:{{ miniforge.sha256 }}"
-#      dest: "/tmp/miniforge.sh"
-#      force: false
-#      mode: 0755
-#    when: not stat_conda.stat.exists
-#    tags: conda
-
-#  - name: install miniforge
-#    become: yes
-#    shell:
-#      creates: "{{ miniforge.home }}/bin/conda"
-#      cmd: |
-#        /tmp/miniforge.sh -b -p "{{ miniforge.home }}"
-#    when: not stat_conda.stat.exists
-#    tags: conda
-
-#  - name: ensure conda.sh activated in shell
-#    become: yes
-#    file:
-#      src: "{{ miniforge.home }}/etc/profile.d/conda.sh"
-#      dest: "/etc/profile.d/conda.sh"
-#      state: link
-#    tags: conda
-
-#  - name: Ensure conda activate directory exists
-#    become: true
-#    file:
-#      path: "{{ miniforge.home }}/etc/conda/activate.d"
-#      state: directory
-#      mode: '0755'
-#    tags: conda
-
-#  - name: create conda configuration directory
-#    become: yes
-#    file:
-#      path: /etc/conda
-#      state: directory
-#    tags: conda
-
-#  - name: Remove implicit .condarc file installed by miniforge
-#    become: yes
-#    file:
-#      path: "{{ miniforge.home }}/.condarc"
-#      state: absent
-
-#  - name: Create default condarc for users
-#    become: yes
-#    copy:
-#      dest: /etc/conda/condarc
-#      mode: 644
-#      content: |
-#        channels:
-#          - conda-forge
-#        envs_dirs:
-#          - "~/.conda/envs"
-#        pkgs_dirs:
-#          - "~/.conda/pkgs"
-#    tags: conda
-
-#  - name: Install conda environments
-#    include_tasks: conda/environment.yaml
-#    with_items: "{{ miniforge.environments | default([]) }}"
-#    tags: conda
+  
