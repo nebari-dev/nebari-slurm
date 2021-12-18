@@ -18,6 +18,68 @@
          line: '{{ hostvars[item]["ansible_" + internal_interface].ipv4.address }} {{item}}'
          state: present
        with_items: '{{ groups["all"] }}'
+       
+     - name: Copy files
+       include_tasks: tasks/copy_files.yaml
+       loop: '{{ ["all"] + group_names + [inventory_hostname_short] }}'
+       loop_control:
+         loop_var: myhost
+
+    #  - name: Load some variables
+    #    include_vars: 
+    #      file: group_vars/hpc-master.yaml
+    #     #  name: myvars
+    #  - name: List some varaibles
+    #    ansible.builtin.debug:
+    #      msg: " {{ item.key }} - {{item.value}} "
+    #   #  when: "'copy_files' == item.key"
+    #    loop: "{{ vars['copy_files'] | dict2items }}"
+       
+    # So I can either give different names for each copy_files (copy_files_all etc) or I can name them all the same and load the correct ones dynamically here.
+    
+    #  - name: Copy arbitrary files onto nodes
+    #    become: True
+    #    copy:
+    #      owner: vagrant
+    #      group: vagrant
+    #      src: "{{ item.key }}" # shell.nix
+    #      dest: "{{ item.value }}" # /opt/shell-dest.nix
+    #    when: vars['copy_files_' + inventory_hostname_short] is defined
+    #    with_dict: "{{ vars['copy_files_' + inventory_hostname_short] }}"
+       # hpc-master, hpc02-test, and hpc03-test came over
+       # all.nix, hpc-worker did not
+
+    #  - name: Copy files
+    #    include_tasks: tasks/copy_files.yaml
+    #    loop: '{{ groups["all"] }}'
+    #    loop_control:
+    #      loop_var: myhost
+       
+       # hpc-master, hpc02-test, and hpc03-test came over
+       # all.nix, hpc-worker did not
+
+    #  - name: Copy arbitrary files onto nodes
+    #    become: True
+    #    copy:
+    #      owner: vagrant
+    #      group: vagrant
+    #      src: "{{ item.key }}" # shell.nix
+    #      dest: "{{ item.value }}" # /opt/shell-dest.nix
+    #    when: "{{ groups['all']['copy_files'] }}" is defined
+    #    with_dict: "{{ copy_files }}"
+    #    loop: "{{ }}"
+    #    # hpc-master, hpc02-test, and hpc03-test came over
+    #    # all.nix, hpc-worker did not
+
+    #  - name: Show all the hosts in the inventory
+    #    ansible.builtin.debug:
+    #      msg: "{{ item }}"
+    #    loop: "{{ groups['all'] }}"
+
+    #  - name: Show all the hosts in the current play
+    #    ansible.builtin.debug:
+    #      msg: "{{ item }}"
+    #    loop: "{{ ansible_play_batch }}"
 
  - hosts: hpc-master
    tasks:
