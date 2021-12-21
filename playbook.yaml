@@ -18,12 +18,6 @@
          line: '{{ hostvars[item]["ansible_" + internal_interface].ipv4.address }} {{item}}'
          state: present
        with_items: '{{ groups["all"] }}'
-       
-     - name: Copy files
-       include_tasks: tasks/copy_files.yaml
-       loop: '{{ ["all"] + group_names + [inventory_hostname_short] }}'
-       loop_control:
-         loop_var: myhost
 
  - hosts: hpc-master
    tasks:
@@ -129,3 +123,12 @@
 
      - name: Dask configuration
        include_tasks: tasks/dask.yaml
+
+ - name: Copy arbitrary files over onto nodes
+   hosts: all
+   tasks:
+     - name: Copy files
+       include_tasks: tasks/copy_files.yaml
+       loop: '{{ ["all"] + group_names + [inventory_hostname_short] }}'
+       loop_control:
+         loop_var: myhost
