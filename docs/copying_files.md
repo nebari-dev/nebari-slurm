@@ -16,4 +16,6 @@ copy_files_hpc02-test:
       directory_mode: '644'
 ```
 
-The owner, group, and mode fields are optional.  See https://docs.ansible.com/ansible/latest/collections/ansible/builtin/copy_module.html#id2 for more detail about each field.
+The owner, group, and mode fields are optional.  See https://docs.ansible.com/ansible/latest/collections/ansible/builtin/copy_module.html#id2 for more detail about each field.  
+
+Files copied in this way will not overwrite existing files.
