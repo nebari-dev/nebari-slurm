@@ -1,6 +1,6 @@
 # ContainDS Dashboards
 
-ContainDS Dashboards is a dashboard publishing colution that has been
+ContainDS Dashboards is a dashboard publishing solution that has been
 integrated with Qhub-HPC. Refer to the [main
 documentation](https:// cdsdashboards.readthedocs.io/en/stable/) for
 additional info.
