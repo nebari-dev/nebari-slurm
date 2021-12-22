@@ -46,19 +46,19 @@ http:
       service: "dummy"
 
     jupyterhub:
-      rule: "Host(`{{ hostvars[groups['hpc-master'][0]].ansible_host }}`) && PathPrefix(`{{ jupyterhub.base_url }}`)"
+      rule: "Host(`{{ traefik.domain | default(hostvars[groups['hpc-master'][0]].ansible_host) }}`) && PathPrefix(`{{ jupyterhub.base_url }}`)"
       entryPoints:
         - "websecure"
       service: "jupyterhub"
       tls: {}
     grafana:
-      rule: "Host(`{{ hostvars[groups['hpc-master'][0]].ansible_host }}`) && PathPrefix(`{{ grafana.base_url }}`)"
+      rule: "Host(`{{ traefik.domain | default(hostvars[groups['hpc-master'][0]].ansible_host) }}`) && PathPrefix(`{{ grafana.base_url }}`)"
       entryPoints:
         - "websecure"
       service: "grafana"
       tls: {}
     dask-gateway:
-      rule: "Host(`{{ hostvars[groups['hpc-master'][0]].ansible_host }}`) && PathPrefix(`/clusters`)"
+      rule: "Host(`{{ traefik.domain | default(hostvars[groups['hpc-master'][0]].ansible_host) }}`) && PathPrefix(`/clusters`)"
       entryPoints:
         - "websecure"
       service: "dask-gateway"

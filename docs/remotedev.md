@@ -14,7 +14,7 @@ Host gpu
   User dlester
   IdentityFile ~/.ssh/id_rsa
   Port 2222
-#  LocalForward 8687 192.168.121.171:443
+#  LocalForward 8443 192.168.121.171:443
 ```
 
 Connect to that machine:
@@ -30,13 +30,22 @@ Inside the remote:
 ```
 git clone https://github.com/Quansight/qhub-hpc
 cd qhub-hpc
-nix-shell
+nix develop
 
 # Install some ansible addons
 ansible-galaxy collection install -r requirements.yaml
 ```
 
-The nix-shell command installs packages mentioned in `shell.nix` and launches a shell.
+The nix-shell command installs packages mentioned in `flake.nix` and launches a shell.
+
+### Configure traefik to expect traffic from localhost
+Modify the all.yaml file to define the traefik.domain ansible variable as below.
+
+```yaml
+traefik:
+  ... # other variables defined here
+  domain: localhost
+```
 
 ### Create and provision VMs
 
@@ -79,7 +88,7 @@ Host gpu
   User dlester
   IdentityFile ~/.ssh/id_rsa
   Port 2222
-  LocalForward 8687 192.168.121.171:443
+  LocalForward 8443 192.168.121.171:443
 
 Host vm
   HostName 192.168.121.171
@@ -94,7 +103,7 @@ again in the second section (vm).
 You should now be able to:
 
 1. Connect direct to the master node (hpc01-test) from your Mac using `ssh vm`
-2. Visit https://127.0.0.1:8687/ to view JupyterHub on the master node through the port forward
+2. Visit https://localhost:8443/ to view JupyterHub on the master node through the port forward
 
 ## Development in VSCode
 
@@ -109,7 +118,7 @@ ssh gpu
 
 # On remote:
 cd qhub-hpc
-nix-shell
+nix develop
 
 cd tests/ubuntu1804
 vagrant provision
