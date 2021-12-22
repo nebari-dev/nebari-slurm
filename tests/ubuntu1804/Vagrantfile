@@ -14,12 +14,12 @@ Vagrant.configure("2") do |config|
   config.vm.define HPC01_TEST, primary: true do |hpc01|
     hpc01.vm.hostname = HPC01_TEST
     hpc01.vm.provider "libvirt" do |libvirthpc01|
-      libvirthpc01.memory = 6144
+      libvirthpc01.memory = 16384
       libvirthpc01.cpus = 2
     end
 
     hpc01.vm.provider "virtualbox" do |vboxhpc01|
-      vboxhpc01.memory = 6144
+      vboxhpc01.memory = 16384
       vboxhpc01.cpus = 2
       vboxhpc01.gui = true
     end
