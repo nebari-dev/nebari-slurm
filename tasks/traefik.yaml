@@ -77,28 +77,6 @@
      group: traefik
    tags: traefik
 
- - name: Copy traefik configuration
-   become: true
-   template:
-     src: templates/traefik.yaml.j2
-     dest: /etc/traefik/traefik.yaml
-     mode: '0600'
-     owner: traefik
-     group: traefik
-   register: _traefik_configuration
-   tags: traefik
-
- - name: Copy traefik dynamic configuration
-   become: true
-   template:
-     src: templates/traefik_dynamic.yaml.j2
-     dest: /etc/traefik/traefik_dynamic.yaml
-     mode: '0600'
-     owner: traefik
-     group: traefik
-   register: _traefik_dynamic_configuration
-   tags: traefik
-
  - name: Ensure that traefik certs configuration directory exists
    become: true
    file:
@@ -119,6 +97,7 @@
      owner: traefik
      group: traefik
    when: traefik.tls.certificate is defined
+   register: _traefik_tls_certificate
    tags: traefik
 
  - name: Copy TLS key if provided
@@ -130,6 +109,29 @@
      owner: traefik
      group: traefik
    when: traefik.tls.key is defined
+   register: _traefik_tls_key
+   tags: traefik
+
+ - name: Copy traefik configuration
+   become: true
+   template:
+     src: templates/traefik.yaml.j2
+     dest: /etc/traefik/traefik.yaml
+     mode: '0600'
+     owner: traefik
+     group: traefik
+   register: _traefik_configuration
+   tags: traefik
+
+ - name: Copy traefik dynamic configuration
+   become: true
+   template:
+     src: templates/traefik_dynamic.yaml.j2
+     dest: /etc/traefik/traefik_dynamic.yaml
+     mode: '0600'
+     owner: traefik
+     group: traefik
+   register: _traefik_dynamic_configuration
    tags: traefik
 
  - name: Copy the traefik systemd service file
