@@ -1,3 +1,17 @@
+{% if traefik.tls.certificate is defined and traefik.tls.key is defined %}
+tls:
+  certificates:
+    - certFile: "{{ _traefik_tls_certificate.dest }}"
+      keyFile: "{{ _traefik_tls_key.dest }}"
+      stores:
+        - default
+  stores:
+    default:
+      defaultCertificate:
+        certFile: "{{ _traefik_tls_certificate.dest }}"
+        keyFile: "{{ _traefik_tls_key.dest }}"
+        
+{% endif %}
 http:
   middlewares:
     https-redirect:

@@ -51,7 +51,8 @@
 
      - name: Install traefik
        include_tasks: tasks/traefik.yaml
-
+       tags: traefik
+       
      - name: Install conda
        include_tasks: tasks/conda.yaml
        tags: conda

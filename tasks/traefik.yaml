@@ -3,6 +3,7 @@
    stat:
      path: "/usr/local/bin/traefik"
    register: _traefik_stat
+   tags: traefik
 
  - name: Download traefik binary
    become: true
@@ -13,6 +14,7 @@
       force: false
       mode: 0755
    when: not _traefik_stat.stat.exists
+   tags: traefik
 
  - name: Unpack traefik binary
    unarchive:
@@ -21,6 +23,7 @@
      dest: "/tmp"
      creates: "/tmp/traefik"
    when: not _traefik_stat.stat.exists
+   tags: traefik
 
  - name: Install traefik binary
    become: true
@@ -32,6 +35,7 @@
      owner: root
      group: root
    when: not _traefik_stat.stat.exists
+   tags: traefik
 
  - name: Create traefik group
    become: true
@@ -39,6 +43,7 @@
     name: traefik
     state: present
     system: true
+   tags: traefik
 
  - name: Create the traefik user
    become: true
@@ -50,6 +55,7 @@
      system: true
      create_home: false
      home: /
+   tags: traefik
 
  - name: Ensure that traefik configuration directory exists
    become: true
@@ -59,6 +65,7 @@
      mode: '0700'
      owner: traefik
      group: traefik
+   tags: traefik
 
  - name: Ensure that traefik acme configuration directory exists
    become: true
@@ -68,6 +75,42 @@
      mode: '0700'
      owner: traefik
      group: traefik
+   tags: traefik
+
+ - name: Ensure that traefik certs configuration directory exists
+   become: true
+   file:
+     path: /etc/traefik/certs
+     state: directory
+     mode: '0700'
+     owner: traefik
+     group: traefik
+   when: traefik.tls.certificate is defined
+   tags: traefik
+
+ - name: Copy TLS certificate if provided
+   become: true
+   copy:
+     src: "{{ traefik.tls.certificate }}"
+     dest: /etc/traefik/certs/{{ traefik.tls.certificate | basename }}
+     mode: '444'
+     owner: traefik
+     group: traefik
+   when: traefik.tls.certificate is defined
+   register: _traefik_tls_certificate
+   tags: traefik
+
+ - name: Copy TLS key if provided
+   become: true
+   copy:
+     src: "{{ traefik.tls.key }}"
+     dest: /etc/traefik/certs/{{ traefik.tls.key | basename }}
+     mode: '0400'
+     owner: traefik
+     group: traefik
+   when: traefik.tls.key is defined
+   register: _traefik_tls_key
+   tags: traefik
 
  - name: Copy traefik configuration
    become: true
@@ -78,6 +121,7 @@
      owner: traefik
      group: traefik
    register: _traefik_configuration
+   tags: traefik
 
  - name: Copy traefik dynamic configuration
    become: true
@@ -88,6 +132,7 @@
      owner: traefik
      group: traefik
    register: _traefik_dynamic_configuration
+   tags: traefik
 
  - name: Copy the traefik systemd service file
    become: true
@@ -120,6 +165,7 @@
      group: root
      mode: 0644
    register: _traefik_service
+   tags: traefik
 
  - name: Ensure Traefik is enabled on boot
    become: true
@@ -129,6 +175,7 @@
      enabled: true
      state: restarted
    when: _traefik_service.changed or _traefik_configuration.changed or _traefik_dynamic_configuration.changed
+   tags: traefik
 
  - name: Allow traefik http through firewall
    become: true
@@ -137,7 +184,8 @@
      port: "80"
      proto: tcp
    when: firewall.enabled
-
+   tags: traefik
+   
  - name: Allow traefik https through firewall
    become: true
    community.general.ufw:
@@ -145,7 +193,7 @@
      port: "443"
      proto: tcp
    when: firewall.enabled
-
    tags:
      - firewall   
+     - traefik
 
