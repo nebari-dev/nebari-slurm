@@ -1,4 +1,6 @@
-# Copying Arbitrary Files onto Nodes
+# Deployment Customization
+
+## Copying Arbitrary Files onto Nodes
 Arbitrary files and folders can be copied from the ansible control node onto the managed nodes as part of the ansible playbook deployment by setting the following ansible variables to copy files onto all nodes, all nodes in a particular group or only onto a particular node respectively.
     - `copy_files_all`
     - `copy_files_[ansible_group_name]`
@@ -26,7 +28,7 @@ The owner, group, and mode fields are optional.  See https://docs.ansible.com/an
 
 Files copied in this way will not overwrite existing files.  Also, remember that the home directory of users is a network file system so it would only be necessary to copy files in the user directories into a single node.
 
-# Accessing Qhub HPC from a Domain
+## Accessing Qhub HPC from a Domain
 
 By default, a qhub-hpc deployment must be accesssed using the ip address of the hpc-master node.  However, if a domain name has been set up to point to the hpc-master node, then Qhub HPC's router, [Traefik](https://doc.traefik.io/traefik/), can be configured to work with the domain by setting the **traefik.domain** ansible variable.
 
@@ -38,7 +40,7 @@ traefik:
   domain: example.com
 ```
 
-# Custom TLS Certificate
+## Custom TLS Certificate
 
 By default, traefik will create and use a self signed TLS certificate for user communication.  If desired, a custom TLS Certificate can be copied from the ansible controller node to the appropriate location for use by traefik.  To do so, set the following settings in the all.yaml file.
 
