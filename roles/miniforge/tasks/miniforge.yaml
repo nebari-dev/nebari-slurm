@@ -63,6 +63,6 @@
        channels:
          - conda-forge
        envs_dirs:
-         - "~/.conda/envs"
-       pkgs_dirs:
-         - "~/.conda/pkgs"
+       {% for directory in miniforge_envs %}
+         - "{{ directory }}"
+       {% endfor %}

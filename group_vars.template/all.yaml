@@ -18,5 +18,4 @@ enabled_groups:
 munge_key: eC36WeTj1JKUGyQEcfqkaRO0fDBoyTVHnkn7kE5sOZ1YUYyqWMSp3qeRZEmtEX9B
 
 jupyterhub_services:
-  prometheus: dpsZlpwaAhi9K8kKf4ZPvCJCuL7D25k1
   dask_gateway: CStgn1NN8DogQR1KajuoQfye1qNRqx6zsh

@@ -21,3 +21,4 @@ openldap_server_enabled: true
 nfs_server_exports:
   - "/home"
   - "/opt/conda"
+  - "/opt/conda-store"

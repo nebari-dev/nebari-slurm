@@ -12,6 +12,8 @@ nfs_client_mounts:
     path: /home
   - host: hpc01-test
     path: /opt/conda
+  - host: hpc01-test
+    path: /opt/conda-store
 
 installed_packages:
   - openmpi-doc
