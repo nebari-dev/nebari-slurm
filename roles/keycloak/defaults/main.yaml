@@ -5,3 +5,5 @@ keycloak_port: "30020"
 keycloak_admin_username: admin
 keycloak_admin_password: XLWUMUu8OG0XqlMREZK9id9o
 keycloak_realm: qhub-hpc
+keycloak_metrics_version: "2.5.3"
+keycloak_metrics_sha256: 9b3f52f842a66dadf5ff3cc3a729b8e49042d32f84510a5d73d41a2e39f29a96

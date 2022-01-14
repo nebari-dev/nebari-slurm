@@ -9,6 +9,7 @@ grafana_dashboards:
   - slurm_exporter
   - traefik
   - conda_store
+  - keycloak
 
 # role: prometheus
 prometheus_port: "9090"

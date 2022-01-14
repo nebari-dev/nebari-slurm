@@ -22,3 +22,6 @@ slurm_exporter_port: "9341"
 # role: conda_store
 conda_store_port: "5000"
 conda_store_prefix: "/conda-store"
+
+# role: keycloak
+keycloak_port: "30020"

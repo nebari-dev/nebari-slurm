@@ -55,3 +55,11 @@ scrape_configs:
     static_configs:
       - targets:
         - 'localhost:{{ conda_store_port }}'
+
+  - job_name: 'keycloak'
+    scrape_interval: 30s
+    scrape_timeout: 30s
+    metrics_path: '/auth/realms/master/metrics'
+    static_configs:
+      - targets:
+        - 'localhost:{{ keycloak_port }}'
