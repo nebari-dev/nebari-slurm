@@ -1,0 +1,4 @@
+---
+ - name: Firewall configuration
+   include_tasks: firewall.yaml
+   when: firewall_enabled

@@ -1,0 +1,6 @@
+nfs_server_enabled: false
+nfs_server_exports: []
+
+nfs_client_enabled: false
+# list of {host: ..., path: ...}
+nfs_client_mounts: []

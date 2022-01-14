@@ -1,0 +1,72 @@
+---
+ - name: Ensure slurmdbd log directory exists
+   become: true
+   file:
+     path: "{{ slurmdbd_config.LogFile | dirname }}"
+     state: directory
+     mode: '0700'
+     owner: slurm
+     group: slurm
+
+ - name: Ensure slurm pid directory exists
+   become: true
+   file:
+     path: "{{ slurmdbd_config.PidFile | dirname }}"
+     state: directory
+     mode: '0755'
+     owner: slurm
+     group: slurm
+
+ - name: install slurmdbd.conf
+   become: true
+   template:
+     src: "templates/slurmdbd.conf"
+     dest: "/etc/slurm-llnl/slurmdbd.conf"
+     owner: root
+     group: root
+     mode: 0444
+   register: _slurmdbd_config
+
+ - name: Copy the slurmdbd systemd service file
+   become: true
+   copy:
+     content: |
+       [Unit]
+       Description=Slrum DBD accounting daemon
+       After=network.target munge.service
+       ConditionPathExists=/etc/slurm-llnl/slurmdbd.conf
+
+       [Service]
+       Type=forking
+       User=root
+       ExecStart=/usr/sbin/slurmdbd
+       ExecReload=/bin/kill -HUN $MAINPID
+       PIDFile={{ slurmdbd_config.PidFile }}
+       LimitNOFILE=65536
+       TasksMax=infinity
+
+       [Install]
+       WantedBy=multi-user.target
+     dest: /etc/systemd/system/slurmdbd.service
+     owner: root
+     group: root
+     mode: 0644
+   register: _slurmdbd_service
+
+ - name: Install slurm controller packages
+   become: true
+   apt:
+     state: latest
+     cache_valid_time: 3600
+     name:
+       - slurmdbd
+   register: _slurmdbd_package
+
+ - name: Ensure slurmdbd is enabled on boot
+   become: true
+   systemd:
+     daemon_reload: true
+     name: slurmdbd
+     enabled: true
+     state: restarted
+   when: _slurmdbd_config.changed or _slurmdbd_service.changed or _slurmdbd_package.changed

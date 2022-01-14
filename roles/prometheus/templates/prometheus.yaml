@@ -1,0 +1,57 @@
+##
+## This file is maintained by Ansible - ALL MODIFICATIONS WILL BE REVERTED
+## https://prometheus.io/docs/prometheus/latest/configuration/configuration/
+##
+
+global:
+  scrape_interval:     15s
+  evaluation_interval: 15s
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+  - static_configs:
+    - targets:
+      # - alertmanager:9093
+
+# Load rules once and periodically evaluate them according to the global 'evaluation_interval'.
+rule_files:
+  # - "first_rules.yml"
+  # - "second_rules.yml"
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+    - targets:
+        - 'localhost:{{ prometheus_port }}'
+{% for host in groups['all'] %}
+        - '{{ host }}:{{ node_exporter_port }}'
+{% endfor %}
+
+  - job_name: 'jupyterhub'
+    metrics_path: '/hub/metrics'
+    static_configs:
+      - targets:
+         - 'localhost:{{ jupyterhub_port }}'
+
+  - job_name: 'traefik'
+    scrape_interval: 30s
+    scrape_timeout: 30s
+    static_configs:
+      - targets:
+        - 'localhost:{{ traefik_metrics_port }}'
+
+  - job_name: 'slurm'
+    scrape_interval: 30s
+    scrape_timeout: 30s
+    static_configs:
+      - targets:
+        - 'localhost:{{ slurm_exporter_port }}'
+
+  - job_name: 'conda_store'
+    scrape_interval: 30s
+    scrape_timeout: 30s
+    metrics_path: '{{ conda_store_prefix }}/metrics'
+    static_configs:
+      - targets:
+        - 'localhost:{{ conda_store_port }}'

@@ -1,0 +1,27 @@
+---
+ - name: Create or update Keycloak realm
+   community.general.keycloak_realm:
+     auth_client_id: admin-cli
+     auth_keycloak_url: "http://localhost:{{ keycloak_port }}/auth"
+     auth_realm: master
+     auth_username: "{{ keycloak_admin_username }}"
+     auth_password: "{{ keycloak_admin_password }}"
+     id: "{{ keycloak_realm }}"
+     realm: "{{ keycloak_realm }}"
+     enabled: true
+     state: present
+
+ - name: Create Keycloak groups
+   community.general.keycloak_group:
+     auth_client_id: admin-cli
+     auth_keycloak_url: "http://localhost:{{ keycloak_port }}/auth"
+     auth_realm: master
+     auth_username: "{{ keycloak_admin_username }}"
+     auth_password: "{{ keycloak_admin_password }}"
+     realm: "{{ keycloak_realm }}"
+     name: "{{ item }}"
+     state: present
+   with_items:
+     - admin
+     - developer
+     - viewer

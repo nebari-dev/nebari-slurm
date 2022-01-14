@@ -1,0 +1,4 @@
+---
+ - name: Install openldap
+   include_tasks: openldap.yaml
+   when: openldap_server_enabled

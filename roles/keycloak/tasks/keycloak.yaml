@@ -1,0 +1,131 @@
+---
+ - name: Install openjdk and python requirements
+   become: true
+   apt:
+     state: latest
+     cache_valid_time: 3600
+     name:
+       - default-jdk
+       - python3
+       - python3-pip
+       - python3-lxml
+
+ - name: Create keycloak group
+   become: true
+   group:
+    name: keycloak
+    state: present
+    system: true
+
+ - name: Create the keycloak user
+   become: true
+   user:
+     name: keycloak
+     groups: keycloak
+     append: true
+     shell: /usr/sbin/nologin
+     system: true
+     create_home: false
+     home: /
+
+ - name: Check that the keycloak binary exists
+   stat:
+     path: "/opt/keycloak-{{ keycloak_version }}/bin/standalone.sh"
+   register: _keycloak_stat
+
+ - name: Download keycloak to local folder
+   get_url:
+     url: "https://github.com/keycloak/keycloak/releases/download/{{ keycloak_version }}/keycloak-{{ keycloak_version }}.tar.gz"
+     checksum: "sha256:{{ keycloak_sha256 }}"
+     dest: "/tmp/keycloak-{{ keycloak_version }}.linux-amd64.tar.gz"
+     force: false
+     mode: 0755
+   when: not _keycloak_stat.stat.exists
+
+ - name: Unpack keycloak
+   become: true
+   unarchive:
+     src: "/tmp/keycloak-{{ keycloak_version }}.linux-amd64.tar.gz"
+     remote_src: true
+     dest: "/opt"
+     owner: keycloak
+     group: keycloak
+     creates: "/opt/keycloak-{{ keycloak_version }}/bin/standalone.sh"
+   when: not _keycloak_stat.stat.exists
+
+ - name: Ensure that keycloak configuration directory exists
+   become: true
+   file:
+     path: /etc/keycloak
+     state: directory
+     mode: '0700'
+     owner: keycloak
+     group: keycloak
+
+ - name: Ensure Keycloak admin user exists
+   become: true
+   ansible.builtin.shell: "/opt/keycloak-{{ keycloak_version }}/bin/add-user-keycloak.sh -r master -u \"{{ keycloak_admin_username }}\" -p \"{{ keycloak_admin_password }}\""
+   args:
+     creates: "/opt/keycloak-{{ keycloak_version }}/standalone/configuration/keycloak-add-user.json"
+
+ - name: Ensure https and proxy is enabled
+   become: true
+   community.general.xml:
+     path: "/opt/keycloak-{{ keycloak_version }}/standalone/configuration/standalone.xml"
+     xpath: "{{ item.xpath }}"
+     attribute: "{{ item.attribute }}"
+     value: "{{ item.value }}"
+     namespaces:
+       ns1: "urn:jboss:domain:19.0"
+       ns2: "urn:jboss:domain:undertow:12.0"
+   with_items:
+     - xpath: "/ns1:server/ns1:profile/ns2:subsystem/ns2:server/ns2:http-listener"
+       attribute: "proxy-address-forwarding"
+       value: "true"
+     - xpath: "/ns1:server/ns1:profile/ns2:subsystem/ns2:server/ns2:https-listener"
+       attribute: "proxy-address-forwarding"
+       value: "true"
+
+ - name: Copy the keycloak systemd service file
+   become: true
+   copy:
+     content: |
+       [Unit]
+       Description=Keycloak
+       After=network.target
+
+       [Service]
+       Environment=LAUNCH_JBOSS_IN_BACKGROUND=1
+       User=keycloak
+       Group=keycloak
+       LimitNOFILE=102642
+       ExecStart=/opt/keycloak-{{ keycloak_version }}/bin/standalone.sh -c standalone.xml -b "0.0.0.0" -Djboss.http.port="{{ keycloak_port }}"
+       WorkingDirectory=/opt/keycloak-{{ keycloak_version }}
+
+       [Install]
+       WantedBy=multi-user.target
+     dest: /etc/systemd/system/keycloak.service
+     owner: root
+     group: root
+     mode: 0644
+   register: _keycloak_service
+
+ - name: Ensure Keycloak is enabled on boot
+   become: true
+   systemd:
+     daemon_reload: true
+     name: keycloak
+     enabled: true
+     state: restarted
+   when: _keycloak_service.changed
+
+ - name: Wait for keycloak to be up
+   uri:
+     url: "http://localhost:{{ keycloak_port }}/auth/admin/master/console/"
+     follow_redirects: none
+     method: GET
+   register: _result
+   until: _result.status == 200
+   retries: 30
+   delay: 5
+   changed_when: false

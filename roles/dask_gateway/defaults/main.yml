@@ -1,0 +1,20 @@
+dask_gateway_enabled: false
+dask_gateway_api_port: "8010"
+dask_gateway_tcp_port: "8011"
+dask_gateway_client_enabled: true
+dask_gateway_environment: "environments/dask-gateway.yaml"
+
+dask_gateway_client_enabled: true
+
+# role: miniforge
+miniforge_home: "/opt/conda"
+
+# role: firewall
+firewall_enabled: true
+
+# role: jupyterhub
+jupyterhub_port: "8000"
+jupyterhub_lab_environment: "environments/jupyterlab.yaml"
+jupyterhub_services:
+  prometheus: dpsZlpwaAhi9K8kKf4ZPvCJCuL7D25k1
+  dask_gateway: CStgn1NN8DogQR1KajuoQfye1qNRqx6zsh

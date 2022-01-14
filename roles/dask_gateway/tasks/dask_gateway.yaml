@@ -1,0 +1,105 @@
+---
+ - name: Install Dask Gateway
+   include_role:
+     name: conda_environment
+   vars:
+     environment_path: "{{ dask_gateway_environment }}"
+
+ - name: Create dask group
+   become: true
+   group:
+    name: dask
+    state: present
+    system: true
+
+ - name: Create the dask user
+   become: true
+   user:
+     name: dask
+     groups: dask
+     append: true
+     shell: /usr/sbin/nologin
+     system: true
+     create_home: false
+     home: /
+
+ - name: Ensure that dask-gateway configuration directory exists
+   become: true
+   file:
+     path: /etc/dask-gateway
+     state: directory
+     mode: '0700'
+     owner: dask
+     group: dask
+
+ - name: Ensure that dask-gateway runtime directory exists
+   become: true
+   file:
+     path: /var/lib/dask-gateway
+     state: directory
+     mode: '0700'
+     owner: dask
+     group: dask
+
+ - name: Copy the dask-gateway configuration
+   become: true
+   template:
+     src: templates/dask_gateway_config.py
+     dest: /etc/dask-gateway/dask_gateway_config.py
+     owner: dask
+     group: dask
+     mode: 0644
+   register: _dask_gateway_configuration
+
+ - name: Copy the dask-gateway systemd service file
+   become: true
+   copy:
+     content: |
+       [Unit]
+       Description=dask-gateway
+       After=network-online.target
+
+       [Service]
+       Type=simple
+       User=root
+       Group=root
+       # By default, $PATH is pretty bare (thanks, systemd)
+       # We add the conda dir & /bin
+       # batchspawner uses sudo, which is in /bin (at least on CentOS)
+       Environment=PATH={{ miniforge_home }}/condabin:{{ miniforge_home }}/envs/{{ dask_gateway_environment | basename | splitext | first }}/bin:$PATH:/bin:/usr/bin:/usr/local/bin
+       ExecStart={{ miniforge_home }}/envs/{{ dask_gateway_environment | basename | splitext | first }}/bin/dask-gateway-server -f /etc/dask-gateway/dask_gateway_config.py
+       Restart=always
+       WorkingDirectory=/var/lib/dask-gateway
+
+       [Install]
+       WantedBy=multi-user.target
+     dest: /etc/systemd/system/dask-gateway.service
+     owner: root
+     group: root
+     mode: 0644
+   register: _dask_gateway_service
+
+ - name: Ensure dask-gateway is enabled on boot
+   become: true
+   systemd:
+     daemon_reload: true
+     name: dask-gateway
+     enabled: true
+     state: restarted
+   when: _dask_gateway_configuration.changed or _dask_gateway_service.changed
+
+ - name: Allow dask-gateway api through firewall
+   become: true
+   community.general.ufw:
+     rule: allow
+     port: "{{ dask_gateway_api_port }}"
+     proto: tcp
+   when: firewall_enabled
+
+ - name: Allow dask-gateway tcp through firewall
+   become: true
+   community.general.ufw:
+     rule: allow
+     port: "{{ dask_gateway_tcp_port }}"
+     proto: tcp
+   when: firewall_enabled

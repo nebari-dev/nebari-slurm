@@ -1,0 +1,8 @@
+openldap_server_enabled: false
+openldap_basedn: dc=mydomain,dc=net
+openldap_server_uri: ldap://localhost:389
+openldap_bind_password: EsicntiZOhQaGomPiJZLWJEJ
+
+openldap_dbtype: "{1}mdb"
+openldap_dbconfig_path: "/usr/share/slapd/DB_CONFIG"
+openldap_schema_path: "/etc/ldap/schema"

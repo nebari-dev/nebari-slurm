@@ -1,0 +1,4 @@
+---
+ - name: Backup configuration
+   include_tasks: backup.yaml
+   when: backup_enabled

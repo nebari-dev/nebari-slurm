@@ -1,9 +1,0 @@
----
- - name: Install slurm common
-   include_tasks: tasks/slurm/common.yaml
-
- - name: Install slurmdbd
-   include_tasks: tasks/slurm/slurmdbd.yaml
-
- - name: Install slurmctld
-   include_tasks: tasks/slurm/slurmctld.yaml

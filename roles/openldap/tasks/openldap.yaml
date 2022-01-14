@@ -1,0 +1,18 @@
+---
+ - name: Install openldap packages
+   become: true
+   apt:
+     name:
+       - slapd
+       - ldap-utils
+       - python3-ldap
+     state: present
+     update_cache: yes
+     cache_valid_time: 3600
+
+ - name: Start ldap service
+   become: true
+   service:
+     name: slapd
+     state: started
+     enabled: yes

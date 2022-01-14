@@ -1,0 +1,62 @@
+---
+ - name: Install munge
+   include_tasks: munge.yaml
+   when: munge_enabled
+
+ - name: Install slurm client packages
+   become: true
+   apt:
+     state: latest
+     cache_valid_time: 3600
+     name:
+       - slurm-client
+       - slurm-wlm-doc
+
+ - name: ensure that slurm configuration directory exists
+   become: true
+   file:
+     path: /etc/slurm-llnl
+     state: directory
+     mode: '0755'
+     owner: root
+     group: root
+
+ - name: install slurm.conf
+   become: true
+   template:
+     src: "templates/slurm.conf"
+     dest: "/etc/slurm-llnl/slurm.conf"
+     owner: root
+     group: root
+     mode: 0444
+   register: _slurm_config
+
+ - name: Install extra execution host configs
+   become: true
+   copy:
+     content: |
+       CgroupAutomount=yes
+       ConstrainCores=yes
+       ConstrainRAMSpace=yes
+       ConstrainSwapSpace=yes
+     dest: "/etc/slurm-llnl/cgroup.conf"
+     owner: root
+     group: root
+     mode: 0444
+   register: _slurm_cgroup_config
+
+ - name: Install slurmdbd
+   include_tasks: slurmdbd.yaml
+   when: slurmdbd_enabled
+
+ - name: Install slurmctld
+   include_tasks: slurmctld.yaml
+   when: slurmctld_enabled
+
+ - name: Install slurmd
+   include_tasks: slurmd.yaml
+   when: slurmd_enabled
+
+ - name: Install slurm exporter
+   include_tasks: slurm_exporter.yaml
+   when: slurm_exporter_enabled

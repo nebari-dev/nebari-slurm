@@ -1,0 +1,7 @@
+keycloak_enabled: false
+keycloak_version: "16.1.0"
+keycloak_sha256: 41ba611b19c657a18889371e7bb1311dc70887a36206642f8dab60bffd0733cb
+keycloak_port: "30020"
+keycloak_admin_username: admin
+keycloak_admin_password: XLWUMUu8OG0XqlMREZK9id9o
+keycloak_realm: qhub-hpc
