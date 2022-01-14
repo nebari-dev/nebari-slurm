@@ -9,7 +9,6 @@ terraform.tfstate.backup
 
 # Environment/key files
 .envrc
-*.json
 
 # ssh
 id_rsa
