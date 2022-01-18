@@ -17,6 +17,7 @@ slurmctld_enabled: true
 slurmdbd_enabled: true
 traefik_enabled: true
 openldap_server_enabled: true
+openldap_client_enabled: true
 
 nfs_server_exports:
   - "/home"

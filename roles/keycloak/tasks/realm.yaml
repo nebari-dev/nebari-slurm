@@ -36,10 +36,10 @@
        rdnLDAPAttribute: uid
        uuidLDAPAttribute: entryUUID
        userObjectClasses: inetOrgPerson, organizationalPerson, posixAccount
-       connectionUrl: ldap://localhost:389
-       usersDn: dc=example,dc=com
+       connectionUrl: "{{ openldap_server_uri }}"
+       usersDn: "{{ openldap_base_dn }}"
        authType: simple
-       bindDn: dc=example,dc=com
+       bindDn: "{{ openldap_bind_dn }}"
        bindCredential: "{{ openldap_bind_password }}"
        searchScope: 1
        validatePasswordPolicy: false
@@ -62,7 +62,7 @@
           is.mandatory.in.ldap: "true"
           read.only: "false"
           always.read_value.from.ldap: "false"
-          attribute.default.value: "10000"
+          attribute.default.value: "{{ keycloak_default_uid }}"
       - name: "unix gid"
         providerId: "user-attribute-ldap-mapper"
         providerType: "org.keycloak.storage.ldap.mappers.LDAPStorageMapper"
@@ -72,7 +72,7 @@
           is.mandatory.in.ldap: "true"
           read.only: "false"
           always.read_value.from.ldap: "false"
-          attribute.default.value: "10000"
+          attribute.default.value: "{{ keycloak_default_gid }}"
       - name: "unix home directory"
         providerId: "user-attribute-ldap-mapper"
         providerType: "org.keycloak.storage.ldap.mappers.LDAPStorageMapper"
@@ -82,7 +82,17 @@
           is.mandatory.in.ldap: "true"
           read.only: "false"
           always.read_value.from.ldap: "false"
-          attribute.default.value: "/home/nobody"
+          attribute.default.value: "{{ keycloak_default_home_directory }}"
+      - name: "unix shell"
+        providerId: "user-attribute-ldap-mapper"
+        providerType: "org.keycloak.storage.ldap.mappers.LDAPStorageMapper"
+        config:
+          ldap.attribute: loginShell
+          user.model.attribute: loginShell
+          is.mandatory.in.ldap: "true"
+          read.only: "false"
+          always.read_value.from.ldap: "false"
+          attribute.default.value: "{{ keycloak_default_shell }}"
 
 
  - name: Create Keycloak groups

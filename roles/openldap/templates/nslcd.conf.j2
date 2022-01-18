@@ -1,0 +1,51 @@
+# /etc/nslcd.conf
+# nslcd configuration file. See nslcd.conf(5)
+# for details.
+
+# The user and group nslcd should run as.
+uid nslcd
+gid nslcd
+
+# The location at which the LDAP server(s) should be reachable.
+uri {{ openldap_server_uri }}
+
+# The search base that will be used for all queries.
+base {{ openldap_base_dn }}
+
+# The LDAP protocol version to use.
+ldap_version 3
+
+# Specifies the search scope ([sub]tree, [one]level, base or
+# children). The default scope is subtree; base scope is almost never
+# useful for name service lookups; children scope is not supported on
+# all servers.
+# Search Scope
+scope one
+
+# Specifies the time limit (in seconds) to use when connecting to the
+# directory server. This is distinct from the time limit specified in
+# timelimit and affects the set-up of the connection only.
+# Bind timelimit
+bind_timelimit 50
+
+# Specifies the time limit (in seconds) to wait for a response from
+# the LDAP server. A value of zero (0) is to wait indefinitely for
+# searches to be completed.
+# Search timelimit.
+timelimit 50
+
+# The DN to bind with for normal lookups.
+# defconf-set-selections doesn't seem to set this. so have to manually set this.
+binddn {{ openldap_bind_dn }}
+bindpw {{ openldap_bind_password }}
+
+# Mappings for Active Directory
+# (replace the SIDs in the objectSid mappings with the value for your domain)
+# "dsquery * -filter (samaccountname=testuser1) -attr ObjectSID"
+pagesize 1000
+referrals yes
+idle_timelimit 800
+
+# Ref: http://msdn.microsoft.com/en-us/library/aa746475%28VS.85%29.aspx (LDAP_MATCHING_RULE_IN_CHAIN)
+filter passwd (objectClass=posixAccount)
+filter shadow (objectClass=posixAccount)

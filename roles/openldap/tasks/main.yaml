@@ -2,3 +2,7 @@
  - name: Install openldap
    include_tasks: openldap.yaml
    when: openldap_server_enabled
+
+ - name: Install openldap client
+   include_tasks: client.yaml
+   when: openldap_client_enabled
