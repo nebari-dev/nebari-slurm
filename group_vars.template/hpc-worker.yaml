@@ -6,6 +6,7 @@ munge_enabled: true
 nfs_client_enabled: true
 node_exporter_enabled: true
 slurmd_enabled: true
+openldap_client_enabled: true
 
 nfs_client_mounts:
   - host: hpc01-test
