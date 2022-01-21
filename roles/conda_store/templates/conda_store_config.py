@@ -16,7 +16,7 @@ c.CondaStore.default_gid = 100
 c.CondaStore.default_permissions = "775"
 
 c.S3Storage.internal_endpoint = "localhost:{{ minio_port }}"
-c.S3Storage.external_endpoint = "{{ ansible_eth0.ipv4.address }}:{{ minio_port }}"
+c.S3Storage.external_endpoint = "{{ lookup('ansible_' + internal_interface, 'ipv4', 'address') }}:{{ minio_port }}"
 c.S3Storage.access_key = "{{ minio_username }}"
 c.S3Storage.secret_key = "{{ minio_password }}"
 c.S3Storage.region = "us-east-1"  # minio region default
