@@ -1,0 +1,36 @@
+HPC01_TEST = "hpc01-test" + (ENV['HPC_VM_PREFIX'] || '')
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "generic/ubuntu2004"
+
+  # forces to use $HOME/.vagrant.d/insecure_private_key' we need the
+  # ssh key to be the same when /home get mounted on nfs
+  config.ssh.insert_key = false
+
+  config.vm.define HPC01_TEST, primary: true do |hpc01|
+    hpc01.vm.hostname = HPC01_TEST
+    hpc01.vm.provider "libvirt" do |libvirthpc01|
+      libvirthpc01.memory = 16384
+      libvirthpc01.cpus = 4
+    end
+
+    hpc01.vm.provider "virtualbox" do |vboxhpc01|
+      vboxhpc01.memory = 16384
+      vboxhpc01.cpus = 4
+      vboxhpc01.gui = true
+    end
+  end
+
+  # issues with dnssec and https://github.com/lavabit/robox/issues/106
+  config.vm.provision 'shell', inline: "if grep 'DNSSEC=yes' /etc/systemd/resolved.conf; then sed -i 's/DNSSEC=yes/DNSSEC=no/g' /etc/systemd/resolved.conf; systemctl restart systemd-resolved.service; fi", privileged: true
+
+
+  config.vm.provision "ansible" do |ansible|
+    ansible.playbook = "../../playbook.yaml"
+    ansible.groups = {
+      "hpc-master" => [HPC01_TEST],
+      "hpc-worker" => [HPC01_TEST],
+      "partition-example" => [HPC01_TEST],
+    }
+  end
+end
