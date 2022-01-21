@@ -1,0 +1,4 @@
+---
+ - name: Install grafana
+   include_tasks: grafana.yaml
+   when: grafana_enabled

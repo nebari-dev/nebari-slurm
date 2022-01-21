@@ -1,0 +1,21 @@
+dask_gateway_client_enabled: true
+firewall_enabled: true
+ipyparallel_enabled: true
+miniforge_enabled: true
+munge_enabled: true
+nfs_client_enabled: true
+node_exporter_enabled: true
+slurmd_enabled: true
+
+nfs_client_mounts:
+  - host: hpc01-test
+    path: /home
+  - host: hpc01-test
+    path: /opt/conda
+  - host: hpc01-test
+    path: /opt/conda-store
+
+installed_packages:
+  - openmpi-doc
+  - openmpi-bin
+  - openmpi-common

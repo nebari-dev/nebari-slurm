@@ -1,0 +1,28 @@
+---
+ - name: Install Bodo Environment
+   include_role:
+     name: conda_environment
+   vars:
+     environment_path: "{{ bodo_environment_path }}"
+
+ - name: Ensure bodo license directory exists
+   become: true
+   file:
+     path: "{{ miniforge_home }}/envs/bodo/share/bodo"
+     state: directory
+     mode: '0755'
+
+ - name: Write bodo license
+   become: true
+   copy:
+     content: "{{ bodo_license }}"
+     dest: "{{ miniforge_home }}/envs/bodo/share/bodo/bodo.license"
+     mode: '644'
+
+ - name: Ensure bodo.sh activated in shell
+   become: true
+   copy:
+     content: |
+       export BODO_LICENSE={{ miniforge_home }}/envs/bodo/share/bodo/bodo.license
+     dest: "/etc/profile.d/bodo.sh"
+     mode: '0755'

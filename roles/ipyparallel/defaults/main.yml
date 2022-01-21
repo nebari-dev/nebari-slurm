@@ -1,0 +1,11 @@
+ipyparallel_enabled: false
+ipyparallel_enable_mpi: false
+ipyparallel_environment: "environments/jupyterlab.yaml"
+ipyparallel_config:
+  controller_memory: "1G"
+  controller_cpus: 1
+  engine_worker_memory: "1G"
+  engine_worker_cpus: 2
+
+# role: miniforge
+miniforge_home: "/opt/conda"

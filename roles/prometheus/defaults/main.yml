@@ -1,0 +1,27 @@
+prometheus_enabled: false
+prometheus_version: "2.23.0"
+prometheus_sha256: 0f54cefdb946852947e35d4db8cfce394911ff586486f927c3887db4183cb643
+prometheus_port: "9090"
+
+node_exporter_enabled: false
+node_exporter_version: "1.0.1"
+node_exporter_sha256: 3369b76cd2b0ba678b6d618deab320e565c3d93ccb5c2a0d5db51a53857768ae
+node_exporter_port: "9100"
+
+# role: jupyterhub
+jupyterhub_port: "8000"
+jupyterhub_services:
+  dask_gateway: CStgn1NN8DogQR1KajuoQfye1qNRqx6zsh
+
+# role: traefik
+traefik_metrics_port: "8082"
+
+# role: slurm
+slurm_exporter_port: "9341"
+
+# role: conda_store
+conda_store_port: "5000"
+conda_store_prefix: "/conda-store"
+
+# role: keycloak
+keycloak_port: "30020"

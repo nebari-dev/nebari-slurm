@@ -1,0 +1,187 @@
+---
+ - name: Check that the traefik binary exists
+   stat:
+     path: "/usr/local/bin/traefik"
+   register: _traefik_stat
+
+ - name: Download traefik binary
+   become: true
+   get_url:
+      url: "https://github.com/traefik/traefik/releases/download/v{{ traefik_version }}/traefik_v{{ traefik_version }}_linux_amd64.tar.gz"
+      checksum: "sha256:{{ traefik_sha256 }}"
+      dest: "/tmp/traefik_v{{ traefik_version }}_linux_amd64.tar.gz"
+      force: false
+      mode: 0755
+   when: not _traefik_stat.stat.exists
+
+ - name: Unpack traefik binary
+   unarchive:
+     src: "/tmp/traefik_v{{ traefik_version }}_linux_amd64.tar.gz"
+     remote_src: true
+     dest: "/tmp"
+     creates: "/tmp/traefik"
+   when: not _traefik_stat.stat.exists
+
+ - name: Install traefik binary
+   become: true
+   copy:
+     src: "/tmp/traefik"
+     dest: "/usr/local/bin/traefik"
+     remote_src: true
+     mode: 0755
+     owner: root
+     group: root
+   when: not _traefik_stat.stat.exists
+
+ - name: Create traefik group
+   become: true
+   group:
+     name: traefik
+     state: present
+     system: true
+
+ - name: Create the traefik user
+   become: true
+   user:
+     name: traefik
+     groups: traefik
+     append: true
+     shell: /usr/sbin/nologin
+     system: true
+     create_home: false
+     home: /
+
+ - name: Ensure that traefik configuration directory exists
+   become: true
+   file:
+     path: /etc/traefik
+     state: directory
+     mode: '0700'
+     owner: traefik
+     group: traefik
+
+
+ - name: Ensure that traefik acme configuration directory exists
+   become: true
+   file:
+     path: /etc/traefik/acme
+     state: directory
+     mode: '0700'
+     owner: traefik
+     group: traefik
+
+
+ - name: Ensure that traefik certs configuration directory exists
+   become: true
+   file:
+     path: /etc/traefik/certs
+     state: directory
+     mode: '0700'
+     owner: traefik
+     group: traefik
+   when: traefik_tls_certificate is defined
+
+
+ - name: Copy TLS certificate if provided
+   become: true
+   copy:
+     src: "{{ traefik_tls_certificate }}"
+     dest: /etc/traefik/certs/{{ traefik_tls_certificate | basename }}
+     mode: '444'
+     owner: traefik
+     group: traefik
+   when: traefik_tls_certificate is defined
+   register: _traefik_tls_certificate
+
+
+ - name: Copy TLS key if provided
+   become: true
+   copy:
+     src: "{{ traefik_tls_key }}"
+     dest: /etc/traefik/certs/{{ traefik_tls_key | basename }}
+     mode: '0400'
+     owner: traefik
+     group: traefik
+   when: traefik_tls_key is defined
+   register: _traefik_tls_key
+
+
+ - name: Copy traefik configuration
+   become: true
+   template:
+     src: templates/traefik.yaml
+     dest: /etc/traefik/traefik.yaml
+     mode: '0600'
+     owner: traefik
+     group: traefik
+   register: _traefik_configuration
+
+
+ - name: Copy traefik dynamic configuration
+   become: true
+   template:
+     src: templates/traefik_dynamic.yaml
+     dest: /etc/traefik/traefik_dynamic.yaml
+     mode: '0600'
+     owner: traefik
+     group: traefik
+   register: _traefik_dynamic_configuration
+
+
+ - name: Copy the traefik systemd service file
+   become: true
+   copy:
+     content: |
+       [Unit]
+       Description=traefik proxy
+       After=network-online.target
+       Wants=network-online.target systemd-networkd-wait-online.service
+
+       [Service]
+       Restart=always
+       User=traefik
+       Group=traefik
+       ExecStart=/usr/local/bin/traefik --configfile=/etc/traefik/traefik.yaml
+       LimitNOFILE=1048576
+       PrivateTmp=true
+       PrivateDevices=false
+       ProtectHome=true
+       ProtectSystem=full
+       ReadWriteDirectories=/etc/traefik/acme
+       CapabilityBoundingSet=CAP_NET_BIND_SERVICE
+       AmbientCapabilities=CAP_NET_BIND_SERVICE
+       NoNewPrivileges=true
+
+       [Install]
+       WantedBy=multi-user.target
+     dest: /etc/systemd/system/traefik.service
+     owner: root
+     group: root
+     mode: 0644
+   register: _traefik_service
+
+
+ - name: Ensure Traefik is enabled on boot
+   become: true
+   systemd:
+     daemon_reload: true
+     name: traefik
+     enabled: true
+     state: restarted
+   when: _traefik_service.changed or _traefik_configuration.changed or _traefik_dynamic_configuration.changed
+
+ - name: Allow traefik http through firewall
+   become: true
+   community.general.ufw:
+     rule: allow
+     port: "80"
+     proto: tcp
+   when: firewall_enabled
+
+ - name: Allow traefik https through firewall
+   become: true
+   community.general.ufw:
+     rule: allow
+     port: "443"
+     proto: tcp
+   when: firewall_enabled

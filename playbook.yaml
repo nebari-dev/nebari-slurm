@@ -1,7 +1,5 @@
 ---
- - name: Populate /etc/hosts with internal interface ip addresses
-   hosts: all
-   gather_facts: true
+ - hosts: all
    pre_tasks:
      - name: Gather facts from ALL hosts (regardless of limit or tags)
        setup:
@@ -9,130 +7,38 @@
        delegate_facts: True
        when: hostvars[item]['ansible_default_ipv4'] is not defined
        with_items: "{{ groups['all'] }}"
+   roles:
+     # core services
+     - hosts
+     - firewall
+     - accounts
+     - apt_packages
+     - miniforge
+     - nfs
+     - mysql
+     - minio
+     - backups
+     - traefik
+     - openldap
+     - keycloak
+     # workflows
+     - slurm
+     # monitoring
+     - prometheus
+     - grafana
+     # data-science services
+     - conda_store
+     - jupyterhub
+     - dask_gateway
+     - ipyparallel
+     # plugins
+     - bodo
+
    tasks:
-     - name: Build hosts file on nodes
-       become: true
-       lineinfile:
-         dest: /etc/hosts
-         regexp: '.*{{ item }}$'
-         line: '{{ hostvars[item]["ansible_" + internal_interface].ipv4.address }} {{item}}'
-         state: present
-       with_items: '{{ groups["all"] }}'
+     - name: Keycloak administration credentials
+       ansible.builtin.debug:
+         msg: "Keycloak administration username={{ keycloak_admin_username }} password={{ keycloak_admin_password }} via https://{{ traefik_domain | default(hostvars[groups['hpc-master'][0]].ansible_host) }}/auth/admin/"
 
- - hosts: hpc-master
-   tasks:
-     - name: Install firewall
-       include_tasks: tasks/firewall.yaml
-       when: firewall.enabled
-
-     - name: Install common packages
-       include_tasks: tasks/apt-packages.yaml
-
-     - name: Install users/groups
-       include_tasks: tasks/accounts.yaml
-
-     - name: Install prometheus node_exporter
-       include_tasks: tasks/node-exporter.yaml
-
-     - name: Install prometheus
-       include_tasks: tasks/prometheus.yaml
-
-     - name: Install prometheus slurm-exporter
-       include_tasks: tasks/prometheus-slurm-exporter.yaml
-
-     - name: Install grafana
-       include_tasks: tasks/grafana.yaml
-
-     - name: Install mysql
-       include_tasks: tasks/mysql.yaml
-
-     - name: Install slurm master
-       include_tasks: tasks/slurm-master.yaml
-
-     - name: Install traefik
-       include_tasks: tasks/traefik.yaml
-       tags: traefik
-       
-     - name: Install conda
-       include_tasks: tasks/conda.yaml
-       tags: conda
-
-     - name: Install nfs server
-       include_tasks: tasks/nfs-server.yaml
-
-     - name: Share directory
-       include_tasks: tasks/share.yaml
-
-     - name: Install conda environments
-       include_tasks: tasks/environments.yaml
-
-     - name: Install jupyterhub
-       include_tasks: tasks/jupyterhub.yaml
-       tags: jupyterhub
-
-     - name: Install jupyterhub ssh
-       include_tasks: tasks/jupyterhub-ssh.yaml
-       when: jupyterhub_ssh.enabled
-
-     - name: Install dask-gateway
-       include_tasks: tasks/dask-gateway.yaml
-
-     # On/Off Features
-     - name: Install bodo
-       include_tasks: tasks/bodo.yaml
-       when: bodo.enabled
-
-     - name: Enable backups
-       include_tasks: tasks/backup.yaml
-       when: backup.enabled
-
- - hosts: hpc-worker
-   tasks:
-     - name: Install firewall
-       include_tasks: tasks/firewall.yaml
-       when: firewall.enabled
-
-     - name: Install common packages
-       include_tasks: tasks/apt-packages.yaml
-
-     - name: Install users/groups
-       include_tasks: tasks/accounts.yaml
-
-     - name: Install prometheus node_exporter
-       include_tasks: tasks/node-exporter.yaml
-
-     - name: Install slurm worker
-       include_tasks: tasks/slurm-worker.yaml
-
-     # conda environments can take a long time to install this may
-     # fail the first time
-     - name: wait for hpc-master nfs server to start
-       wait_for:
-         host: "{{ groups['hpc-master'][0] }}"
-         port: 2049
-         timeout: 600
-
-     - name: Install nfs client
-       include_tasks: tasks/nfs-client.yaml
-
-     - name: Install cifs client
-       include_tasks: tasks/cifs-client.yaml
-
-     - name: Install conda
-       include_tasks: tasks/conda.yaml
-       tags: conda
-
-     - name: IPyParallel configuration
-       include_tasks: tasks/ipyparallel.yaml
-
-     - name: Dask configuration
-       include_tasks: tasks/dask.yaml
-
- - name: Copy arbitrary files over onto nodes
-   hosts: all
-   tasks:
-     - name: Copy files
-       include_tasks: tasks/copy_files.yaml
-       loop: '{{ ["all"] + group_names + [inventory_hostname_short] }}'
-       loop_control:
-         loop_var: myhost
+     - name: Accessing cluster
+       ansible.builtin.debug:
+         msg: "Access cluster via following url: https://{{ traefik_domain | default(hostvars[groups['hpc-master'][0]].ansible_host) }}"

@@ -1,0 +1,8 @@
+---
+ - name: Install prometheus
+   include_tasks: prometheus.yml
+   when: prometheus_enabled
+
+ - name: Install node_exporter
+   include_tasks: node_exporter.yml
+   when: node_exporter_enabled

@@ -1,0 +1,4 @@
+environment_path: null
+
+# role: miniforge
+miniforge_home: "/opt/conda"

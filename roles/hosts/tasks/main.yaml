@@ -1,0 +1,9 @@
+---
+ - name: Ensure hosts exist within /etc/hosts
+   become: true
+   lineinfile:
+     dest: /etc/hosts
+     regexp: '.*{{ item }}$'
+     line: '{{ hostvars[item]["ansible_" + internal_interface].ipv4.address }} {{item}}'
+     state: present
+   with_items: '{{ groups["all"] }}'

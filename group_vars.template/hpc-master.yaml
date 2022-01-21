@@ -1,0 +1,25 @@
+dask_gateway_enabled: true
+firewall_enabled: true
+grafana_enabled: true
+jupyterhub_enabled: true
+jupyterhub_ssh_enabled: true
+keycloak_enabled: true
+miniforge_enabled: true
+munge_enabled: true
+mysql_enabled: true
+minio_enabled: true
+conda_store_enabled: true
+nfs_server_enabled: true
+node_exporter_enabled: true
+prometheus_enabled: true
+slurm_exporter_enabled: true
+slurmctld_enabled: true
+slurmdbd_enabled: true
+traefik_enabled: true
+openldap_server_enabled: true
+openldap_client_enabled: true
+
+nfs_server_exports:
+  - "/home"
+  - "/opt/conda"
+  - "/opt/conda-store"

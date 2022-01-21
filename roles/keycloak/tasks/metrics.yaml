@@ -1,0 +1,20 @@
+---
+ - name: Download keycloak to local folder
+   become: true
+   get_url:
+     url: "https://github.com/aerogear/keycloak-metrics-spi/releases/download/{{ keycloak_metrics_version }}/keycloak-metrics-spi-{{ keycloak_metrics_version }}.jar"
+     checksum: "sha256:{{ keycloak_metrics_sha256 }}"
+     dest: "/opt/keycloak-{{ keycloak_version }}/standalone/deployments/keycloak-metrics-spi-{{ keycloak_metrics_version }}.jar"
+     force: false
+     owner: keycloak
+     group: keycloak
+     mode: 0755
+
+ - name: Touch dodeploy file within folder
+   become: true
+   file:
+     path: "/opt/keycloak-{{ keycloak_version }}/standalone/deployments/keycloak-metrics-spi-{{ keycloak_metrics_version }}.jar.dodeploy"
+     state: touch
+     owner: keycloak
+     group: keycloak
+     mode: 0755

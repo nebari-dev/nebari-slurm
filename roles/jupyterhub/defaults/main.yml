@@ -1,0 +1,45 @@
+jupyterhub_ssh_enabled: false
+jupyterhub_ssh_port: "8022"
+
+cdsdashboards_enabled: true
+
+jupyterhub_enabled: false
+jupyterhub_port: "8000"
+jupyterhub_base_url: "/"
+jupyterhub_hub_environment: "environments/jupyterhub.yaml"
+jupyterhub_lab_environment: "environments/jupyterlab.yaml"
+jupyterhub_dashboard_environment: "environments/dashboards.yaml"
+jupyterhub_client_id: "jupyterhub"
+jupyterhub_client_secret: "SUPERSECRETPASSWORDJUPYTERHUB"
+
+jupyterhub_config:
+  spawner:
+    start_timeout: 60  # seconds
+
+jupyterhub_services:
+  dask_gateway: CStgn1NN8DogQR1KajuoQfye1qNRqx6zsh
+
+jupyterhub_theme:
+  template_vars:
+    hub_title: "This is QHub HPC"
+    hub_subtitle: "your scalable open source data science laboratory."
+    welcome: "have fun."
+    logo: "/hub/custom/images/jupyter_qhub_logo.svg"
+    primary_color: '#4f4173'
+    secondary_color: '#957da6'
+    accent_color: '#32C574'
+    text_color: "#111111"
+    h1_color: "#652e8e"
+    h2_color: "#652e8e"
+
+# role: miniforge
+miniforge_home: "/opt/conda"
+
+# role: traefik
+# traefik_domain: ...
+
+# role: keycloak
+keycloak_port: "30020"
+keycloak_admin_username: "admin"
+keycloak_admin_password: XLWUMUu8OG0XqlMREZK9id9o
+keycloak_realm: qhub-hpc

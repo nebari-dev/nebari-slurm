@@ -1,0 +1,8 @@
+openldap_server_enabled: false
+openldap_bind_password: EsicntiZOhQaGomPiJZLWJEJ
+openldap_server_uri: ldap://localhost:389
+openldap_bind_dn: "dc=example,dc=com"
+openldap_base_dn: "dc=example,dc=com"
+openldap_db_type: "{1}mdb"
+
+openldap_client_enabled: false

@@ -1,0 +1,20 @@
+---
+ - name: create environments directory
+   become: yes
+   file:
+     path: /opt/conda-environments
+     state: directory
+
+ - name: copy environments files
+   become: yes
+   template:
+     src: "{{ environment_path }}"
+     dest: "/opt/conda-environments/{{ environment_path | basename }}"
+     mode: 0644
+   register: _environment
+
+ - name: "install conda environment {{ environment_path | basename }}"
+   become: yes
+   shell:
+     cmd: "{{ miniforge_home }}/bin/mamba env update -f /opt/conda-environments/{{ environment_path | basename }} --prefix {{ miniforge_home }}/envs/{{ environment_path | basename | splitext | first }}"
+   when: _environment.changed

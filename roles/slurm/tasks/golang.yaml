@@ -1,0 +1,32 @@
+---
+ - name: Check that the go binary exists
+   stat:
+     path: "/usr/local/bin/go"
+   register: _golang_stat
+
+ - name: Download go tarball to local folder
+   get_url:
+     url: "https://golang.org/dl/go{{ golang_version }}.linux-amd64.tar.gz"
+     checksum: "sha256:{{ golang_sha256 }}"
+     dest: "/tmp/golang-{{ golang_version }}.tar.gz"
+     force: false
+     mode: 0755
+   when: not _golang_stat.stat.exists
+
+ - name: Unpack golang
+   become: true
+   unarchive:
+     src: "/tmp/golang-{{ golang_version }}.tar.gz"
+     remote_src: true
+     dest: "/opt"
+     creates: "/opt/go/bin/go"
+   when: not _golang_stat.stat.exists
+
+ - name: Set golang to user path
+   become: true
+   copy:
+     content: |
+       export PATH=/opt/go/bin:$PATH
+     dest: /etc/profile.d/golang.sh
+     mode: '0755'
+   when: not _golang_stat.stat.exists

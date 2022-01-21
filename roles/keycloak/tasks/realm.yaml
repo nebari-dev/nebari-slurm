@@ -1,0 +1,121 @@
+---
+ - name: Create or update Keycloak realm
+   community.general.keycloak_realm:
+     auth_client_id: admin-cli
+     auth_keycloak_url: "http://localhost:{{ keycloak_port }}/auth"
+     auth_realm: master
+     auth_username: "{{ keycloak_admin_username }}"
+     auth_password: "{{ keycloak_admin_password }}"
+     id: "{{ keycloak_realm }}"
+     realm: "{{ keycloak_realm }}"
+     enabled: true
+     state: present
+
+ - name: Create User Federation for LDAP
+   community.general.keycloak_user_federation:
+     auth_client_id: admin-cli
+     auth_keycloak_url: "http://localhost:{{ keycloak_port }}/auth"
+     auth_realm: master
+     auth_username: "{{ keycloak_admin_username }}"
+     auth_password: "{{ keycloak_admin_password }}"
+     realm: "{{ keycloak_realm }}"
+     name: "{{ keycloak_realm }}-ldap"
+     state: present
+     provider_id: ldap
+     provider_type: org.keycloak.storage.UserStorageProvider
+     config:
+       priority: 0
+       enabled: true
+       cachePolicy: DEFAULT
+       batchSizeForSync: 1000
+       editMode: WRITABLE
+       importEnabled: true
+       syncRegistrations: true
+       vendor: other
+       usernameLDAPAttribute: uid
+       rdnLDAPAttribute: uid
+       uuidLDAPAttribute: entryUUID
+       userObjectClasses: inetOrgPerson, organizationalPerson, posixAccount
+       connectionUrl: "{{ openldap_server_uri }}"
+       usersDn: "{{ openldap_base_dn }}"
+       authType: simple
+       bindDn: "{{ openldap_bind_dn }}"
+       bindCredential: "{{ openldap_bind_password }}"
+       searchScope: 1
+       validatePasswordPolicy: false
+       trustEmail: false
+       useTruststoreSpi: ldapsOnly
+       connectionPooling: true
+       pagination: true
+       allowKerberosAuthentication: false
+       debug: false
+       useKerberosForPasswordAuthentication: false
+       fullSyncPeriod: 3600
+       changedSyncPeriod: 3600
+     mappers:
+      - name: "unix uid"
+        providerId: "user-attribute-ldap-mapper"
+        providerType: "org.keycloak.storage.ldap.mappers.LDAPStorageMapper"
+        config:
+          ldap.attribute: uidNumber
+          user.model.attribute: uidNumber
+          is.mandatory.in.ldap: "true"
+          read.only: "false"
+          always.read_value.from.ldap: "false"
+          attribute.default.value: "{{ keycloak_default_uid }}"
+      - name: "unix gid"
+        providerId: "user-attribute-ldap-mapper"
+        providerType: "org.keycloak.storage.ldap.mappers.LDAPStorageMapper"
+        config:
+          ldap.attribute: gidNumber
+          user.model.attribute: gidNumber
+          is.mandatory.in.ldap: "true"
+          read.only: "false"
+          always.read_value.from.ldap: "false"
+          attribute.default.value: "{{ keycloak_default_gid }}"
+      - name: "unix home directory"
+        providerId: "user-attribute-ldap-mapper"
+        providerType: "org.keycloak.storage.ldap.mappers.LDAPStorageMapper"
+        config:
+          ldap.attribute: homeDirectory
+          user.model.attribute: homeDirectory
+          is.mandatory.in.ldap: "true"
+          read.only: "false"
+          always.read_value.from.ldap: "false"
+          attribute.default.value: "{{ keycloak_default_home_directory }}"
+      - name: "unix shell"
+        providerId: "user-attribute-ldap-mapper"
+        providerType: "org.keycloak.storage.ldap.mappers.LDAPStorageMapper"
+        config:
+          ldap.attribute: loginShell
+          user.model.attribute: loginShell
+          is.mandatory.in.ldap: "true"
+          read.only: "false"
+          always.read_value.from.ldap: "false"
+          attribute.default.value: "{{ keycloak_default_shell }}"
+
+
+ - name: Create Keycloak groups
+   community.general.keycloak_group:
+     auth_client_id: admin-cli
+     auth_keycloak_url: "http://localhost:{{ keycloak_port }}/auth"
+     auth_realm: master
+     auth_username: "{{ keycloak_admin_username }}"
+     auth_password: "{{ keycloak_admin_password }}"
+     realm: "{{ keycloak_realm }}"
+     name: "{{ item }}"
+     state: present
+   with_items:
+     - admin
+     - developer
+     - viewer
+
+ - name: Enable keycloak metrics endpoint
+   become: true
+   ansible.builtin.shell: |
+     /opt/keycloak-{{ keycloak_version }}/bin/kcadm.sh config credentials --server "http://localhost:{{ keycloak_port }}/auth" --realm master --user "{{ keycloak_admin_username }}" --password "{{ keycloak_admin_password }}"  && \
+     /opt/keycloak-{{ keycloak_version }}/bin/kcadm.sh update events/config -s "eventsEnabled=true" -s "adminEventsEnabled=true" -s "eventsListeners+=metrics-listener" && \
+     /opt/keycloak-{{ keycloak_version }}/bin/kcadm.sh update events/config -r "{{ keycloak_realm }}" -s "eventsEnabled=true" -s "adminEventsEnabled=true" -s "eventsListeners+=metrics-listener" && \
+     touch /opt/keycloak-{{ keycloak_version }}/metrics
+   args:
+     creates: "/opt/keycloak-{{ keycloak_version }}/metrics"

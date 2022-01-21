@@ -1,0 +1,4 @@
+---
+ - name: Install minio
+   include_tasks: minio.yaml
+   when: minio_enabled

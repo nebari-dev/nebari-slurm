@@ -1,0 +1,27 @@
+traefik_enabled: false
+traefik_version: "2.4.0"
+traefik_sha256: 1e8cd14a0c09ba44ba8b44a94441caaf1edc3e043a65a7d43f9c870be47f70aa
+traefik_metrics_port: "8082"
+
+# traefik_domain: <dns-name>
+# traefik_tls_certificate: <path>
+# traefik_tls_key: <path>
+
+
+# role: jupyterhub
+jupyterhub_port: "8000"
+jupyterhub_base_url: "/"
+
+# role: grafana
+grafana_port: "3000"
+grafana_base_url: "/monitoring"
+
+# role: dask_gateway
+dask_gateway_api_port: "8010"
+
+# role: keycloak
+keycloak_port: "30020"
+
+# role: conda_store
+conda_store_prefix: "/conda-store"
+conda_store_port: "5000"

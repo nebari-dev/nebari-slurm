@@ -1,0 +1,85 @@
+{% if traefik_tls_certificate is defined and traefik_tls_key is defined %}
+tls:
+  certificates:
+    - certFile: "{{ _traefik_tls_certificate.dest }}"
+      keyFile: "{{ _traefik_tls_key.dest }}"
+      stores:
+        - default
+  stores:
+    default:
+      defaultCertificate:
+        certFile: "{{ _traefik_tls_certificate.dest }}"
+        keyFile: "{{ _traefik_tls_key.dest }}"
+
+{% endif %}
+http:
+  middlewares:
+    https-redirect:
+      redirectscheme:
+        scheme: "https"
+
+  services:
+    dummy: # never reacher due to middleware http -> https redirect
+      loadBalancer:
+        servers:
+          - url: "localhost"
+
+    keycloak:
+      loadBalancer:
+        servers:
+          - url: "http://localhost:{{ keycloak_port }}/"
+    jupyterhub:
+      loadBalancer:
+        servers:
+          - url: "http://localhost:{{ jupyterhub_port }}/"
+    grafana:
+      loadBalancer:
+        servers:
+          - url: "http://localhost:{{ grafana_port }}/"
+    dask-gateway:
+      loadBalancer:
+        servers:
+          - url: "http://localhost:{{ dask_gateway_api_port }}/"
+    conda-store:
+      loadBalancer:
+        servers:
+          - url: "http://localhost:{{ conda_store_port }}/"
+
+  routers:
+    https-redirect:
+      rule: "HostRegexp(`{any:.*}`)"
+      middlewares: ["https-redirect"]
+      entryPoints:
+        - "web"
+      service: "dummy"
+
+    keycloak:
+      rule: "Host(`{{ traefik_domain | default(hostvars[groups['hpc-master'][0]].ansible_host) }}`) && PathPrefix(`/auth`)"
+      entryPoints:
+        - "websecure"
+      service: "keycloak"
+      tls: {}
+    jupyterhub:
+      rule: "Host(`{{ traefik_domain | default(hostvars[groups['hpc-master'][0]].ansible_host) }}`) && PathPrefix(`{{ jupyterhub_base_url }}`)"
+      entryPoints:
+        - "websecure"
+      service: "jupyterhub"
+      tls: {}
+    grafana:
+      rule: "Host(`{{ traefik_domain | default(hostvars[groups['hpc-master'][0]].ansible_host) }}`) && PathPrefix(`{{ grafana_base_url }}`)"
+      entryPoints:
+        - "websecure"
+      service: "grafana"
+      tls: {}
+    dask-gateway:
+      rule: "Host(`{{ traefik_domain | default(hostvars[groups['hpc-master'][0]].ansible_host) }}`) && PathPrefix(`/clusters`)"
+      entryPoints:
+        - "websecure"
+      service: "dask-gateway"
+      tls: {}
+    conda-store:
+      rule: "Host(`{{ traefik_domain | default(hostvars[groups['hpc-master'][0]].ansible_host) }}`) && PathPrefix(`{{ conda_store_prefix }}`)"
+      entryPoints:
+        - "websecure"
+      service: "conda-store"
+      tls: {}

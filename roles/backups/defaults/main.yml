@@ -1,0 +1,7 @@
+---
+backup_enabled: false
+backup_on_calendar: "daily"
+backup_randomized_delay: "3600"
+backup_environment:
+  RESTIC_REPOSITORY: ...
+  RESTIC_PASSWORD: ...

@@ -1,0 +1,6 @@
+name: conda-store
+channels:
+ - conda-forge
+dependencies:
+ - conda-store-server=={{ conda_store_version }}
+ - pymysql

@@ -1,0 +1,42 @@
+---
+ - name: Install ldap client packages
+   become: true
+   apt:
+     name:
+       - libpam-ldapd
+       - nscd
+     state: latest
+     cache_valid_time: 3600
+
+
+ - name: LDAP Authentication | Create Home Directories on login
+   become: true
+   lineinfile:
+     dest: /etc/pam.d/common-account
+     regexp: 'pam_mkhomedir\.so'
+     line: "session required pam_mkhomedir.so skel=/etc/skel/ umask=0022"
+     state: present
+   notify: restart services ldap
+
+
+ - name: LDAP Authentication | Query ldap in nsswitch.conf
+   become: true
+   replace:
+     dest: /etc/nsswitch.conf
+     regexp: '^({{ item }}(?!.*\bldap\b).*)$'
+     replace: '\1 ldap'
+     backup: 'yes'
+   with_items:
+     - passwd
+     - shadow
+     - group
+   notify: restart services ldap
+
+
+ - name: "LDAP Authentication | Configure /etc/nslcd.conf"
+   become: true
+   template:
+     src: nslcd.conf.j2
+     dest: /etc/nslcd.conf
+     mode: 0600
+   notify: restart services ldap

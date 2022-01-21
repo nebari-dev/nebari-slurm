@@ -1,0 +1,4 @@
+---
+ - name: Install miniforge
+   include_tasks: miniforge.yaml
+   when: miniforge_enabled

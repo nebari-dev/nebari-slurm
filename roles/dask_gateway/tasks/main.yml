@@ -1,0 +1,8 @@
+---
+ - name: Install dask-gateway server
+   include_tasks: dask_gateway.yaml
+   when: dask_gateway_enabled
+
+ - name: Install dask-gateway client
+   include_tasks: client.yaml
+   when: dask_gateway_client_enabled

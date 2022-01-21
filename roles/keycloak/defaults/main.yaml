@@ -1,0 +1,20 @@
+keycloak_enabled: false
+keycloak_version: "16.1.0"
+keycloak_sha256: 41ba611b19c657a18889371e7bb1311dc70887a36206642f8dab60bffd0733cb
+keycloak_port: "30020"
+keycloak_admin_username: admin
+keycloak_admin_password: XLWUMUu8OG0XqlMREZK9id9o
+keycloak_realm: qhub-hpc
+keycloak_metrics_version: "2.5.3"
+keycloak_metrics_sha256: 9b3f52f842a66dadf5ff3cc3a729b8e49042d32f84510a5d73d41a2e39f29a96
+
+keycloak_default_uid: "10000"
+keycloak_default_gid: "10000"
+keycloak_default_home_directory: "/home/nobody"
+keycloak_default_shell: "/bin/bash"
+
+# role: openldap
+openldap_server_uri: ldap://localhost:389
+openldap_base_dn: "dc=example,dc=com"
+openldap_bind_dn: "dc=example,dc=com"
+openldap_bind_password: EsicntiZOhQaGomPiJZLWJEJ

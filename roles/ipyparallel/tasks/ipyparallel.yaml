@@ -1,0 +1,62 @@
+---
+ - name: Ensure that jupyter configuration directory exists
+   become: true
+   file:
+     path: /etc/jupyter
+     state: directory
+     mode: '0755'
+
+ - name: Ensure that ipyparallel default profile configuration directory exists
+   become: true
+   file:
+     path: /etc/jupyter/profile_default
+     state: directory
+     mode: '0755'
+
+ - name: Configuration ipcontroller_config.py
+   become: true
+   copy:
+     content: |
+       c.HubFactory.ip = u'*'
+       c.HubFactory.registration_timeout = 600
+     dest: /etc/jupyter/profile_default/ipcontroller_config.py
+     mode: '0744'
+
+ - name: Configuration ipengine_config.py
+   become: true
+   copy:
+     content: |
+       c.IPEngineApp.wait_for_url_file = 300
+       c.EngineFactory.timeout = 300
+     dest: /etc/jupyter/profile_default/ipengine_config.py
+     mode: '0744'
+
+ - name: Configuration ipcluster_config.py
+   become: true
+   copy:
+     content: |
+       c.IPClusterStart.controller_launcher_class = 'SlurmControllerLauncher'
+       c.IPClusterEngines.engine_launcher_class = 'SlurmEngineSetLauncher'
+
+       c.SlurmEngineSetLauncher.batch_template = """#!/bin/sh
+       #SBATCH --job-name=ipy-engine-{cluster_id}
+       #SBATCH --output=.ipyparallel_engine_%j.log
+       #SBATCH --error=.ipyparallel_engine_%j.log
+       #SBATCH --ntasks={n}
+       #SBATCH --mem={{ ipyparallel_config.engine_worker_memory }}
+       #SBATCH --cpus-per-task={{ ipyparallel_config.engine_worker_cpus }}
+
+       srun {{ miniforge_home }}/envs/{{ ipyparallel_environment | basename | splitext | first }}/bin/python -m ipyparallel.engine {% if ipyparallel_enable_mpi %}--mpi{% endif %} --profile-dir="{profile_dir}" --cluster-id="{cluster_id}"
+       """
+
+       c.SlurmControllerLauncher.batch_template = """#!/bin/sh
+       #SBATCH --job-name=ipy-controller-{cluster_id}
+       #SBATCH --output=.ipyparallel_controller_%j.log
+       #SBATCH --error=.ipyparallel_controller_%j.log
+       #SBATCH --mem={{ ipyparallel_config.controller_memory }}
+       #SBATCH --cpus-per-task={{ ipyparallel_config.controller_cpus }}
+       #SBATCH --ntasks=1
+       {{ miniforge_home }}/envs/{{ ipyparallel_environment | basename | splitext | first }}/bin/python -m ipyparallel.controller --profile-dir="{profile_dir}" --cluster-id="{cluster_id}"
+       """
+     dest: /etc/jupyter/profile_default/ipcluster_config.py
+     mode: '0744'

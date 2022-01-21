@@ -1,0 +1,11 @@
+##
+## This file is maintained by Ansible - ALL MODIFICATIONS WILL BE REVERTED
+##     https://grafana.com/docs/grafana/latest/datasources/
+##
+
+apiVersion: 1
+datasources:
+ - name: Prometheus
+   type: prometheus
+   access: proxy
+   url: http://localhost:{{ prometheus_port }}

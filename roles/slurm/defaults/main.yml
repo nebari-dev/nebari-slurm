@@ -1,0 +1,54 @@
+munge_enabled: false
+munge_key: eC36WeTj1JKUGyQEcfqkaRO0fDBoyTVHnkn7kE5sOZ1YUYyqWMSp3qeRZEmtEX9B
+
+slurmd_enabled: false
+slurmctld_enabled: false
+slurmdbd_enabled: false
+
+slurm_config:
+  ClusterName: cluster
+  # slurmctld options
+  SlurmctldPort: 6817
+  SlurmctldLogFile: /var/log/slurm-llnl/slurmctld.log
+  SlurmctldPidFile: /var/lib/slurm-llnl/slurmctld.pid
+  StateSaveLocation: /var/lib/slurm-llnl/slurmctld
+  SwitchType: switch/none
+  TaskPlugin: task/affinity
+  MpiDefault: pmi2
+  # slurmctld scheduler
+  SchedulerType: sched/backfill
+  SelectType: select/cons_res
+  SelectTypeParameters: CR_CPU_Memory
+  # slurmd options
+  SlurmdPort: 6818
+  SlurmdLogFile: /var/log/slurm-llnl/slurmd.log
+  SlurmdPidFile: /var/lib/slurm-llnl/slurmd.pid
+  SlurmdSpoolDir: /var/lib/slurm-llnl/slurmd
+
+slurmdbd_port: "6819"
+slurmdbd_config:
+  # slurmdbd options
+  LogFile: /var/log/slurm-llnl/slurmdbd.log
+  PidFile: /var/lib/slurm-llnl/slurmdbd.pid
+
+golang_version: "1.15.6"
+golang_sha256: 3918e6cc85e7eaaa6f859f1bdbaac772e7a825b0eb423c63d3ae68b21f84b844
+
+slurm_exporter_enabled: false
+slurm_exporter_version: "0.15"
+slurm_exporter_sha256: 77893b595093427c6d9be12af8b340d1a22c0017855d570b3d422338853b855c
+slurm_exporter_port: "9341"
+
+
+# role: mysql
+mysql_databases:
+  - slurm
+  - conda-store
+
+mysql_users:
+  - username: slurm
+    password: W9T0N4ejQBR4RmQCU6GmbbZa
+    privileges: '*.*:ALL'
+  - username: conda-store
+    password: eIbmUditL4RbQm0YPeLozRme
+    privileges: '*.*:ALL'

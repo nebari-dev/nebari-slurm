@@ -1,0 +1,8 @@
+---
+ - name: Install nfs server
+   include_tasks: server.yaml
+   when: nfs_server_enabled
+
+ - name: Install nfs client
+   include_tasks: client.yaml
+   when: nfs_client_enabled
