@@ -37,6 +37,11 @@ jupyterhub_theme:
 #    c.{classname}.{attribute} = {value}
 jupyterhub_custom: {}
 
+idle_culler:
+  enabled: true
+  timeout: 86400   # 1 day
+  cull_every: 3600 # 1 hour
+
 # role: miniforge
 miniforge_home: "/opt/conda"
 

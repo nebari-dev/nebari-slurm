@@ -5,6 +5,7 @@
 import subprocess
 import json
 import os
+import sys
 
 from jupyterhub_traefik_proxy import TraefikTomlProxy
 from batchspawner import SlurmSpawner
@@ -228,6 +229,19 @@ echo "jupyterhub-singleuser ended gracefully"
 
 # ===== adding api tokens for external services =======
 c.JupyterHub.services = [
+{% if idle_culler.enabled %}
+   {
+        'name': 'idle-culler',
+        'admin': True,
+        'command': [
+            sys.executable,
+            '-m', 'jupyterhub_idle_culler',
+            '--timeout={{ idle_culler.timeout }}',
+            '--cull-every={{ idle_culler.cull_every }}',
+            '--remove-named-servers',
+        ],
+    },
+{% endif %}
 {% for service_name in jupyterhub_services %}
    {
       'name': "{{ service_name }}",
