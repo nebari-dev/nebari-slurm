@@ -32,6 +32,17 @@
      - group
    notify: restart services ldap
 
+ - name: LDAP Authentication | no cache for ldap in nscd.conf
+   become: true
+   replace:
+     dest: /etc/nscd.conf
+     regexp: '^(\s+enable-cache\s+{{ item }})\s+yes\s*$'
+     replace: '\1 no'
+     backup: 'yes'
+   with_items:
+     - passwd
+     - group
+   notify: restart services ldap
 
  - name: "LDAP Authentication | Configure /etc/nslcd.conf"
    become: true
