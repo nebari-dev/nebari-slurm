@@ -34,6 +34,9 @@ bind_timelimit 50
 # Search timelimit.
 timelimit 50
 
+# Disable cache so that lookups for users are done on every login
+cache 0 0
+
 # The DN to bind with for normal lookups.
 # defconf-set-selections doesn't seem to set this. so have to manually set this.
 binddn {{ openldap_bind_dn }}
