@@ -1,3 +1,4 @@
+# Any additional users and groups you would like added to all nodes
 enabled_users:
   - username: example-user
     uid: 10000
@@ -15,9 +16,28 @@ enabled_groups:
   - name: example-user
     gid: 10000
 
+# should be `ldap://<hpc-master-hostname>:389`
 openldap_server_uri: ldap://hpc01-test:389
 
+# ============= Passwords ===============
 munge_key: eC36WeTj1JKUGyQEcfqkaRO0fDBoyTVHnkn7kE5sOZ1YUYyqWMSp3qeRZEmtEX9B
+
+openldap_bind_password: EsicntiZOhQaGomPiJZLWJEJ
+
+jupyterhub_client_secret: "SUPERSECRETPASSWORDJUPYTERHUB"
+conda_store_client_secret: "SUPERSECRETPASSWORDCONDASTORE"
+grafana_client_secret: "SUPERSECRETPASSWORDGRAFANA"
+
+minio_password: mWdaGyPmNOApU93Vxk6sNTac
+keycloak_admin_password: XLWUMUu8OG0XqlMREZK9id9o
 
 jupyterhub_services:
   dask_gateway: CStgn1NN8DogQR1KajuoQfye1qNRqx6zsh
+
+mysql_users:
+  - username: slurm
+    password: W9T0N4ejQBR4RmQCU6GmbbZa
+    privileges: '*.*:ALL'
+  - username: conda-store
+    password: eIbmUditL4RbQm0YPeLozRme
+    privileges: '*.*:ALL'

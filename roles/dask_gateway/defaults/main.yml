@@ -16,5 +16,4 @@ firewall_enabled: true
 jupyterhub_port: "8000"
 jupyterhub_lab_environment: "environments/jupyterlab.yaml"
 jupyterhub_services:
-  prometheus: dpsZlpwaAhi9K8kKf4ZPvCJCuL7D25k1
   dask_gateway: CStgn1NN8DogQR1KajuoQfye1qNRqx6zsh

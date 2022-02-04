@@ -32,6 +32,10 @@ jupyterhub_theme:
     h1_color: "#652e8e"
     h2_color: "#652e8e"
 
+# for each key
+#    c.{classname}.{attribute} = {value}
+jupyterhub_custom: {}
+
 # role: miniforge
 miniforge_home: "/opt/conda"
 

@@ -10,8 +10,6 @@ node_exporter_port: "9100"
 
 # role: jupyterhub
 jupyterhub_port: "8000"
-jupyterhub_services:
-  dask_gateway: CStgn1NN8DogQR1KajuoQfye1qNRqx6zsh
 
 # role: traefik
 traefik_metrics_port: "8082"

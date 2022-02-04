@@ -256,3 +256,9 @@ c.JupyterHub.template_vars = {
 {% endfor %}
 {% if cdsdashboards_enabled %}'cdsdashboards_enabled': True{% endif %}
 }
+
+# ======================= CUSTOM ==================
+jupyterhub_custom = json.loads('{{ jupyterhub_custom | tojson }}')
+for classname, attributes in jupyterhub_custom.items():
+    for attribute, value in attributes.items():
+        setattr(getattr(c, classname), attribute, value)

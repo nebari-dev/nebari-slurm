@@ -35,7 +35,8 @@ bind_timelimit 50
 timelimit 50
 
 # Disable cache so that lookups for users are done on every login
-cache 0 0
+# https://manpages.debian.org/unstable/nslcd/nslcd.conf.5.en.html#cache
+cache dn2uid 0
 
 # The DN to bind with for normal lookups.
 # defconf-set-selections doesn't seem to set this. so have to manually set this.
