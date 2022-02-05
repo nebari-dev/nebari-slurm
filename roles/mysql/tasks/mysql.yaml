@@ -10,6 +10,18 @@
      state: latest
      cache_valid_time: 3600
 
+ - name: Ensure mysql settings in file
+   become: true
+   community.general.ini_file:
+     path: "/etc/mysql/mysql.conf.d/mysqld.cnf"
+     section: mysqld
+     option: "{{ item.key }}"
+     value: "{{ item.value }}"
+     mode: '0644'
+     backup: yes
+   with_dict: "{{ mysql_config }}"
+   notify: restart services mysql
+
  - name: Create mysql database
    become: true
    community.mysql.mysql_db:

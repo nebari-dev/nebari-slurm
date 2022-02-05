@@ -3,6 +3,9 @@ mysql_databases:
   - slurm
   - conda-store
 
+mysql_config:
+  max_connections: 200
+
 mysql_users:
   - username: slurm
     password: W9T0N4ejQBR4RmQCU6GmbbZa
