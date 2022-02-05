@@ -7,6 +7,7 @@ dependencies:
   - oauthenticator
   - jupyterhub-idle-culler
   - jupyterhub-systemdspawner
+  - python-keycloak
   - pip:
       - qhub-jupyterhub-theme==0.3.1
       - jupyterhub-traefik-proxy
