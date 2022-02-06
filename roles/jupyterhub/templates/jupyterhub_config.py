@@ -6,6 +6,7 @@ import subprocess
 import json
 import os
 import sys
+import glob
 
 from jupyterhub_traefik_proxy import TraefikTomlProxy
 from batchspawner import SlurmSpawner
@@ -276,3 +277,16 @@ jupyterhub_custom = json.loads('{{ jupyterhub_custom | tojson }}')
 for classname, attributes in jupyterhub_custom.items():
     for attribute, value in attributes.items():
         setattr(getattr(c, classname), attribute, value)
+
+# =================== ADDITIONAL FILES ====================
+# https://github.com/jupyterhub/zero-to-jupyterhub-k8s/blob/main/jupyterhub/files/hub/jupyterhub_config.py#L459
+# load /etc/jupyterhub/additional config files
+config_dir = "/etc/jupyterhub/additional/"
+if os.path.isdir(config_dir):
+    for file_path in sorted(glob.glob(f"{config_dir}/*.py")):
+        file_name = os.path.basename(file_path)
+        print(f"Loading {config_dir} config: {file_name}")
+        with open(file_path) as f:
+            file_content = f.read()
+        # compiling makes debugging easier: https://stackoverflow.com/a/437857
+        exec(compile(source=file_content, filename=file_name, mode="exec"))

@@ -37,6 +37,10 @@ jupyterhub_theme:
 #    c.{classname}.{attribute} = {value}
 jupyterhub_custom: {}
 
+# "name": "<local-path>"
+# use variable: inventory_dir to point to use inventory directory
+jupyterhub_additional_config: {}
+
 idle_culler:
   enabled: true
   timeout: 86400   # 1 day

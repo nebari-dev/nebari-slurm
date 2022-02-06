@@ -16,6 +16,13 @@
      state: directory
      mode: '0755'
 
+ - name: Create hub user config directory
+   become: true
+   file:
+     path: /etc/jupyterhub/additional
+     state: directory
+     mode: '0755'
+
  - name: Create hub state directory
    become: true
    file:
@@ -100,7 +107,15 @@
    template:
      src: templates/jupyterhub_config.py
      dest: /etc/jupyterhub/jupyterhub_config.py
-   register: _jupyterhub_config
+   notify: restart services jupyterhub
+
+ - name: Copy jupyterhub_config.py files
+   become: true
+   template:
+     src: "{{ item.value }}"
+     dest: "/etc/jupyterhub/additional/{{ item.key }}.py"
+   with_dict: "{{ jupyterhub_additional_config }}"
+   notify: restart services jupyterhub
 
  - name: Setup JupyterHub systemd unit
    become: true
@@ -125,13 +140,12 @@
        WantedBy=multi-user.target
      dest: /etc/systemd/system/jupyterhub.service
      mode: '0544'
-   register: _jupyterhub_service
+   notify: restart services jupyterhub
 
- - name: Restart JupyterHub
+ - name: Ensure JupyterHub Started
    become: true
    systemd:
      name: jupyterhub
      enabled: true
-     state: restarted
+     state: started
      daemon_reload: true
-   when: _jupyterhub_service.changed or _jupyterhub_config.changed
