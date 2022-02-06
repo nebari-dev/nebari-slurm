@@ -11,6 +11,7 @@ import glob
 from jupyterhub_traefik_proxy import TraefikTomlProxy
 from batchspawner import SlurmSpawner
 from traitlets import Unicode, Callable
+import keycloak
 
 # Find all conda environments that have dask jupyterlab, batchspawner, and jupyterhub installed
 jupyterlab_packages = ['jupyterlab', 'batchspawner', 'jupyterhub']
@@ -45,7 +46,7 @@ c.JupyterHub.hub_ip = '0.0.0.0'
 
 # -------------------- Base Authenticator ----------------
 from oauthenticator.generic import GenericOAuthenticator
-c.JupyterHub.authenticator_class = GenericOAuthenticator
+
 c.OAuthenticator.client_id = "{{ jupyterhub_client_id }}"
 c.OAuthenticator.client_secret = "{{ jupyterhub_client_secret }}"
 c.GenericOAuthenticator.oauth_callback_url = "https://{{ traefik_domain | default(hostvars[groups['hpc-master'][0]].ansible_host) }}/hub/oauth_callback"
@@ -58,6 +59,62 @@ c.GenericOAuthenticator.username_key = "preferred_username"
 c.GenericOAuthenticator.claim_groups_key = "roles"
 c.GenericOAuthenticator.allowed_groups = ['jupyterhub_admin', 'jupyterhub_developer']
 c.GenericOAuthenticator.admin_groups = ['jupyterhub_admin']
+
+
+def sync_users(username, min_uid=1_000_000, max_uid=1_000_000_000):
+    current_uids = set()
+    keycloak_admin = keycloak.KeycloakAdmin(
+        server_url="https://{{ traefik_domain | default(hostvars[groups['hpc-master'][0]].ansible_host) }}/auth/",
+        username="{{ keycloak_admin_username }}",
+        password="{{ keycloak_admin_password }}",
+        realm_name="{{ keycloak_realm }}",
+        user_realm_name="master",
+        verify=False)
+
+    # quick check if uid/home directory is set for user this way this
+    # function only runs on new user registration
+    username_uid = keycloak_admin.get_user_id(username)
+    user = keycloak_admin.get_user(username_uid)
+    if 'uidNumber' in user['attributes'] and 'homeDirectory' in user['attributes']:
+        return
+
+    users = keycloak_admin.get_users()
+    for user in users:
+        uid = user.get('attributes', {}).get('uidNumber')
+        if uid:
+            current_uids.add(int(uid[0]))
+
+    for user in users:
+        payload = user
+        username = user['username']
+        user_id = user['id']
+        attributes = user['attributes']
+        uid = attributes.get('uidNumber')
+        homeDirectory = attributes.get('homeDirectory')
+
+        if homeDirectory is None:
+            payload['attributes']['homeDirectory'] = f'/home/{username}'
+
+        if uid is None:
+            initial_uid = (hash(username) % (max_uid - min_uid)) + min_uid
+            while initial_uid in current_uids:
+                initial_uid = ((initial_uid + 1 - min_uid) % (max_uid - min_uid)) + min_uid
+
+            payload['attributes']['uidNumber'] = str(initial_uid)
+            current_uids.add(initial_uid)
+
+        if homeDirectory is None or uid is None:
+            keycloak_admin.update_user(user_id, payload)
+
+
+class QHubAuthenticator(GenericOAuthenticator):
+    async def authenticate(self, handler, data):
+        user = await super().authenticate(handler, data)
+        sync_users()
+        return user
+
+
+c.JupyterHub.authenticator_class = QHubAuthenticator
 
 # -------------------- Base Spawner --------------------
 
