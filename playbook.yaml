@@ -35,6 +35,10 @@
      - bodo
 
    tasks:
+     - name: Additional ansible tasks
+       include_tasks: "{{ item }}"
+       with_items: "{{ additional_tasks | default([]) }}"
+
      - name: Keycloak administration credentials
        ansible.builtin.debug:
          msg: "Keycloak administration username={{ keycloak_admin_username }} password={{ keycloak_admin_password }} via https://{{ traefik_domain | default(hostvars[groups['hpc-master'][0]].ansible_host) }}/auth/admin/"
