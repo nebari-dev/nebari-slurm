@@ -7,6 +7,12 @@
        delegate_facts: True
        when: hostvars[item]['ansible_default_ipv4'] is not defined
        with_items: "{{ groups['all'] }}"
+     - name: Copy files
+       include_tasks: tasks/copy_files.yaml
+       loop: '{{ ["all"] + group_names + [inventory_hostname_short] }}'
+       loop_control:
+         loop_var: myhost
+
    roles:
      # core services
      - hosts
