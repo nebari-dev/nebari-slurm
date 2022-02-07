@@ -20,6 +20,7 @@
      - accounts
      - apt_packages
      - miniforge
+     - cifs
      - nfs
      - mysql
      - minio

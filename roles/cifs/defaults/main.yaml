@@ -1,0 +1,16 @@
+samba_server_enabled: false
+samba_server_shares: []
+# - name: example_mout
+#   path: /path/to/share
+#   public: "yes" | "no"   # optional default no
+#   writable: "yes" | "no" # optional default no
+
+samba_client_enabled: false
+samba_client_mounts: []
+# - name: example_mount # (name of samba share)
+#   host: hpc-worker
+#   path: /place/to/mount/share
+#   options: "rw,sync,hard,intr" # optional
+#   username: <username>         # optional
+#   password: <password>         # optional
+#   domain: <domain>             # optional

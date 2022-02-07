@@ -1,0 +1,16 @@
+# {{ ansible_managed }}
+
+[global]
+workgroup = WORKGROUP
+
+
+{% if samba_server_shares|length > 0 %}
+## Shared directories
+{% for share in samba_server_shares %}
+[{{ share.name }}]
+path = {{ share.path }}
+public = {{ share.public | default('no') }}
+writable = {{ share.writable | default('no') }}
+
+{% endfor %}
+{% endif %}

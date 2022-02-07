@@ -1,0 +1,25 @@
+---
+ - name: Install samba
+   become: true
+   apt:
+     state: latest
+     cache_valid_time: 3600
+     name:
+       - samba
+
+ - name: Ensure samba server share directories exist
+   become: true
+   file:
+     path: "{{ item.path }}"
+     state: directory
+   with_items: "{{ samba_server_shares }}"
+
+ - name: Copy the samba configuration
+   become: true
+   template:
+     src: templates/smb.conf.j2
+     dest: /etc/samba/smb.conf
+     owner: root
+     group: root
+     mode: 0644
+   notify: restart services samba
