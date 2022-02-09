@@ -10,10 +10,15 @@ output "private-master-node-ip" {
 
 output "public-worker-node-ip" {
   description = "ip addresses of worker nodes"
-  value = digitalocean_droplet.worker-nodes.*.ipv4_address
+  value       = digitalocean_droplet.worker-nodes.*.ipv4_address
 }
 
 output "private-worker-node-ip" {
   description = "ip addresses of worker nodes"
-  value = digitalocean_droplet.worker-nodes.*.ipv4_address_private
+  value       = digitalocean_droplet.worker-nodes.*.ipv4_address_private
+}
+
+output "ssh-key" {
+  description = "ssh private key location"
+  value       = var.ssh-private-key-name
 }

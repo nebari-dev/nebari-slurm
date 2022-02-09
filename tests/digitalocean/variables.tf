@@ -4,10 +4,10 @@ variable "name" {
   default     = "qhub-hpc-test"
 }
 
-variable "ssh-private-key" {
+variable "ssh-private-key-name" {
   description = "Path to ssh private key for access to machines"
   type        = string
-  default    = "./id_rsa"
+  default     = "id_rsa_qhub_hpc"
 }
 
 variable "tags" {
