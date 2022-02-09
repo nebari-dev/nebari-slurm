@@ -59,7 +59,7 @@ JobId=37 JobName=spawner-jupyterhub
    Power=
 ```
 
-## Configuring/Adding Node Information
+## Configuring and adding node information
 
 For each node create a `host_vars/<node-name>.yaml` and omit any
 fields if you want to use the default value. Suppose the following
