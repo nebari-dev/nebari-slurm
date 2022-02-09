@@ -42,13 +42,13 @@ choice).
 
 # Feature Matrix
 
-| Core                                             | QHub       | QHub-HPC              |
-|--------------------------------------------------|------------|-----------------------|
-| Scheduler                                        | Kubernetes | SystemD and Slurm     |
-| User Isolation                                   | Containers | Slurm managed cgroups |
-| Auto-scaling compute nodes                       | X          |                       |
-| Cost efficient compute support (Spot/Premptible) | X          |                       |
-| Static compute nodes                             |            | X                     |
+| Core                                             | QHub                                | QHub-HPC          |
+|--------------------------------------------------|-------------------------------------|-------------------|
+| Scheduler                                        | Kubernetes                          | SystemD and Slurm |
+| User Isolation                                   | Containers (cgroups and namespaces) | Slurm (cgroups)   |
+| Auto-scaling compute nodes                       | X                                   |                   |
+| Cost efficient compute support (Spot/Premptible) | X                                   |                   |
+| Static compute nodes                             |                                     | X                 |
 
 | User Services                      | QHub | QHub-HPC |
 |------------------------------------|------|----------|
