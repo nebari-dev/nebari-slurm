@@ -71,11 +71,11 @@ def sync_users(username, min_uid=1_000_000, max_uid=1_000_000_000):
         user_realm_name="master",
         verify=False)
 
-    # quick check if uid/home directory is set for user this way this
+    # quick check to see if user_sync has run on user
     # function only runs on new user registration
     username_uid = keycloak_admin.get_user_id(username)
     user = keycloak_admin.get_user(username_uid)
-    if 'uidNumber' in user['attributes'] and 'homeDirectory' in user['attributes']:
+    if 'jupyterhubCheck' in user['attributes']:
         return
 
     users = keycloak_admin.get_users()
@@ -85,32 +85,28 @@ def sync_users(username, min_uid=1_000_000, max_uid=1_000_000_000):
             current_uids.add(int(uid[0]))
 
     for user in users:
+        if 'jupyterhubCheck' in user['attributes']:
+            continue
+
         payload = user
-        username = user['username']
-        user_id = user['id']
-        attributes = user['attributes']
-        uid = attributes.get('uidNumber')
-        homeDirectory = attributes.get('homeDirectory')
+        payload['attributes']['jupyterhubCheck'] = 'true'
+        payload['attributes']['homeDirectory'] = f'/home/{username}'
 
-        if homeDirectory is None:
-            payload['attributes']['homeDirectory'] = f'/home/{username}'
+        initial_uid = (hash(user['username']) % (max_uid - min_uid)) + min_uid
+        while initial_uid in current_uids:
+            initial_uid = ((initial_uid + 1 - min_uid) % (max_uid - min_uid)) + min_uid
+        payload['attributes']['uidNumber'] = str(initial_uid)
+        current_uids.add(initial_uid)
 
-        if uid is None:
-            initial_uid = (hash(username) % (max_uid - min_uid)) + min_uid
-            while initial_uid in current_uids:
-                initial_uid = ((initial_uid + 1 - min_uid) % (max_uid - min_uid)) + min_uid
-
-            payload['attributes']['uidNumber'] = str(initial_uid)
-            current_uids.add(initial_uid)
-
-        if homeDirectory is None or uid is None:
-            keycloak_admin.update_user(user_id, payload)
+        keycloak_admin.update_user(user['id'], payload)
 
 
 class QHubAuthenticator(GenericOAuthenticator):
     async def authenticate(self, handler, data):
         user = await super().authenticate(handler, data)
-        sync_users()
+        if user is None:
+            return user
+        sync_users(user['name'])
         return user
 
 
