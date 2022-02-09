@@ -17,7 +17,7 @@ achieves workflows and scheduling of compute via
 | Core                                             | QHub       | QHub-HPC              |
 |--------------------------------------------------|------------|-----------------------|
 | Scheduler                                        | Kubernetes | SystemD and Slurm     |
-| User Isolation                                   | Containers | Slurm managed CGroups |
+| User Isolation                                   | Containers | Slurm managed cgroups |
 | Auto-scaling compute nodes                       | X          |                       |
 | Cost efficient compute support (Spot/Premptible) | X          |                       |
 | Static compute nodes                             |            | X                     |
