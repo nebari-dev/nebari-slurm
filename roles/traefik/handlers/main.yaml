@@ -1,0 +1,9 @@
+---
+ - name: "restart services traefik"
+   become: true
+   service:
+     name={{item}}
+     enabled=yes
+     state=restarted
+   with_items:
+     - "traefik"

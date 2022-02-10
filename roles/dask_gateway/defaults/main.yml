@@ -1,6 +1,7 @@
 dask_gateway_enabled: false
 dask_gateway_api_port: "8010"
-dask_gateway_tcp_port: "8011"
+dask_gateway_scheduler_internal_port: "8785"
+dask_gateway_scheduler_external_port: "8786"
 dask_gateway_client_enabled: true
 dask_gateway_environment: "environments/dask-gateway.yaml"
 

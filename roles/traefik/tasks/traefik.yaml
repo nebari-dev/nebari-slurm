@@ -33,12 +33,14 @@
      group: root
    when: not _traefik_stat.stat.exists
 
+
  - name: Create traefik group
    become: true
    group:
      name: traefik
      state: present
      system: true
+
 
  - name: Create the traefik user
    become: true
@@ -91,7 +93,7 @@
      owner: traefik
      group: traefik
    when: traefik_tls_certificate is defined
-   register: _traefik_tls_certificate
+   notify: restart services traefik
 
 
  - name: Copy TLS key if provided
@@ -103,7 +105,7 @@
      owner: traefik
      group: traefik
    when: traefik_tls_key is defined
-   register: _traefik_tls_key
+   notify: restart services traefik
 
 
  - name: Copy traefik configuration
@@ -114,8 +116,7 @@
      mode: '0600'
      owner: traefik
      group: traefik
-   register: _traefik_configuration
-
+   notify: restart services traefik
 
  - name: Copy traefik dynamic configuration
    become: true
@@ -125,8 +126,7 @@
      mode: '0600'
      owner: traefik
      group: traefik
-   register: _traefik_dynamic_configuration
-
+   notify: restart services traefik
 
  - name: Copy the traefik systemd service file
    become: true
@@ -158,7 +158,7 @@
      owner: root
      group: root
      mode: 0644
-   register: _traefik_service
+   notify: restart services traefik
 
 
  - name: Ensure Traefik is enabled on boot
@@ -167,8 +167,8 @@
      daemon_reload: true
      name: traefik
      enabled: true
-     state: restarted
-   when: _traefik_service.changed or _traefik_configuration.changed or _traefik_dynamic_configuration.changed
+     state: started
+
 
  - name: Allow traefik http through firewall
    become: true
@@ -178,10 +178,29 @@
      proto: tcp
    when: firewall_enabled
 
+
  - name: Allow traefik https through firewall
    become: true
    community.general.ufw:
      rule: allow
      port: "443"
+     proto: tcp
+   when: firewall_enabled
+
+
+ - name: Allow jupyterhub-ssh through firewall
+   become: true
+   community.general.ufw:
+     rule: allow
+     port: "{{ jupyterhub_ssh_external_port }}"
+     proto: tcp
+   when: firewall_enabled
+
+
+ - name: Allow dask-gateway-scheduler through firewall
+   become: true
+   community.general.ufw:
+     rule: allow
+     port: "{{ dask_gateway_scheduler_external_port }}"
      proto: tcp
    when: firewall_enabled

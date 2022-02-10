@@ -6,6 +6,18 @@ global:
   sendAnonymousUsage: false
 
 ################################################################
+# TLS Certificates
+################################################################
+{% if traefik_tls_type == "letsencrypt" %}
+certificatesResolvers:
+  leresolver:
+    acme:
+      email: "{{ traefik_letsencrypt_email }}"
+      storage: "/etc/traefik/acme/acme.json"
+      tlsChallenge: {}
+{% endif %}
+
+################################################################
 # Entrypoints configuration
 ################################################################
 entryPoints:
@@ -13,6 +25,17 @@ entryPoints:
     address: ":80"
   websecure:
     address: ":443"
+    http:
+{% if traefik_tls_type == "letsencrypt" %}
+      tls:
+        certResolver: leresolver
+{% else %}
+      tls: {}
+{% endif %}
+  jupyterhub-ssh:
+    address: ":{{ jupyterhub_ssh_external_port }}"
+  dask-gateway-scheduler:
+    address: ":{{ dask_gateway_scheduler_external_port }}"
   metrics:
     address: "localhost:{{ traefik_metrics_port }}"
 

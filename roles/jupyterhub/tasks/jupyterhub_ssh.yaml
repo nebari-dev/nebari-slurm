@@ -15,7 +15,7 @@
      owner: root
      group: root
      mode: 0644
-   register: _jupyterhub_ssh_config
+   notify: restart services jupyterhub-ssh
 
  - name: Setup JupyterHub-SSH systemd unit
    become: true
@@ -32,21 +32,12 @@
        WantedBy=multi-user.target
      dest: /etc/systemd/system/jupyterhub-ssh.service
      mode: '0544'
-   register: _jupyterhub_ssh_service
+   notify: restart services jupyterhub-ssh
 
  - name: Restart JupyterHub SSH
    become: true
    systemd:
      name: jupyterhub-ssh
      enabled: true
-     state: restarted
+     state: started
      daemon_reload: true
-   when: _jupyterhub_ssh_service.changed or _jupyterhub_ssh_config.changed
-
- - name: Allow jupyterhub ssh through firewall
-   become: true
-   community.general.ufw:
-     rule: allow
-     port: "{{ jupyterhub_ssh_port }}"
-     proto: tcp
-   when: firewall_enabled

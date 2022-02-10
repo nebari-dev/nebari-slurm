@@ -1,5 +1,6 @@
 jupyterhub_ssh_enabled: false
-jupyterhub_ssh_port: "8022"
+jupyterhub_ssh_internal_port: "8021"
+jupyterhub_ssh_external_port: "8022"
 
 cdsdashboards_enabled: true
 

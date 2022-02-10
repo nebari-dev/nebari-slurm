@@ -49,7 +49,7 @@
      owner: dask
      group: dask
      mode: 0644
-   register: _dask_gateway_configuration
+   notify: restart services dask-gateway
 
  - name: Copy the dask-gateway systemd service file
    become: true
@@ -77,7 +77,7 @@
      owner: root
      group: root
      mode: 0644
-   register: _dask_gateway_service
+   notify: restart services dask-gateway
 
  - name: Ensure dask-gateway is enabled on boot
    become: true
@@ -85,21 +85,4 @@
      daemon_reload: true
      name: dask-gateway
      enabled: true
-     state: restarted
-   when: _dask_gateway_configuration.changed or _dask_gateway_service.changed
-
- - name: Allow dask-gateway api through firewall
-   become: true
-   community.general.ufw:
-     rule: allow
-     port: "{{ dask_gateway_api_port }}"
-     proto: tcp
-   when: firewall_enabled
-
- - name: Allow dask-gateway tcp through firewall
-   become: true
-   community.general.ufw:
-     rule: allow
-     port: "{{ dask_gateway_tcp_port }}"
-     proto: tcp
-   when: firewall_enabled
+     state: started

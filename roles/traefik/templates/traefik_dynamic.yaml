@@ -1,4 +1,4 @@
-{% if traefik_tls_certificate is defined and traefik_tls_key is defined %}
+{% if traefik_tls_type == "certificate" %}
 tls:
   certificates:
     - certFile: "{{ _traefik_tls_certificate.dest }}"
@@ -10,8 +10,34 @@ tls:
       defaultCertificate:
         certFile: "{{ _traefik_tls_certificate.dest }}"
         keyFile: "{{ _traefik_tls_key.dest }}"
-
 {% endif %}
+
+# ============ TCP Route Configuration ===========
+tcp:
+  services:
+    jupyterhub-ssh:
+      loadBalancer:
+        servers:
+          - address: "localhost:{{ jupyterhub_ssh_internal_port }}"
+    dask-gateway-scheduler:
+      loadBalancer:
+        servers:
+          - address: "localhost:{{ dask_gateway_scheduler_internal_port }}"
+  routers:
+    jupyterhub-ssh:
+      entryPoints:
+        - "jupyterhub-ssh"
+      rule: "HostSNI(`*`)"
+      service: "jupyterhub-ssh"
+    dask-gateway-scheduler:
+      entryPoints:
+        - "dask-gateway-scheduler"
+      rule: "HostSNI(`*`)"
+      service: "dask-gateway-scheduler"
+      tls:
+        passthrough: true
+
+# ========== HTTP/HTTPS Route Configuration ===========
 http:
   middlewares:
     https-redirect:
@@ -58,28 +84,23 @@ http:
       entryPoints:
         - "websecure"
       service: "keycloak"
-      tls: {}
     jupyterhub:
       rule: "Host(`{{ traefik_domain | default(hostvars[groups['hpc-master'][0]].ansible_host) }}`) && PathPrefix(`{{ jupyterhub_base_url }}`)"
       entryPoints:
         - "websecure"
       service: "jupyterhub"
-      tls: {}
     grafana:
       rule: "Host(`{{ traefik_domain | default(hostvars[groups['hpc-master'][0]].ansible_host) }}`) && PathPrefix(`{{ grafana_base_url }}`)"
       entryPoints:
         - "websecure"
       service: "grafana"
-      tls: {}
     dask-gateway:
       rule: "Host(`{{ traefik_domain | default(hostvars[groups['hpc-master'][0]].ansible_host) }}`) && PathPrefix(`/clusters`)"
       entryPoints:
         - "websecure"
       service: "dask-gateway"
-      tls: {}
     conda-store:
       rule: "Host(`{{ traefik_domain | default(hostvars[groups['hpc-master'][0]].ansible_host) }}`) && PathPrefix(`{{ conda_store_prefix }}`)"
       entryPoints:
         - "websecure"
       service: "conda-store"
-      tls: {}

@@ -11,7 +11,7 @@ c.DaskGateway.backend_class = (
 c.JobQueueBackend.dask_gateway_jobqueue_launcher = "{{ miniforge_home }}/envs/{{ dask_gateway_environment | basename | splitext | first }}/bin/dask-gateway-jobqueue-launcher"
 
 c.Proxy.address = ':{{ dask_gateway_api_port }}'
-c.Proxy.tcp_address = ':{{ dask_gateway_tcp_port }}'
+c.Proxy.tcp_address = ':{{ dask_gateway_scheduler_internal_port }}'
 
 # Authentication
 c.DaskGateway.authenticator_class = "dask_gateway_server.auth.JupyterHubAuthenticator"

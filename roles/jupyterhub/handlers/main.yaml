@@ -7,3 +7,12 @@
      state=restarted
    with_items:
      - "jupyterhub"
+
+ - name: "restart services jupyterhub-ssh"
+   become: true
+   service:
+     name={{item}}
+     enabled=yes
+     state=restarted
+   with_items:
+     - "jupyterhub-ssh"

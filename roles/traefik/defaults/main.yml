@@ -3,14 +3,17 @@ traefik_version: "2.4.0"
 traefik_sha256: 1e8cd14a0c09ba44ba8b44a94441caaf1edc3e043a65a7d43f9c870be47f70aa
 traefik_metrics_port: "8082"
 
+traefik_tls_type: "self-signed"
 # traefik_domain: <dns-name>
-# traefik_tls_certificate: <path>
-# traefik_tls_key: <path>
-
+# traefik_letsencrypt_email: <email> # required if type == "letsencrypt"
+# traefik_tls_certificate: <local-path>
+# traefik_tls_key: <local-path>
 
 # role: jupyterhub
 jupyterhub_port: "8000"
 jupyterhub_base_url: "/"
+jupyterhub_ssh_internal_port: "8021"
+jupyterhub_ssh_external_port: "8022"
 
 # role: grafana
 grafana_port: "3000"
@@ -18,6 +21,8 @@ grafana_base_url: "/monitoring"
 
 # role: dask_gateway
 dask_gateway_api_port: "8010"
+dask_gateway_scheduler_internal_port: "8785"
+dask_gateway_scheduler_external_port: "8786"
 
 # role: keycloak
 keycloak_port: "30020"
