@@ -238,7 +238,7 @@ By default, a qhub-hpc deployment must be accesssed using the ip
 address of the hpc-master node.  However, if a domain name has been
 set up to point to the hpc-master node, then Qhub HPC's router,
 [Traefik](https://doc.traefik.io/traefik/), can be configured to work
-with the domain by setting the **traefik.domain** ansible variable.
+with the domain by setting the `traefik_domain` ansible variable.
 
 For example, if you had the example.com domain set up to point to the
 hpc-master node, then you could add the following to the all.yaml file
@@ -249,17 +249,39 @@ browser would bring up your Qhub HPC deployment sign in page.
 traefik_domain: example.com
 ```
 
+### Automated Lets-Encrypt Certificate
+
+Traefik can provision a tls certificate from Let's Encrypt assuming
+that your master node ip is publicly accessible. Additionally the
+`traefik_domain` and `traefik_letsencrypt_email` must be set.
+
+```yaml
+traefik_tls_type: letsencrypt
+traefik_letsencrypt_email: myemail@example.com
+```
+
 ### Custom TLS Certificate
 
 By default, traefik will create and use a self signed TLS certificate
 for user communication.  If desired, a custom TLS Certificate can be
-copied from the ansible controller node to the appropriate location
-for use by traefik.  To do so, set the following settings in the
-all.yaml file.
+copied from ansible to the appropriate location for use by Traefik.
+To do so, set the following settings in the all.yaml file.
 
 ```yaml
+traefik_tls_type: certificate
 traefik_tls_certificate: /path/to/MyCertificate.crt
 traefik_tls_key: /path/to/MyKey.key
+```
+
+For testing out this optional it is easy to generate your own
+self-signed certificate. Substitute all of the values for values that
+fit your use case.
+
+```shell
+export QHUB_HPC_DOMAIN=example.com
+openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -sha256 -days 365 \
+  -subj "/C=US/ST=Oregon/L=Portland/O=Quansight/OU=Org/CN=$QHUB_HPC_DOMAIN" \
+  -nodes
 ```
 
 ## Backups
