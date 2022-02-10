@@ -260,6 +260,12 @@ trap 'echo SIGTERM received' TERM
 {{prologue}}
 {% endraw %}
 
+{% if conda_store_enabled %}
+# Setting Conda-Store configuration
+mkdir -p "$HOME/.jupyter/lab/user-settings/@mamba-org/gator-lab/"
+echo '{"condaStoreUrl": "https://{{ traefik_domain }}/conda-store"}' > $HOME/.jupyter/lab/user-settings/@mamba-org/gator-lab/plugin.jupyterlab-settings
+{% endif %}
+
 {% if cdsdashboards_enabled %}
 # Overwrite conda_environment_prefix when using cdsdashboards
 if [ -n '{{ '{{ conda_env }}' }}' ]; then
