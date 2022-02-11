@@ -95,7 +95,7 @@ http:
         - "websecure"
       service: "grafana"
     dask-gateway:
-      rule: "Host(`{{ traefik_domain | default(hostvars[groups['hpc-master'][0]].ansible_host) }}`) && PathPrefix(`/clusters`)"
+      rule: "Host(`{{ traefik_domain | default(hostvars[groups['hpc-master'][0]].ansible_host) }}`) && (PathPrefix(`/clusters`) || PathPrefix(`/gateway`))"
       entryPoints:
         - "websecure"
       service: "dask-gateway"
