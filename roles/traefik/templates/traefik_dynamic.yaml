@@ -43,6 +43,10 @@ http:
     https-redirect:
       redirectscheme:
         scheme: "https"
+    dask-gateway-strip:
+      stripPrefix:
+        prefixes:
+          - "/gateway"
 
   services:
     dummy: # never reacher due to middleware http -> https redirect
@@ -96,6 +100,7 @@ http:
       service: "grafana"
     dask-gateway:
       rule: "Host(`{{ traefik_domain | default(hostvars[groups['hpc-master'][0]].ansible_host) }}`) && (PathPrefix(`/clusters`) || PathPrefix(`/gateway`))"
+      middlewares: ["dask-gateway-strip"]
       entryPoints:
         - "websecure"
       service: "dask-gateway"
