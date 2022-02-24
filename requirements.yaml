@@ -2,4 +2,5 @@
 collections:
   - name: community.mysql
   - name: community.general
+    version: 4.2.0
   - name: ansible.posix
