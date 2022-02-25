@@ -48,7 +48,7 @@
 
      - name: Keycloak administration credentials
        ansible.builtin.debug:
-         msg: "Keycloak administration username={{ keycloak_admin_username }} password={{ keycloak_admin_password }} via https://{{ traefik_domain | default(hostvars[groups['hpc-master'][0]].ansible_host) }}/auth/admin/"
+         msg: "Keycloak administration username={{ keycloak_admin_username }} via https://{{ traefik_domain | default(hostvars[groups['hpc-master'][0]].ansible_host) }}/auth/admin/"
 
      - name: Accessing cluster
        ansible.builtin.debug:

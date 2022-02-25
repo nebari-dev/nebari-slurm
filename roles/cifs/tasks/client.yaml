@@ -13,6 +13,7 @@
      port: 445
      timeout: 600
    with_items: "{{ samba_client_mounts }}"
+   no_log: True  # Avoid logging user creds
 
  - name: Ensure samba mounted directories exist
    become: true
@@ -20,6 +21,7 @@
      path: "{{ item.path }}"
      state: directory
    with_items: "{{ samba_client_mounts }}"
+   no_log: True  # Avoid logging user creds
 
  - name: Ensure samba credentials directory exists
    become: true
@@ -48,6 +50,7 @@
      group: root
      mode: 0600
    with_items: "{{ samba_client_mounts }}"
+   no_log: True  # Avoid logging user creds
 
  - name: Add fstab entries for nfs mounts
    become: true
@@ -58,3 +61,4 @@
      state: mounted
      fstype: cifs
    with_items: "{{ samba_client_mounts }}"
+   no_log: True  # Avoid logging user creds

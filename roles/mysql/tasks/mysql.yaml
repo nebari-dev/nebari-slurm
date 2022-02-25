@@ -37,3 +37,4 @@
      priv: "{{ item.privileges }}"
      state: present
    with_items: "{{ mysql_users }}"
+   no_log: True  # Avoid logging user creds
