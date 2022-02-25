@@ -13,4 +13,5 @@ jobs:
     steps:
       - name: "Check KVM Capabilities of CI"
         run: |
-          sudo kvm-ok
+          cat /proc/cpuinfo
+          egrep -c '(vmx|svm)' /proc/cpuinfo | grep -v "^0$"
