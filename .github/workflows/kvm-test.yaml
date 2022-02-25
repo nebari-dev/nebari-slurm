@@ -10,6 +10,6 @@ jobs:
     name: "KVM Test"
     runs-on: ubuntu-latest
     steps:
-      - name: "Check KVM Capabilities"
+      - name: "Check KVM Capabilities of CI"
         run: |
           sudo kvm-ok
