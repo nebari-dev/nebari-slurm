@@ -1,0 +1,15 @@
+name: "Vagrant (KVM) Tests"
+
+on:
+  pull_request:
+  push:
+    branches: [ $default-branch ]
+
+jobs:
+  test-kvm:
+    name: "KVM Test"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Check KVM Capabilities"
+        run: |
+          sudo kvm-ok
