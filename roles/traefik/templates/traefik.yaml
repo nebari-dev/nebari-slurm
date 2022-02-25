@@ -36,6 +36,14 @@ entryPoints:
     address: ":{{ jupyterhub_ssh_external_port }}"
   dask-gateway-scheduler:
     address: ":{{ dask_gateway_scheduler_external_port }}"
+  minio:
+    address: ":{{ minio_external_port }}"
+{% if traefik_tls_type == "letsencrypt" %}
+      tls:
+        certResolver: leresolver
+{% else %}
+      tls: {}
+{% endif %}
   metrics:
     address: "localhost:{{ traefik_metrics_port }}"
 

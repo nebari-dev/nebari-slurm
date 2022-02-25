@@ -54,6 +54,10 @@ http:
         servers:
           - url: "localhost"
 
+    minio:
+      loadBalancer:
+        servers:
+          - url: "http://localhost:{{ minio_internal_port }}/"
     keycloak:
       loadBalancer:
         servers:
@@ -83,6 +87,11 @@ http:
         - "web"
       service: "dummy"
 
+    minio:
+      rule: "Host(`{{ traefik_domain | default(hostvars[groups['hpc-master'][0]].ansible_host) }}`)"
+      entryPoints:
+        - "minio"
+      service: "minio"
     keycloak:
       rule: "Host(`{{ traefik_domain | default(hostvars[groups['hpc-master'][0]].ansible_host) }}`) && PathPrefix(`/auth`)"
       entryPoints:

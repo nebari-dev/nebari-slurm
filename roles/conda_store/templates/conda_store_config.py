@@ -14,10 +14,10 @@ c.CondaStore.default_uid = 1000
 c.CondaStore.default_gid = 100
 c.CondaStore.default_permissions = "775"
 
-c.S3Storage.internal_endpoint = "localhost:{{ minio_port }}"
+c.S3Storage.internal_endpoint = "localhost:{{ minio_internal_port }}"
 c.S3Storage.internal_secure = False
-c.S3Storage.external_endpoint = "{{ traefik_domain | default(hostvars[groups['hpc-master'][0]].ansible_host) }}:{{ minio_port }}"
-c.S3Storage.external_secure = False
+c.S3Storage.external_endpoint = "{{ traefik_domain | default(hostvars[groups['hpc-master'][0]].ansible_host) }}:{{ minio_external_port }}"
+c.S3Storage.external_secure = True
 c.S3Storage.access_key = "{{ minio_username }}"
 c.S3Storage.secret_key = "{{ minio_password }}"
 c.S3Storage.region = "us-east-1"  # minio region default

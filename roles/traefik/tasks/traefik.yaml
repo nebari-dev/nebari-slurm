@@ -204,3 +204,11 @@
      port: "{{ dask_gateway_scheduler_external_port }}"
      proto: tcp
    when: firewall_enabled
+
+ - name: Allow minio through firewall
+   become: true
+   community.general.ufw:
+     rule: allow
+     port: "{{ minio_external_port }}"
+     proto: tcp
+   when: firewall_enabled
