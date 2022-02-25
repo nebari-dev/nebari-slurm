@@ -110,3 +110,11 @@
      enabled: true
      state: restarted
    when: _minio_service.changed or _minio_configuration.changed
+
+ - name: Allow minio through firewall
+   become: true
+   community.general.ufw:
+     rule: allow
+     port: "{{ minio_port }}"
+     proto: tcp
+   when: firewall_enabled
