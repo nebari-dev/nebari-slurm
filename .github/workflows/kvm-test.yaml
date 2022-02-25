@@ -3,7 +3,8 @@ name: "Vagrant (KVM) Tests"
 on:
   pull_request:
   push:
-    branches: [ $default-branch ]
+    branches:
+      - main
 
 jobs:
   test-kvm:
