@@ -1,5 +1,5 @@
 conda_store_enabled: false
-conda_store_version: "0.3.9"
+conda_store_version: "0.3.10"
 conda_store_port: "5000"
 conda_store_environment: "environments/conda-store.yaml"
 conda_store_prefix: "/conda-store"
