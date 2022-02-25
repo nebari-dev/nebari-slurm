@@ -1,3 +1,5 @@
-slurm_memory: 16000
+# or set these variables in group_vars/hpc-worker.yaml if all
+# workers have the same resources
+slurm_memory: 5900
 slurm_cpus: 4
 slurm_sockets_per_board: 4

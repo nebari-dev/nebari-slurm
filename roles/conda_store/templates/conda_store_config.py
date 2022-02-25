@@ -8,7 +8,6 @@ from conda_store_server.server.auth import GenericOAuthAuthentication
 # ==================================
 c.CondaStore.storage_class = S3Storage
 c.CondaStore.store_directory = "/opt/conda-store/conda-store/"
-c.CondaStore.environment_directory = "/opt/conda-store/envs/"
 c.CondaStore.conda_command = "conda"
 c.CondaStore.database_url = "mysql+pymysql://{{ mysql_users[1].username }}:{{ mysql_users[1].password }}@localhost/{{ mysql_databases[1] }}"
 c.CondaStore.default_uid = 1000
@@ -16,12 +15,13 @@ c.CondaStore.default_gid = 100
 c.CondaStore.default_permissions = "775"
 
 c.S3Storage.internal_endpoint = "localhost:{{ minio_port }}"
+c.S3Storage.internal_secure = False
 c.S3Storage.external_endpoint = "{{ traefik_domain | default(hostvars[groups['hpc-master'][0]].ansible_host) }}:{{ minio_port }}"
+c.S3Storage.external_secure = False
 c.S3Storage.access_key = "{{ minio_username }}"
 c.S3Storage.secret_key = "{{ minio_password }}"
 c.S3Storage.region = "us-east-1"  # minio region default
 c.S3Storage.bucket_name = "conda-store"
-c.S3Storage.secure = False
 
 # ==================================
 #        server settings

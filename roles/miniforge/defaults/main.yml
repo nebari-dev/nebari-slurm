@@ -4,4 +4,7 @@ miniforge_sha256: 49268ee30d4418be4de852dda3aa4387f8c95b55a76f43fb1af68dcbf8b205
 miniforge_home: "/opt/conda"
 miniforge_envs:
   - "/opt/conda/envs/"
-  - "/opt/conda-store/envs/"
+  - "/opt/conda-store/conda-store/default/envs/"
+  - "/opt/conda-store/conda-store/developer/envs/"
+  - "/opt/conda-store/conda-store/admin/envs/"
+  - "/opt/conda-store/conda-store/filesystem/envs/"

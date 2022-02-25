@@ -264,6 +264,9 @@ trap 'echo SIGTERM received' TERM
 # Setting Conda-Store configuration
 mkdir -p "$HOME/.jupyter/lab/user-settings/@mamba-org/gator-lab/"
 echo '{"condaStoreUrl": "/conda-store"}' > $HOME/.jupyter/lab/user-settings/@mamba-org/gator-lab/plugin.jupyterlab-settings
+
+# Setting nb_conda_kernels settings
+echo '{"CondaKernelSpecManager": {"name_format": "{environment}"}}' > $HOME/.jupyter/jupyter_config.json
 {% endif %}
 
 {% if cdsdashboards_enabled %}
