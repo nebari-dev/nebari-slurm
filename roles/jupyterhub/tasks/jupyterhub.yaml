@@ -135,6 +135,7 @@
        # batchspawner uses sudo, which is in /bin (at least on CentOS)
        Environment=PATH={{ miniforge_home }}/condabin:{{ miniforge_home }}/envs/{{ jupyterhub_hub_environment | basename | splitext | first }}/bin:$PATH:/bin:/usr/bin:/usr/local/bin
        ExecStart={{ miniforge_home }}/envs/{{ jupyterhub_hub_environment | basename | splitext | first }}/bin/jupyterhub --config /etc/jupyterhub/jupyterhub_config.py --upgrade-db
+       KillMode=process
 
        [Install]
        WantedBy=multi-user.target
