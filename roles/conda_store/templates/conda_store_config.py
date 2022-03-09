@@ -13,6 +13,9 @@ c.CondaStore.database_url = "mysql+pymysql://{{ mysql_users[1].username }}:{{ my
 c.CondaStore.default_uid = 1000
 c.CondaStore.default_gid = 100
 c.CondaStore.default_permissions = "775"
+c.CondaStore.conda_included_packages = [
+    "ipykernel",
+]
 
 c.S3Storage.internal_endpoint = "localhost:{{ minio_internal_port }}"
 c.S3Storage.internal_secure = False
