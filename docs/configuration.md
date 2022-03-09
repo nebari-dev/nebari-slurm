@@ -138,6 +138,18 @@ idle_culler:
  - `timeout` is the time that a user is inactive 
  - `cull_every` is the interval to delete inactive jupyterlab instances
 
+### Set default UI to classic jupyter notebooks
+
+As of JupyterHub 2.0, the default user interface is Jupyterlab.  If the classic Jupyter notebook UI is preferred, this can be configured as shown below.
+```yaml
+jupyterhub_custom:
+  QHubHPCSpawner:
+    default_url: '/tree'
+  Spawner:
+    environment:
+      JUPYTERHUB_SINGLEUSER_APP: notebook.notebookapp.NotebookApp
+```
+
 ### Services
 
 Additional services can be added to the `jupyterhub_services`
