@@ -36,6 +36,7 @@ c.JupyterHub.base_url = '{{ jupyterhub_base_url }}'
 
 # Don't kill servers when JupyterHub restarts
 c.JupyterHub.cleanup_servers = False
+c.JupyterHub.cleanup_proxy = False
 
 # Turn sessions off - we don't use them, since we pass through to slurm
 c.PAMAuthenticator.open_sessions = False
