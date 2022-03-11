@@ -32,7 +32,7 @@ scrape_configs:
     metrics_path: '/hub/metrics'
     static_configs:
       - targets:
-         - 'localhost:{{ jupyterhub_port }}'
+         - 'localhost:{{ jupyterhub_proxy_port }}'
 
   - job_name: 'traefik'
     scrape_interval: 30s

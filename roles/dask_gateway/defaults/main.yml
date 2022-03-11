@@ -12,7 +12,7 @@ miniforge_home: "/opt/conda"
 firewall_enabled: true
 
 # role: jupyterhub
-jupyterhub_port: "8000"
+jupyterhub_proxy_port: "15002"
 jupyterhub_lab_environment: "environments/jupyterlab.yaml"
 jupyterhub_services:
   dask_gateway: CStgn1NN8DogQR1KajuoQfye1qNRqx6zsh

@@ -16,7 +16,7 @@ c.Proxy.tcp_address = ':{{ dask_gateway_scheduler_internal_port }}'
 # Authentication
 c.DaskGateway.authenticator_class = "dask_gateway_server.auth.JupyterHubAuthenticator"
 c.JupyterHubAuthenticator.jupyterhub_api_token = "{{ jupyterhub_services.dask_gateway }}"
-c.JupyterHubAuthenticator.jupyterhub_api_url = "http://localhost:{{ jupyterhub_port }}/hub/api"
+c.JupyterHubAuthenticator.jupyterhub_api_url = "http://localhost:{{ jupyterhub_proxy_port }}/hub/api"
 
 
 # Find all conda environments that have dask distributed installed

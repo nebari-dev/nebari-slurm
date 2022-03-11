@@ -37,14 +37,15 @@ c.JupyterHub.base_url = '{{ jupyterhub_base_url }}'
 # Configure jupyterhub to work with external proxy
 c.JupyterHub.cleanup_servers = False
 c.ConfigurableHTTPProxy.should_start = False
-c.ConfigurableHTTPProxy.auth_token = "INSECURE-TOKEN-FIX-ME"
-c.ConfigurableHTTPProxy.api_url = 'http://localhost:8001'
+c.ConfigurableHTTPProxy.auth_token = "{{ jupyterhub_proxy_auth_token }}"
+c.ConfigurableHTTPProxy.api_url = 'http://localhost:{{ jupyterhub_proxy_api_port }}'
 
 # Turn sessions off - we don't use them, since we pass through to slurm
 c.PAMAuthenticator.open_sessions = False
 
 # Listen on all interfaces, since hub should be reachable from spawned nodes
 c.JupyterHub.hub_ip = '0.0.0.0'
+c.JupyterHub.hub_port = {{ jupyterhub_port }}
 
 
 # -------------------- Base Authenticator ----------------
