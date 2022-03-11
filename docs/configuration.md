@@ -222,8 +222,7 @@ The owner, group, and mode fields are optional. See
 https://docs.ansible.com/ansible/latest/collections/ansible/builtin/copy_module.html#id2
 for more detail about each field.
 
-Files copied in this way will not overwrite existing files.  Also,
-remember that the home directory of users is a network file system so
+Remember that the home directory of users is a network file system so
 it would only be necessary to copy files in the user directories into
 a single node.
 
