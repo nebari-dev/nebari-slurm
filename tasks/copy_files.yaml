@@ -8,6 +8,5 @@
      group: "{{ item.group | default(omit) }}"
      mode: "{{ item.mode | default(omit) }}"
      directory_mode: "{{ item.directory_mode | default(omit) }}"
-     force: no  # only copy files over if they don't exist on destination
    when: (vars['copy_files_' + myhost]) is defined
    loop: "{{ vars['copy_files_' + myhost] }}"
