@@ -34,9 +34,11 @@ c.JupyterHub.authenticate_prometheus = False
 # JupyterHub base url
 c.JupyterHub.base_url = '{{ jupyterhub_base_url }}'
 
-# Don't kill servers when JupyterHub restarts
+# Configure jupyterhub to work with external proxy
 c.JupyterHub.cleanup_servers = False
-c.JupyterHub.cleanup_proxy = False
+c.ConfigurableHTTPProxy.should_start = False
+c.ConfigurableHTTPProxy.auth_token = "INSECURE-TOKEN-FIX-ME"
+c.ConfigurableHTTPProxy.api_url = 'http://localhost:8001'
 
 # Turn sessions off - we don't use them, since we pass through to slurm
 c.PAMAuthenticator.open_sessions = False
