@@ -141,6 +141,7 @@
        ProtectKernelModules=yes
 
        Environment=PATH={{ miniforge_home }}/condabin:{{ miniforge_home }}/envs/{{ jupyterhub_hub_environment | basename | splitext | first }}/bin:$PATH:/bin:/usr/bin:/usr/local/bin
+       Environment=CONFIGPROXY_AUTH_TOKEN={{ jupyterhub_proxy_auth_token }}
        ExecStart={{ miniforge_home }}/envs/{{ jupyterhub_hub_environment | basename | splitext | first }}/bin/configurable-http-proxy \
          --ip=127.0.0.1 \
          --port={{ jupyterhub_proxy_port }} \
@@ -159,6 +160,11 @@
    become: true
    copy:
      content: |
+       [Unit]
+       # CHP must have successfully started *before* we launch JupyterHub
+       Requires=jupyterhub-proxy.service
+       After=jupyterhub-proxy.service
+
        [Service]
        User=root
        Restart=always
@@ -172,7 +178,7 @@
        # We add the conda dir & /bin
        # batchspawner uses sudo, which is in /bin (at least on CentOS)
        Environment=PATH={{ miniforge_home }}/condabin:{{ miniforge_home }}/envs/{{ jupyterhub_hub_environment | basename | splitext | first }}/bin:$PATH:/bin:/usr/bin:/usr/local/bin
-       ExecStart={{ miniforge_home }}/envs/{{ jupyterhub_hub_environment | basename | splitext | first }}/bin/jupyterhub --config /etc/jupyterhub/jupyterhub_config.py --upgrade-db
+       ExecStart={{ miniforge_home }}/envs/{{ jupyterhub_hub_environment | basename | splitext | first }}/bin/jupyterhub --config /etc/jupyterhub/jupyterhub_config.py --debug
        KillMode=process
 
        [Install]

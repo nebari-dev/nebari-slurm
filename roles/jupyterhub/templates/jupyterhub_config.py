@@ -119,6 +119,13 @@ c.JupyterHub.authenticator_class = QHubAuthenticator
 # -------------------- Base Spawner --------------------
 
 class QHubHPCSpawnerBase(SlurmSpawner):
+  async def poll(self):
+      # on server restart the port appears to change when poll() is called
+      # on the server.port object. This shim ensures that port is preserved
+      port = self.server.port
+      value = await super().poll()
+      self.server.port = port
+      return value
 
   req_conda_environment_prefix = Unicode('',
         help="Conda environment prefix to launch jupyterlab"
@@ -193,7 +200,7 @@ from cdsdashboards.hubextension.spawners.variablemixin import VariableMixin, Met
 dashboard_packages = ['cdsdashboards-singleuser']
 
 class QHubHPCSpawner(QHubHPCSpawnerBase, VariableMixin, metaclass=MetaVariableMixin):
-  pass
+    pass
 
 c.VariableMixin.default_presentation_cmd = ['jhsingle-native-proxy']
 
