@@ -30,6 +30,13 @@
      state: directory
      mode: '0755'
 
+ - name: Create hub proxy state directory
+   become: true
+   file:
+     path: /var/lib/jupyterhub-proxy
+     state: directory
+     mode: '0755'
+
  - name: Create keycloak client for jupyterhub
    community.general.keycloak_client:
      auth_client_id: admin-cli
@@ -117,10 +124,47 @@
    with_dict: "{{ jupyterhub_additional_config }}"
    notify: restart services jupyterhub
 
+ - name: Setup External Proxy for JupyterHub systemd unit
+   become: true
+   copy:
+     content: |
+       [Service]
+       User=root
+       Restart=always
+       WorkingDirectory=/var/lib/jupyterhub-proxy
+       # Protect bits that are normally shared across the system
+       ProtectHome=tmpfs
+       ProtectSystem=strict
+       PrivateTmp=yes
+       PrivateDevices=yes
+       ProtectKernelTunables=yes
+       ProtectKernelModules=yes
+
+       Environment=PATH={{ miniforge_home }}/condabin:{{ miniforge_home }}/envs/{{ jupyterhub_hub_environment | basename | splitext | first }}/bin:$PATH:/bin:/usr/bin:/usr/local/bin
+       Environment=CONFIGPROXY_AUTH_TOKEN={{ jupyterhub_proxy_auth_token }}
+       ExecStart={{ miniforge_home }}/envs/{{ jupyterhub_hub_environment | basename | splitext | first }}/bin/configurable-http-proxy \
+         --ip=127.0.0.1 \
+         --port={{ jupyterhub_proxy_port }} \
+         --api-ip=127.0.0.1 \
+         --api-port={{ jupyterhub_proxy_api_port }} \
+         --default-target=http://localhost:{{ jupyterhub_port }}/ \
+         --error-target=http://localhost:{{ jupyterhub_port }}/hub/error
+
+       [Install]
+       WantedBy=multi-user.target
+     dest: /etc/systemd/system/jupyterhub-proxy.service
+     mode: '0544'
+   notify: restart services jupyterhub-proxy
+
  - name: Setup JupyterHub systemd unit
    become: true
    copy:
      content: |
+       [Unit]
+       # CHP must have successfully started *before* we launch JupyterHub
+       Requires=jupyterhub-proxy.service
+       After=jupyterhub-proxy.service
+
        [Service]
        User=root
        Restart=always
@@ -134,7 +178,8 @@
        # We add the conda dir & /bin
        # batchspawner uses sudo, which is in /bin (at least on CentOS)
        Environment=PATH={{ miniforge_home }}/condabin:{{ miniforge_home }}/envs/{{ jupyterhub_hub_environment | basename | splitext | first }}/bin:$PATH:/bin:/usr/bin:/usr/local/bin
-       ExecStart={{ miniforge_home }}/envs/{{ jupyterhub_hub_environment | basename | splitext | first }}/bin/jupyterhub --config /etc/jupyterhub/jupyterhub_config.py --upgrade-db
+       ExecStart={{ miniforge_home }}/envs/{{ jupyterhub_hub_environment | basename | splitext | first }}/bin/jupyterhub --config /etc/jupyterhub/jupyterhub_config.py --debug
+       KillMode=process
 
        [Install]
        WantedBy=multi-user.target
@@ -146,6 +191,14 @@
    become: true
    systemd:
      name: jupyterhub
+     enabled: true
+     state: started
+     daemon_reload: true
+
+ - name: Ensure JupyterHub Proxy Started
+   become: true
+   systemd:
+     name: jupyterhub-proxy
      enabled: true
      state: started
      daemon_reload: true

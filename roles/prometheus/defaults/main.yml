@@ -9,7 +9,7 @@ node_exporter_sha256: 3369b76cd2b0ba678b6d618deab320e565c3d93ccb5c2a0d5db51a5385
 node_exporter_port: "9100"
 
 # role: jupyterhub
-jupyterhub_port: "8000"
+jupyterhub_proxy_port: "15002"
 
 # role: traefik
 traefik_metrics_port: "8082"

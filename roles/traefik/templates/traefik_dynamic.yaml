@@ -65,7 +65,7 @@ http:
     jupyterhub:
       loadBalancer:
         servers:
-          - url: "http://localhost:{{ jupyterhub_port }}/"
+          - url: "http://localhost:{{ jupyterhub_proxy_port }}/"
     grafana:
       loadBalancer:
         servers:

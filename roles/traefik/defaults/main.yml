@@ -10,7 +10,7 @@ traefik_tls_type: "self-signed"
 # traefik_tls_key: <local-path>
 
 # role: jupyterhub
-jupyterhub_port: "8000"
+jupyterhub_proxy_port: "15002"
 jupyterhub_base_url: "/"
 jupyterhub_ssh_internal_port: "8021"
 jupyterhub_ssh_external_port: "8022"
