@@ -8,7 +8,7 @@ samba_server_shares: []
 samba_client_enabled: false
 samba_client_mounts: []
 # - name: example_mount # (name of samba share)
-#   host: hpc-worker
+#   host: hpc_worker
 #   path: /place/to/mount/share
 #   options: "rw,sync,hard,intr" # optional
 #   username: <username>         # optional

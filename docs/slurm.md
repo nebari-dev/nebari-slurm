@@ -129,10 +129,10 @@ Partitions in slurm can easily be created via ansible groups. Any
 group start starts with `partition-`. For example
 
 ```ini
-[hpc-master]
+[hpc_master]
 hpc01-test
 
-[hpc-worker]
+[hpc_worker]
 hpc02-test
 hpc03-test
 hpc04-test

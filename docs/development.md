@@ -130,7 +130,7 @@ Similarly with source files, or it should also be possible to only run the relev
 To run ansible directly only on tasks tagged 'conda' and 'jupyterhub' on the master node, run this within the nix shell on the gpu machine:
 
 ```
-ansible-playbook -i .vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory --private-key=~/.vagrant.d/insecure_private_key -u vagrant -l hpc-master --tags="conda,jupyterhub" ../../playbook.yaml
+ansible-playbook -i .vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory --private-key=~/.vagrant.d/insecure_private_key -u vagrant -l hpc_master --tags="conda,jupyterhub" ../../playbook.yaml
 ```
 
 For debugging:
