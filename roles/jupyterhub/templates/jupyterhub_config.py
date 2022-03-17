@@ -131,6 +131,7 @@ class QHubHPCSpawnerBase(SlurmSpawner):
         help="Conda environment prefix to launch jupyterlab"
     ).tag(config=True)
 
+{% if jupyterhub_qhub_options_form %}
   # data from form submission is {key: [value]}
   # we need to convert the formdata to a key value dict
   def options_from_form(self, data):
@@ -188,7 +189,7 @@ class QHubHPCSpawnerBase(SlurmSpawner):
 
     # Display full form including conda env dropdown
     return ''.join([self.main_options_form, self.conda_options_form])
-
+{% endif %}
 
 {% if cdsdashboards_enabled %}
 # -------------------- Specify Dashboard Instance Size --------------------

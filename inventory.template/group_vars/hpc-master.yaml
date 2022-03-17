@@ -2,6 +2,7 @@ dask_gateway_enabled: true
 firewall_enabled: true
 grafana_enabled: true
 jupyterhub_enabled: true
+jupyterhub_qhub_options_form: true
 jupyterhub_ssh_enabled: true
 keycloak_enabled: true
 miniforge_enabled: true

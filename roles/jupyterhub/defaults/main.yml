@@ -17,6 +17,7 @@ jupyterhub_lab_environment: "environments/jupyterlab.yaml"
 jupyterhub_dashboard_environment: "environments/dashboards.yaml"
 jupyterhub_client_id: "jupyterhub"
 jupyterhub_client_secret: "SUPERSECRETPASSWORDJUPYTERHUB"
+jupyterhub_qhub_options_form: true
 
 jupyterhub_config:
   spawner:
