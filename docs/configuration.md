@@ -150,6 +150,12 @@ jupyterhub_custom:
       JUPYTERHUB_SINGLEUSER_APP: notebook.notebookapp.NotebookApp
 ```
 
+### Turn off resource selection user options form
+The resource selection options form allows users to choose the cpu, memory, and partition on which to run their user server.  This feature is enabled by default, but can be disabled as shown below.
+```yaml
+jupyterhub_qhub_options_form: false
+```
+
 ### Services
 
 Additional services can be added to the `jupyterhub_services`
