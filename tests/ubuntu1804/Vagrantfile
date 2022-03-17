@@ -61,7 +61,7 @@ Vagrant.configure("2") do |config|
     ansible.groups = {
       "hpc_master" => [HPC01_TEST],
       "hpc_worker" => [HPC02_TEST, HPC03_TEST],
-      "partition-example" => [HPC03_TEST],
+      "partition_example" => [HPC03_TEST],
     }
     ansible.raw_arguments = [
       "-f 5",  # number of hosts to configure in parallel

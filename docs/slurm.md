@@ -137,7 +137,7 @@ hpc02-test
 hpc03-test
 hpc04-test
 
-[partition-example]
+[partition_example]
 hpc02-test
 hpc04-test
 ```
