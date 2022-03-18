@@ -4,6 +4,6 @@
    lineinfile:
      dest: /etc/hosts
      regexp: '.*{{ item }}$'
-     line: '{{ hostvars[item]["ansible_" + internal_interface].ipv4.address }} {{item}}'
+     line: '{{ hostvars[item]["ansible_" + hostvars[item].get("internal_interface", internal_interface)].ipv4.address }} {{item}}'
      state: present
    with_items: '{{ groups["all"] }}'
