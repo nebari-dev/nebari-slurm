@@ -16,7 +16,7 @@ enabled_groups:
   - name: example-user
     gid: 10000
 
-# should be `ldap://<hpc-master-hostname>:389`
+# should be `ldap://<hpc_master-hostname>:389`
 openldap_server_uri: ldap://hpc01-test:389
 
 # ============= Passwords ===============

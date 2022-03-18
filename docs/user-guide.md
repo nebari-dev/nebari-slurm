@@ -7,7 +7,7 @@
 Managing conda environments is done via
 [Conda-Store](https://conda-store.readthedocs.io/en/latest/). You can
 visit Conda-Store within your QHub-HPC deployment at
-`https://<hpc-master>/conda-store/`.
+`https://<hpc_master>/conda-store/`.
 
 ## ContainDS Dashboards
 

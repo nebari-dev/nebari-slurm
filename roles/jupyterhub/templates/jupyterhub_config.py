@@ -53,12 +53,12 @@ from oauthenticator.generic import GenericOAuthenticator
 
 c.OAuthenticator.client_id = "{{ jupyterhub_client_id }}"
 c.OAuthenticator.client_secret = "{{ jupyterhub_client_secret }}"
-c.GenericOAuthenticator.oauth_callback_url = "https://{{ traefik_domain | default(hostvars[groups['hpc-master'][0]].ansible_host) }}/hub/oauth_callback"
+c.GenericOAuthenticator.oauth_callback_url = "https://{{ traefik_domain | default(hostvars[groups['hpc_master'][0]].ansible_host) }}/hub/oauth_callback"
 c.GenericOAuthenticator.scope = "profile"
 c.GenericOAuthenticator.tls_verify = False
-c.GenericOAuthenticator.authorize_url = "https://{{ traefik_domain | default(hostvars[groups['hpc-master'][0]].ansible_host) }}/auth/realms/{{ keycloak_realm }}/protocol/openid-connect/auth"
-c.GenericOAuthenticator.token_url = "https://{{ traefik_domain | default(hostvars[groups['hpc-master'][0]].ansible_host) }}/auth/realms/{{ keycloak_realm }}/protocol/openid-connect/token"
-c.GenericOAuthenticator.userdata_url = "https://{{ traefik_domain | default(hostvars[groups['hpc-master'][0]].ansible_host) }}/auth/realms/{{ keycloak_realm }}/protocol/openid-connect/userinfo"
+c.GenericOAuthenticator.authorize_url = "https://{{ traefik_domain | default(hostvars[groups['hpc_master'][0]].ansible_host) }}/auth/realms/{{ keycloak_realm }}/protocol/openid-connect/auth"
+c.GenericOAuthenticator.token_url = "https://{{ traefik_domain | default(hostvars[groups['hpc_master'][0]].ansible_host) }}/auth/realms/{{ keycloak_realm }}/protocol/openid-connect/token"
+c.GenericOAuthenticator.userdata_url = "https://{{ traefik_domain | default(hostvars[groups['hpc_master'][0]].ansible_host) }}/auth/realms/{{ keycloak_realm }}/protocol/openid-connect/userinfo"
 c.GenericOAuthenticator.username_key = "preferred_username"
 c.GenericOAuthenticator.claim_groups_key = "roles"
 c.GenericOAuthenticator.allowed_groups = ['jupyterhub_admin', 'jupyterhub_developer']
@@ -68,7 +68,7 @@ c.GenericOAuthenticator.admin_groups = ['jupyterhub_admin']
 def sync_users(username, min_uid=1_000_000, max_uid=1_000_000_000):
     current_uids = set()
     keycloak_admin = keycloak.KeycloakAdmin(
-        server_url="https://{{ traefik_domain | default(hostvars[groups['hpc-master'][0]].ansible_host) }}/auth/",
+        server_url="https://{{ traefik_domain | default(hostvars[groups['hpc_master'][0]].ansible_host) }}/auth/",
         username="{{ keycloak_admin_username }}",
         password="{{ keycloak_admin_password }}",
         realm_name="{{ keycloak_realm }}",

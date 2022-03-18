@@ -79,10 +79,10 @@ resource "local_file" "ansible_inventory" {
 ${google_compute_instance.master-node.name} ansible_host=${google_compute_instance.master-node.network_interface.0.access_config.0.nat_ip} ansible_user=ubuntu ansible_ssh_private_key_file=${var.ssh-private-key}
 ${join("\n", formatlist("%s ansible_host=%s ansible_user=ubuntu ansible_ssh_private_key_file=${var.ssh-private-key}", google_compute_instance.worker-nodes.*.name, google_compute_instance.worker-nodes.*.network_interface.0.access_config.0.nat_ip))}
 
-[hpc-master]
+[hpc_master]
 ${google_compute_instance.master-node.name}
 
-[hpc-worker]
+[hpc_worker]
 ${join("\n", formatlist("%s", google_compute_instance.worker-nodes.*.name))}
 EOT
 

@@ -252,13 +252,13 @@ slurmdbd_config:
 ### Accessing Qhub HPC from a Domain
 
 By default, a qhub-hpc deployment must be accesssed using the ip
-address of the hpc-master node.  However, if a domain name has been
-set up to point to the hpc-master node, then Qhub HPC's router,
+address of the hpc_master node.  However, if a domain name has been
+set up to point to the hpc_master node, then Qhub HPC's router,
 [Traefik](https://doc.traefik.io/traefik/), can be configured to work
 with the domain by setting the `traefik_domain` ansible variable.
 
 For example, if you had the example.com domain set up to point to the
-hpc-master node, then you could add the following to the all.yaml file
+hpc_master node, then you could add the following to the all.yaml file
 and redeploy, after which navigating to https://example.com in a web
 browser would bring up your Qhub HPC deployment sign in page.
 

@@ -66,10 +66,10 @@ file](https://docs.ansible.com/ansible/latest/user_guide/intro_inventory.html). 
   - `ansible_user` which is the username to login into node by default is the user that the `ansible-playbook` command is run as
   - `ansible_ssh_private_key_file` is the path to the ssh key to login to node
 
-Next you must configure the groups. In this case the `hpc-master` and
-`hpc-worker` groups. There must only be one node in the `hpc-master`
-group. `N` nodes can be in the `hpc-worker` section (including the
-hpc-master node which is not recommended).
+Next you must configure the groups. In this case the `hpc_master` and
+`hpc_worker` groups. There must only be one node in the `hpc_master`
+group. `N` nodes can be in the `hpc_worker` section (including the
+hpc_master node which is not recommended).
 
 ```
 hpc02-test ansible_host=192.168.121.124 ansible_port=22 ansible_user='vagrant' ansible_ssh_private_key_file='/home/costrouc/.vagrant.d/insecure_private_key'
@@ -77,15 +77,15 @@ hpc03-test ansible_host=192.168.121.176 ansible_port=22 ansible_user='vagrant' a
 hpc04-test ansible_host=192.168.121.133 ansible_port=22 ansible_user='vagrant' ansible_ssh_private_key_file='/home/costrouc/.vagrant.d/insecure_private_key'
 hpc01-test ansible_host=192.168.121.35 ansible_port=22 ansible_user='vagrant' ansible_ssh_private_key_file='/home/costrouc/.vagrant.d/insecure_private_key'
 
-[hpc-master]
+[hpc_master]
 hpc01-test
 
-[hpc-worker]
+[hpc_worker]
 hpc02-test
 hpc03-test
 hpc04-test
 
-[partition-example]
+[partition_example]
 hpc02-test
 hpc04-test
 ```
@@ -110,7 +110,7 @@ slurm_sockets_per_board: 4
 
 This however is difficult to correctly set see the section
 "Configuring and adding node information" in [slurm.md](./slurm.md). A
-hosts file should be created for each node in the `hpc-worker`
+hosts file should be created for each node in the `hpc_worker`
 group. In the inventory example above the following files would exist:
 
  - `host_vars/hpc02-test.md`
@@ -125,8 +125,8 @@ corrected on a re-deployment.
 Most if not all configuration will be done in the `group_vars`
 directory. Within that directory there are three groups:
  - `all.yaml` which are variables set for all nodes
- - `hpc-master.yaml` which are variables set for the hpc master node
- - `hpc-worker.yaml` which are variables set for the hpc worker nodes
+ - `hpc_master.yaml` which are variables set for the hpc master node
+ - `hpc_worker.yaml` which are variables set for the hpc worker nodes
 
 Detailed information on customizing the configuration should see the
 [configuration](./configuration.md).
@@ -147,6 +147,6 @@ ansible-playbook -i inventory /tmp/qhub-hpc/playbook.yaml
 # Checking the status of the deployment
 
 Upon successful deployment you should be able to visit the
-`https://<hpc-master>/` where `<hpc-master>` is the ip address or dns
+`https://<hpc_master>/` where `<hpc_master>` is the ip address or dns
 name of your specific deployment. You will be prompted by the
 jupyterhub landing page.

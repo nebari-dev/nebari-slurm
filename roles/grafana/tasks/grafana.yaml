@@ -49,7 +49,7 @@
          protocol: openid-connect
          protocolMapper: oidc-group-membership-mapper
      redirect_uris:
-       - "https://{{ traefik_domain | default(hostvars[groups['hpc-master'][0]].ansible_host) }}{{ grafana_base_url }}/login/generic_oauth"
+       - "https://{{ traefik_domain | default(hostvars[groups['hpc_master'][0]].ansible_host) }}{{ grafana_base_url }}/login/generic_oauth"
    register: grafana_client
 
  - name: Create grafana keycloak roles
@@ -131,7 +131,7 @@
        [server]
        protocol = http
        http_port = {{ grafana_port }}
-       domain = {{ traefik_domain | default(hostvars[groups['hpc-master'][0]].ansible_host) }}
+       domain = {{ traefik_domain | default(hostvars[groups['hpc_master'][0]].ansible_host) }}
        root_url = https://%(domain)s{{ grafana_base_url }}
        serve_from_sub_path = true
 
@@ -148,9 +148,9 @@
        client_id = {{ grafana_client_id }}
        client_secret = {{ grafana_client_secret }}
        scopes = profile
-       auth_url = "https://{{ traefik_domain | default(hostvars[groups['hpc-master'][0]].ansible_host) }}/auth/realms/{{ keycloak_realm }}/protocol/openid-connect/auth"
-       token_url = "https://{{ traefik_domain | default(hostvars[groups['hpc-master'][0]].ansible_host) }}/auth/realms/{{ keycloak_realm }}/protocol/openid-connect/token"
-       api_url = "https://{{ traefik_domain | default(hostvars[groups['hpc-master'][0]].ansible_host) }}/auth/realms/{{ keycloak_realm }}/protocol/openid-connect/userinfo"
+       auth_url = "https://{{ traefik_domain | default(hostvars[groups['hpc_master'][0]].ansible_host) }}/auth/realms/{{ keycloak_realm }}/protocol/openid-connect/auth"
+       token_url = "https://{{ traefik_domain | default(hostvars[groups['hpc_master'][0]].ansible_host) }}/auth/realms/{{ keycloak_realm }}/protocol/openid-connect/token"
+       api_url = "https://{{ traefik_domain | default(hostvars[groups['hpc_master'][0]].ansible_host) }}/auth/realms/{{ keycloak_realm }}/protocol/openid-connect/userinfo"
        tls_skip_verify_insecure = true
        login_attribute_path: preferred_username
        role_attribute_path: "contains(roles[*], 'grafana_admin') && 'Admin' || contains(roles[*], 'grafana_developer') && 'Editor' || contains(roles[*], 'grafana_viewer') || 'Viewer'"

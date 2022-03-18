@@ -194,10 +194,10 @@ resource "local_file" "ansible_inventory" {
         ansible_ssh_private_key_file: ${var.ssh-private-key}
       ${join("\n    ", formatlist("%s:\n      ansible_host: %s\n      ansible_user: ubuntu\n      ansible_ssh_private_key_file: ${var.ssh-private-key}\n      ansible_ssh_common_args: '-o ProxyCommand=\"ssh -i id_rsa -W %%h:%%p -q ubuntu@${azurerm_linux_virtual_machine.master-node.public_ip_address}\"'", azurerm_linux_virtual_machine.worker-nodes.*.name, azurerm_linux_virtual_machine.worker-nodes.*.private_ip_address))}
     children:
-      hpc-master:
+      hpc_master:
         hosts:
           ${azurerm_linux_virtual_machine.master-node.name}:
-      hpc-worker:
+      hpc_worker:
         hosts:
           ${join("\n        ", formatlist("%s:", azurerm_linux_virtual_machine.worker-nodes.*.name))}
   EOT

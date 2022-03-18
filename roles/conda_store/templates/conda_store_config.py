@@ -19,7 +19,7 @@ c.CondaStore.conda_included_packages = [
 
 c.S3Storage.internal_endpoint = "localhost:{{ minio_internal_port }}"
 c.S3Storage.internal_secure = False
-c.S3Storage.external_endpoint = "{{ traefik_domain | default(hostvars[groups['hpc-master'][0]].ansible_host) }}:{{ minio_external_port }}"
+c.S3Storage.external_endpoint = "{{ traefik_domain | default(hostvars[groups['hpc_master'][0]].ansible_host) }}:{{ minio_external_port }}"
 c.S3Storage.external_secure = True
 c.S3Storage.access_key = "{{ minio_username }}"
 c.S3Storage.secret_key = "{{ minio_password }}"
@@ -42,10 +42,10 @@ c.CondaStoreServer.url_prefix = "{{ conda_store_prefix }}"
 # ==================================
 #         auth settings
 # ==================================
-c.GenericOAuthAuthentication.access_token_url = "https://{{ traefik_domain | default(hostvars[groups['hpc-master'][0]].ansible_host) }}/auth/realms/{{ keycloak_realm }}/protocol/openid-connect/token"
-c.GenericOAuthAuthentication.authorize_url = "https://{{ traefik_domain | default(hostvars[groups['hpc-master'][0]].ansible_host) }}/auth/realms/{{ keycloak_realm }}/protocol/openid-connect/auth"
-c.GenericOAuthAuthentication.user_data_url = "https://{{ traefik_domain | default(hostvars[groups['hpc-master'][0]].ansible_host) }}/auth/realms/{{ keycloak_realm }}/protocol/openid-connect/userinfo"
-c.GenericOAuthAuthentication.oauth_callback_url = "https://{{ traefik_domain | default(hostvars[groups['hpc-master'][0]].ansible_host) }}/conda-store/oauth_callback"
+c.GenericOAuthAuthentication.access_token_url = "https://{{ traefik_domain | default(hostvars[groups['hpc_master'][0]].ansible_host) }}/auth/realms/{{ keycloak_realm }}/protocol/openid-connect/token"
+c.GenericOAuthAuthentication.authorize_url = "https://{{ traefik_domain | default(hostvars[groups['hpc_master'][0]].ansible_host) }}/auth/realms/{{ keycloak_realm }}/protocol/openid-connect/auth"
+c.GenericOAuthAuthentication.user_data_url = "https://{{ traefik_domain | default(hostvars[groups['hpc_master'][0]].ansible_host) }}/auth/realms/{{ keycloak_realm }}/protocol/openid-connect/userinfo"
+c.GenericOAuthAuthentication.oauth_callback_url = "https://{{ traefik_domain | default(hostvars[groups['hpc_master'][0]].ansible_host) }}/conda-store/oauth_callback"
 c.GenericOAuthAuthentication.client_id = "{{ conda_store_client_id }}"
 c.GenericOAuthAuthentication.client_secret = "{{ conda_store_client_secret }}"
 c.GenericOAuthAuthentication.access_scope = "profile"
