@@ -57,3 +57,10 @@
      objectClass:
        - top
        - domain
+
+ - name: Allow OpenLDAP through firewall
+   become: true
+   community.general.ufw:
+     rule: allow
+     name: OpenLDAP LDAP
+   when: firewall_enabled
