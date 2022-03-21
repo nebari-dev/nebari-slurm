@@ -31,7 +31,7 @@
    copy:
      content: |
        [Unit]
-       Description=Slrum node daemon
+       Description=Slurm node daemon
        After=network.target munge.service remote-fs.target
        ConditionPathExists=/etc/slurm-llnl/slurm.conf
 

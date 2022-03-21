@@ -678,7 +678,7 @@
         "#d44a3a"
       ],
       "datasource": "Prometheus",
-      "description": "The agent mechanism helps to control communication between the Slrum daemons and the controller for a best effort.",
+      "description": "The agent mechanism helps to control communication between the Slurm daemons and the controller for a best effort.",
       "fieldConfig": {
         "defaults": {
           "custom": {}
