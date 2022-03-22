@@ -72,3 +72,11 @@
      enabled: true
      state: restarted
    when: _slurm_config.changed or _slurm_cgroup_config.changed or _slurmd_service.changed or _slurmd_package.changed
+
+ - name: Allow slurmd through firewall
+   become: true
+   community.general.ufw:
+     rule: allow
+     port: "{{ slurm_config.SlurmdPort }}"
+     proto: tcp
+   when: firewall_enabled
