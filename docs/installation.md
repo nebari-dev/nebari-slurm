@@ -90,7 +90,7 @@ hpc02-test
 hpc04-test
 ```
 
-Arbitrary additional groups with name `partition-<name>` may be added
+Arbitrary additional groups with name `partition_<name>` may be added
 to create additional slurm partition groups of name `<name>`. This can
 be useful if you want a Slurm partition for on the gpu or high memory
 nodes.
