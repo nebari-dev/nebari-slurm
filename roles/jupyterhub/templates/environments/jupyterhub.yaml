@@ -13,7 +13,6 @@ dependencies:
       - jupyterhub-traefik-proxy
       # jupyterhub-ssh has not made a release yet
       - git+https://github.com/yuvipanda/jupyterhub-ssh.git
-      # batchspawner latest slurm fixes
-      - https://github.com/jupyterhub/batchspawner/archive/129951ad11e3049567b94adb8c9725dc22225a1a.tar.gz
+      - batchspawner==1.1.0
       # cdsdashboards
       - cdsdashboards==0.5.0b2
