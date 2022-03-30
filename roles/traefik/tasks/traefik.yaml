@@ -89,11 +89,13 @@
    copy:
      src: "{{ traefik_tls_certificate }}"
      dest: /etc/traefik/certs/{{ traefik_tls_certificate | basename }}
+     remote_src: "{{ traefik_tls_certificate_remote_src | default(false) }}"
      mode: '444'
      owner: traefik
      group: traefik
    when: traefik_tls_certificate is defined
    notify: restart services traefik
+   register: _traefik_tls_certificate
 
 
  - name: Copy TLS key if provided
@@ -101,11 +103,13 @@
    copy:
      src: "{{ traefik_tls_key }}"
      dest: /etc/traefik/certs/{{ traefik_tls_key | basename }}
+     remote_src: "{{ traefik_tls_key_remote_src | default(false) }}"
      mode: '0400'
      owner: traefik
      group: traefik
    when: traefik_tls_key is defined
    notify: restart services traefik
+   register: _traefik_tls_key
 
 
  - name: Copy traefik configuration
