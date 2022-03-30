@@ -20,5 +20,4 @@ dependencies:
       - https://github.com/mamba-org/gator/archive/conda-store-integration.tar.gz
       # vscode jupyterlab launcher
       - git+https://github.com/betatim/vscode-binder
-      # batchspawner latest slurm fixes
-      - https://github.com/jupyterhub/batchspawner/archive/1decdf259a25c8e33e90de7a5817da11a92c0326.tar.gz
+      - batchspawner==1.1.0
