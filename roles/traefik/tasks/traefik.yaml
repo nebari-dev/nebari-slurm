@@ -94,6 +94,7 @@
      group: traefik
    when: traefik_tls_certificate is defined
    notify: restart services traefik
+   register: _traefik_tls_certificate
 
 
  - name: Copy TLS key if provided
@@ -106,6 +107,7 @@
      group: traefik
    when: traefik_tls_key is defined
    notify: restart services traefik
+   register: _traefik_tls_key
 
 
  - name: Copy traefik configuration
