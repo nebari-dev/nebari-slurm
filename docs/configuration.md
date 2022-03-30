@@ -292,7 +292,10 @@ traefik_tls_key: /path/to/MyKey.key
 
 For testing out this optional it is easy to generate your own
 self-signed certificate. Substitute all of the values for values that
-fit your use case.
+fit your use case. If you need to copy the certificate and/or key from a
+location on the remote server (as opposed to a local file on the Ansible
+host), you can also add `traefik_tls_certificate_remote_src: true` and
+`traefik_tls_key_remote_src: true`, respectively.
 
 ```shell
 export QHUB_HPC_DOMAIN=example.com
