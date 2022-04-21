@@ -240,8 +240,8 @@ c.QHubHPCSpawner.req_memory = '1' # GB
 c.QHubHPCSpawner.req_nprocs = '1'
 c.QHubHPCSpawner.req_conda_environment_prefix = '{{ miniforge_home }}/envs/{{ jupyterhub_lab_environment | basename | splitext | first }}'
 c.QHubHPCSpawner.req_prologue = '''
-# ensure user has link to shared directory
-if [ ! -L "$HOME/share" ]; then
+# ensure user has link to the shared directory, if it exists
+if [ -d "/home/share" ] && [ ! -L "$HOME/share" ]; then
   ln -s /home/share "$HOME/share"
 fi
 
