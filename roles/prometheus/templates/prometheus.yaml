@@ -22,7 +22,7 @@ rule_files:
 scrape_configs:
   - job_name: 'prometheus'
     static_configs:
-    - targets:
+      - targets:
         - 'localhost:{{ prometheus_port }}'
 {% for host in groups['all'] %}
         - '{{ host }}:{{ node_exporter_port }}'
