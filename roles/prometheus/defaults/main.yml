@@ -23,3 +23,5 @@ conda_store_prefix: "/conda-store"
 
 # role: keycloak
 keycloak_port: "30020"
+
+prometheus_additional_scrape_configs: []

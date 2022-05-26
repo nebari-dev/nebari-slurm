@@ -304,6 +304,21 @@ openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -sha256 -days 3
   -nodes
 ```
 
+## Prometheus
+
+### Adding additional scrape configs
+
+If you want to add additional jobs/targets for Prometheus to scrape and ingest, you can
+use the `prometheus_additional_scrape_configs` variable to define your own:
+
+```yaml
+prometheus_additional_scrape_configs:
+  - job_name: my_job
+    static_configs:
+      - targets:
+        - 'example.com:9100'
+```
+
 ## Backups
 
 Backups are performed in QHub HPC via [restic](https://restic.net/)

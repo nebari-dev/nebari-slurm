@@ -63,3 +63,7 @@ scrape_configs:
     static_configs:
       - targets:
         - 'localhost:{{ keycloak_port }}'
+
+{% if prometheus_additional_scrape_configs %}
+{{ prometheus_additional_scrape_configs | to_nice_yaml(indent=2) | indent(width=2, first=True) }}
+{% endif %}
