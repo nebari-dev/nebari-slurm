@@ -79,7 +79,7 @@ nfs_client_mounts:
 
 You may mount arbitrary cifs/samba or windows file shares with
 `samba_client_mounts`. The `username`, `password`, `options`, and
-`domain` fields are optional. 
+`domain` fields are optional.
 
 ```yaml
 samba_client_mounts:
@@ -94,7 +94,7 @@ samba_client_mounts:
   ...
 ```
 
-## JupyterHub 
+## JupyterHub
 
 ### Setting arbitrary traitlets in JupyterHub
 
@@ -111,7 +111,7 @@ jupyterhub_custom:
 ### Arbitrary additional files as configuration
 
 You may add additional files that are run at the end of JupyterHub's
-configuration via Traitlets. 
+configuration via Traitlets.
 
 ```yaml
 jupyterhub_additional_config:
@@ -135,7 +135,7 @@ idle_culler:
   cull_every: 3600 # 1 hour
 ```
 
- - `timeout` is the time that a user is inactive 
+ - `timeout` is the time that a user is inactive
  - `cull_every` is the interval to delete inactive jupyterlab instances
 
 ### Set default UI to classic jupyter notebooks
@@ -160,7 +160,7 @@ jupyterhub_qhub_options_form: false
 
 Additional services can be added to the `jupyterhub_services`
 variable. Currently this is only `<service-name>:
-<service-apikey>`. You must keep the `dask_gatway` section.
+<service-apikey>`. You must keep the `dask_gateway` section.
 
 ```yaml
 jupyterhub_services:
@@ -336,4 +336,3 @@ At any time you can trigger a manual backup. SSH into the master node.
 ```shell
 sudo systemctl start restic-backup.service
 ```
-
