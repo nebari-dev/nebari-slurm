@@ -119,14 +119,6 @@ c.JupyterHub.authenticator_class = QHubAuthenticator
 # -------------------- Base Spawner --------------------
 
 class QHubHPCSpawnerBase(SlurmSpawner):
-  async def poll(self):
-      # on server restart the IP and port appears to change when poll() is called
-      # on the server object. This shim ensures that those are preserved
-      ip, port = self.server.ip, self.server.port
-      value = await super().poll()
-      self.server.ip, self.server.port = ip, port
-      return value
-
   req_conda_environment_prefix = Unicode('',
         help="Conda environment prefix to launch jupyterlab"
     ).tag(config=True)
