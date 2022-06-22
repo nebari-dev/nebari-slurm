@@ -1,7 +1,7 @@
 HPC01_TEST = "hpc01-test" + (ENV['HPC_VM_PREFIX'] || '')
 
 Vagrant.configure("2") do |config|
-  config.vm.box = "generic/ubuntu2004"
+  config.vm.box = "ubuntu/focal64"
 
   # forces to use $HOME/.vagrant.d/insecure_private_key' we need the
   # ssh key to be the same when /home get mounted on nfs
