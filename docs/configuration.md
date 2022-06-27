@@ -319,6 +319,29 @@ prometheus_additional_scrape_configs:
         - 'example.com:9100'
 ```
 
+## Grafana
+
+### Specifying version
+
+The latest Grafana version will be installed by default but a specific or minimum
+version can be specified with `grafana_version`:
+
+```yaml
+grafana_version: "=9.0.0"  # Pin to 9.0.0
+grafana_version: ">=9.0.0"  # Install latest version only if current version is <9.0.0
+```
+
+## Adding additional configuration
+
+You can add additional configuration to the `grafana.ini` file using
+`grafana_additional_config`:
+
+```yaml
+grafana_additional_config: |
+  [users]
+  viewers_can_edit = true  # Allow Viewers to edit but not save dashboards
+```
+
 ## Backups
 
 Backups are performed in QHub HPC via [restic](https://restic.net/)

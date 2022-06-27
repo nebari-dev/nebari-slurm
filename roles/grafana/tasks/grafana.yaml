@@ -13,8 +13,8 @@
  - name: Install grafana
    become: true
    apt:
-     name: grafana
-     state: latest
+     name: grafana{{ grafana_version }}
+     state: "{% if grafana_version %}present{% else %}latest{% endif %}"
      cache_valid_time: 3600
 
  - name: Create keycloak client for grafana
@@ -154,6 +154,11 @@
        tls_skip_verify_insecure = true
        login_attribute_path: preferred_username
        role_attribute_path: "contains(roles[*], 'grafana_admin') && 'Admin' || contains(roles[*], 'grafana_developer') && 'Editor' || contains(roles[*], 'grafana_viewer') || 'Viewer'"
+
+       [dashboards]
+       min_refresh_interval = 1s
+
+       {{ grafana_additional_config }}
      dest: /etc/grafana/grafana.ini
      owner: root
      group: grafana

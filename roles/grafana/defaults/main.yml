@@ -10,6 +10,8 @@ grafana_dashboards:
   - traefik
   - conda_store
   - keycloak
+grafana_version: ""
+grafana_additional_config: ""
 
 # role: prometheus
 prometheus_port: "9090"
