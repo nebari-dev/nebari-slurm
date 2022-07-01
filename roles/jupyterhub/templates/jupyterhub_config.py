@@ -94,7 +94,7 @@ def sync_users(username, min_uid=1_000_000, max_uid=1_000_000_000):
 
         payload = user
         payload['attributes']['jupyterhubCheck'] = 'true'
-        payload['attributes']['homeDirectory'] = f'/home/{username}'
+        payload['attributes']['homeDirectory'] = f"/home/{user['username']}"
 
         initial_uid = (hash(user['username']) % (max_uid - min_uid)) + min_uid
         while initial_uid in current_uids:
