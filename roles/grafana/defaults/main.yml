@@ -10,6 +10,7 @@ grafana_dashboards:
   - traefik
   - conda_store
   - keycloak
+grafana_dashboards_folder: ""
 grafana_version: ""
 grafana_additional_config: ""
 
