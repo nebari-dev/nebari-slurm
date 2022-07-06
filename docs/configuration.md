@@ -321,6 +321,17 @@ prometheus_additional_scrape_configs:
 
 ## Grafana
 
+### Changing provisioned dashboards folder
+
+All provisioned dashboards in the `grafana_dashboards` variable will be added to the
+"General" folder by default. "General" is a special folder where anyone can add
+dashboards and can't be restricted so if you wish to separate provisioned dashboards you
+can set `grafana_dashboards_folder`:
+
+```yaml
+grafana_dashboards_folder: "Official"
+```
+
 ### Specifying version
 
 The latest Grafana version will be installed by default but a specific or minimum
@@ -331,7 +342,7 @@ grafana_version: "=9.0.0"  # Pin to 9.0.0
 grafana_version: ">=9.0.0"  # Install latest version only if current version is <9.0.0
 ```
 
-## Adding additional configuration
+### Adding additional configuration
 
 You can add additional configuration to the `grafana.ini` file using
 `grafana_additional_config`:
