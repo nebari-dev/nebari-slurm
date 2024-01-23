@@ -36,7 +36,7 @@ jobs:
           brew tap hashicorp/tap
           brew install hashicorp/tap/vagrant
 
-          - name: Show Vagrant version
+      - name: Show Vagrant version
         run: vagrant --version
 
       - name: Run vagrant up
