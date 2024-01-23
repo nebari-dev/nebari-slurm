@@ -31,7 +31,12 @@ jobs:
           ansible-galaxy collection install community.general
           ansible-galaxy collection install ansible.posix
 
-      - name: Show Vagrant version
+      - name: Vagrant Install
+        run: |
+          brew tap hashicorp/tap
+          brew install hashicorp/tap/vagrant
+
+          - name: Show Vagrant version
         run: vagrant --version
 
       - name: Run vagrant up
