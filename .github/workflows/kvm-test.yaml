@@ -10,7 +10,7 @@ jobs:
   # https://github.com/jonashackt/vagrant-github-actions
   test-kvm:
     name: "KVM Test"
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 
