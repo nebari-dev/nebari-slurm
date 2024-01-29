@@ -2,17 +2,13 @@ name: jupyterhub
 channels:
   - conda-forge
 dependencies:
-  - pip
-  - jupyterhub{{ jupyterhub_version }}
-  - oauthenticator
-  - jupyterhub-idle-culler
-  - jupyterhub-systemdspawner
-  - python-keycloak
+  - pip==21.1.2
+  - jupyterhub==2.3.0
+  - jupyterhub-kubespawner==1.1.0
+  - oauthenticator==14.1.0
+  - escapism==1.0.1
+  - cdsdashboards==0.6.3
+  - jupyterhub-idle-culler==1.0
   - pip:
-      - qhub-jupyterhub-theme==0.3.1
-      - jupyterhub-traefik-proxy
-      # jupyterhub-ssh has not made a release yet
-      - git+https://github.com/yuvipanda/jupyterhub-ssh.git
-      - batchspawner==1.1.0
-      # cdsdashboards
-      - cdsdashboards==0.5.0b2
+      - qhub-jupyterhub-theme==0.3.6
+      - python-keycloak==0.26.1
