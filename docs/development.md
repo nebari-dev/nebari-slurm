@@ -1,176 +1,152 @@
-## Remote Development
+# Development Guide
 
-Running and developing on a remote Linux machine running `libvirt`.
+Welcome to the QHub HPC development guide! This guide will help you set up your development environment and tools for working with QHub HPC using Vagrant to orchestrated the virtual machines (VMs) and Ansible to provision the necessary infrastructure.
 
-In this example, using a Mac laptop.
+## Prerequisites
 
-### Set up SSH on local machine
+Before you begin, make sure you have the following prerequisites installed on your system:
 
-In ~/.ssh/config add:
+- Vagrant: Vagrant is a tool for building and managing virtual machine environments. Install the latest version for your operating system.
 
-```
-Host gpu
-  HostName gpu.quansight.dev
-  User dlester
-  IdentityFile ~/.ssh/id_rsa
-  Port 2222
-#  LocalForward 8443 192.168.121.171:443
-```
+- Virtualization Provider: Depending on your preference, choose either Libvirt or VirtualBox as your virtualization provider.
 
-Connect to that machine:
+- Git: Git is a version control system. You'll need it to clone the QHub HPC repository.
 
-```
-ssh gpu
-```
+Let's get started!
 
-### Clone repo and setup Nix shell
+## Additional Development Tasks
 
-Inside the remote:
+It is recommended to use a personal environment for development. This will allow you to install additional packages and tools without affecting your system's global environment. We recommend using Conda to create a personal environment but you could use pipenv or virtualenv as well. Keep in mind that Ansible cannot run on a Windows host natively, though it can run under the Windows Subsystem for Linux (WSL).
 
-```
-git clone https://github.com/Quansight/qhub-hpc
-cd qhub-hpc
-nix develop
+### Installing Ansible
 
-# Install some ansible addons
-ansible-galaxy collection install -r requirements.yaml
+We recommend installing Ansible via Conda for a seamless development experience. First, you need to install Conda:
+
+```bash
+conda create -n qhub-hpc -c conda-forge ansible
+conda activate qhub-hpc
 ```
 
-The nix-shell command installs packages mentioned in `flake.nix` and launches a shell.
+This creates a Conda environment named qhub-hpc and installs Ansible within it. You can activate this environment whenever you need to use Ansible for QHub HPC development tasks.
 
-### Configure traefik to expect traffic from localhost
-Modify the all.yaml file to define the traefik.domain ansible variable as below.
+If you prefer not to use Conda and want to install Ansible using other methods, please follow the official Ansible installation instructions for your specific platform.
 
-```yaml
-traefik:
-  ... # other variables defined here
-  domain: localhost
+## Choose a Virtualization Provider
+
+QHub HPC supports two virtualization providers: Libvirt and QEMU. You can choose the one that suits your needs. If you're unsure, we recommend using Libvirt.
+
+### Providers
+
+Vagrant is a versatile tool that can manage different types of machines through various providers. While Vagrant ships with support for VirtualBox, Hyper-V, and Docker, it can work with other providers as well. Choosing the right provider can offer features that align with your specific use case.
+
+Alternate providers may offer advantages such as better stability and performance. For example, if you intend to use Vagrant for significant workloads, VMware providers are often recommended due to their robust support and reliability, surpassing VirtualBox in many scenarios.
+
+Before you can use a different provider, you must install it using the Vagrant plugin system. Once installed, using the provider is straightforward and aligns with Vagrant's user-friendly approach.
+
+For QHub HPC development, we provide instructions for two providers: Libvirt and virtualbox. Follow the relevant subsection for your chosen provider to set up your development environment.
+
+### Libvirt
+
+Libvirt is a toolkit for managing virtualization platforms. It provides a common API for different virtualization technologies, including QEMU, KVM, Xen, LXC, and VirtualBox. Libvirt is a popular choice for Linux-based systems and is the default provider for Vagrant on Linux.
+
+If you're using a Linux-based system, we recommend using Libvirt as your provider. It offers better performance and stability than VirtualBox and is the default provider for Vagrant on Linux. For installation documentation, please refer to the [Libvirt provider documentation](https://ubuntu.com/server/docs/virtualization-libvirt).
+
+Libvirt will also require you to install a an extension for Vagrant called `vagrant-libvirt`. You can install this extension by running the following command:
+
+```bash
+vagrant plugin install vagrant-libvirt
 ```
 
-### Create and provision VMs
+Note: For more information you can refer to this opensource article on [Libvirt](https://opensource.com/article/21/10/vagrant-libvirt).
 
-Inside the remote still:
+### VirtualBox
 
-```
+VirtualBox is a popular virtualization platform that supports a wide range of operating systems. It is a cross-platform solution that is available for Windows, macOS, and Linux. VirtualBox is the default provider for Vagrant on Windows and macOS.
+
+If you're using Windows or macOS, we recommend using VirtualBox as your provider. It is the default provider for Vagrant on these platforms and offers a stable and reliable experience. For installation documentation, please refer to the [VirtualBox community documentation](https://help.ubuntu.com/community/VirtualBox/Installation).
+
+## Create and Provision VMs
+
+Select one of the available test Vagrant files already present in this repository under the `/tests` directory. For example, if you want to test the `ubuntu1804` Vagrant file, run the following command:
+
+```bash
 cd tests/ubuntu1804
-# OR  cd tests/ubuntu2004
-vagrant up --provider=libvirt
+vagrant up --provider=<provider>
 ```
 
-Note that if someone else has already done this on the same machine, there may be a naming conflict. Either try 
-ubuntu2004 instead, or add your own prefix to avoid a conflict.
+Before creating and provisioning the virtual machines (VMs), please be aware of potential naming conflicts if someone else has already used the same machine. To avoid conflicts, consider one of the following options:
 
-For tests/ubuntu1804, this can be achieved by setting `export HPC_VM_PREFIX='-<my initials>'` before running any vagrant commands.
+1. Choose a Different Ubuntu Version:
+   - Instead of `ubuntu1804`, try using `ubuntu2004` if it's available.
 
-### Connect to hpc01-test VM
+2. Add Your Own Prefix:
+  You can add a unique prefix to the VM names to avoid conflicts. Set an environment variable `HPC_VM_PREFIX` with your chosen prefix before running any Vagrant commands. For example:
 
-On the remote:
+   ```bash
+   export HPC_VM_PREFIX='-<my initials>'
+    ```
 
-```
-vagrant ssh
-```
+  This will prefix all VM names with the string you provide. For example, if you set `HPC_VM_PREFIX='-abc'`, the VM names will be `abc-ubuntu1804-master`, `abc-ubuntu1804-worker-1`, and so on.
 
-This should ssh into the hpc01-test VM.
+This should spin up the VMs and provision them using Ansible. If you encounter any errors, please refer to the [Troubleshooting] section.
 
-To obtain the IP on the remote network:
+Now that your VMs are up and running, lets populate then with the QHub infrastrcture. To do so, copy the contents of `templates.inventory/*` over into the newly created `.vagrant/provisioners/ansible/inventory/` directory. For example considering that you are in the `tests/ubuntu1804` directory, run the following command:
 
-```
-ip addr
-```
-
-This could be 192.168.121.171 for example.
-
-To be able to connect all the way through, back on the host Mac add/update to ~/.ssh/config:
-
-```
-Host gpu
-  HostName gpu.quansight.dev
-  User dlester
-  IdentityFile ~/.ssh/id_rsa
-  Port 2222
-  LocalForward 8443 192.168.121.171:443
-
-Host vm
-  HostName 192.168.121.171
-  user vagrant
-  Port 22
-  ProxyJump gpu 
+```bash
+cp -r ../../templates.inventory/* .vagrant/provisioners/ansible/inventory/
 ```
 
-Note the IP address we obtained for the VM appears twice - once in the (now uncommented LocalForward in gpu), and 
-again in the second section (vm).
+you should now be able to see two new folders being added `host_vars` and `group_vars` under the `.vagrant/provisioners/ansible/inventory/` directory. These folders contain the variables that are used by Ansible to provision the VMs. For more information on the variables, please refer to the [configuration](./configuration.md) page in this documentation.
 
-You should now be able to:
+In the example above, the directory structure should be as follows:
 
-1. Connect direct to the master node (hpc01-test) from your Mac using `ssh vm`
-2. Visit https://localhost:8443/ to view JupyterHub on the master node through the port forward
-
-## Development in VSCode
-
-In VSCode on your Mac, you can install the [Remote SSH](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-ssh) extension.
-
-Cmd+Shift+P to load command palette, select `Remote - SSH: Connect to Host` and `gpu` should show up. You can browse the remote file system and open the qhub-hpc folder.
-
-During development, if you make changes then you may need to re-provision using:
-
+```bash
+tests/ubuntu2004/.vagrant/provisioners/ansible/inventory/
+├── group_vars
+│   ├── all.yaml
+│   ├── hpc_master.yaml
+│   └── hpc_worker.yaml
+├── host_vars
+│   └── hpc01-test.yaml
+└── vagrant_ansible_inventory
 ```
-ssh gpu
 
-# On remote:
-cd qhub-hpc
-nix develop
+Now to make the new changes to propagate, run the following command:
 
-cd tests/ubuntu1804
+```bash
 vagrant provision
 ```
 
-Or it may be easier just to edit/copy the jupyterhub_config.py file to /etc/jupyterhub directly.
-Similarly with source files, or it should also be possible to only run the relevant ansible steps.
+This should now populate the VMs with the QHub infrastructure. You can now access the JupyterHub instance by visiting `https://<master node ip>/` where `<master node ip>` is the ip address of your specific deployment. You will be prompted by the jupyterhub landing page.
 
-To run ansible directly only on tasks tagged 'conda' and 'jupyterhub' on the master node, run this within the nix shell on the gpu machine:
+If you would like to set a DNS record for the master node, you can do so by adding the following line to your `/etc/hosts` file:
 
+```bash
+<master node ip> <your domain name>
 ```
-ansible-playbook -i .vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory --private-key=~/.vagrant.d/insecure_private_key -u vagrant -l hpc_master --tags="conda,jupyterhub" ../../playbook.yaml
+
+and make sure to replace `<master node ip>` with the ip address of your master node and `<your domain name>` with the domain name you would like to use. If using a serivce such as CloudFlare to manage your DNS records, you can also set up an A record to point to the master node ip address and the above step will not be required.
+
+Though, do update the contents of `group_vars/all.yaml` to include the extra field (at the end of the file):
+
+```yaml
+traefik_domain: <your domain name>
 ```
 
-For debugging:
+This will ensure that the traefik reverse proxy is configured to use the domain name you have set.
 
-```
-# Restart JupyterHub to read latest config changes:
+## Checking services
+
+For debugging purposes, you can inspect service status, logs or restart an individual service while connected to the master node. Bellow we give an example of how to do this for the JupyterHub and Slurm services.
+
+```bash
+# Restart JupyterHub:
 systemctl restart jupyterhub
-# Inspect logs
+
+# Inspect logs:
 journalctl -u jupyterhub -e
 ```
 
-SlurmSpawner logs are stored in the worker nodes in the home folder of the user running JupyterLab, eg. /home/example-user/.jupyterhub_slurmspawner_9.log
+`SlurmSpawner` logs are stored in the worker nodes in the home folder of the user running JupyterLab, e.g., `/home/example-user/.jupyterhub_slurmspawner_9.log`
 
-Conda troubles:
-To completely remove and reinstall:
-```
-sudo rm -rf /opt/conda/envs/jupyterhub
-sudo /opt/conda/bin/conda env update -f /opt/conda-environments/jupyterhub.yaml --prefix /opt/conda/envs/jupyterhub
-```
-
-## KVM and libvirt
-
-If you find vagrant is in an inconsistent state and cannot access the VMs, you can destroy manually:
-
-virsh list --all
-# get the machine name
-
-virsh destroy <THE_MACHINE>
-virsh undefine <THE_MACHINE>
-
-# get the volume name
-virsh vol-list default
-
-virsh vol-delete --pool default <THE_VOLUME>
-
-## SQLite
-
-To inspect the database, `ssh vm` then:
-
-```
-sudo apt install sqlite3
-sqlite3 /var/lib/jupyterhub/jupyterhub.sqlite
-```
+## Troubleshooting

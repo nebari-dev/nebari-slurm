@@ -10,7 +10,7 @@ dependencies:
   - cdsdashboards==0.6.3
   - jupyterhub-idle-culler==1.0
   - pip:
-      - qhub-jupyterhub-theme==0.3.6
+      - nebari_jupyterhub_theme==2023.4.1
       - sqlalchemy==1.4.4
       - python-keycloak==0.26.1
       - jupyterhub-traefik-proxy==0.3.0
