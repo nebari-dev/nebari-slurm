@@ -11,4 +11,9 @@ dependencies:
   - jupyterhub-idle-culler==1.0
   - pip:
       - qhub-jupyterhub-theme==0.3.6
+      - sqlalchemy==1.4.4
       - python-keycloak==0.26.1
+      - jupyterhub-traefik-proxy==0.3.0
+      - batchspawner==1.1.0
+      # jupyterhub-ssh has not made a release yet
+      - git+https://github.com/yuvipanda/jupyterhub-ssh.git
