@@ -24,7 +24,7 @@
      dest: "/etc/slurm/slurmdbd.conf"
      owner: root
      group: root
-     mode: 0444
+     mode: 0600
    register: _slurmdbd_config
 
  - name: Copy the slurmdbd systemd service file
