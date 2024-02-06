@@ -33,11 +33,11 @@
        [Unit]
        Description=Slurm controller daemon
        After=network.target munge.service
-       ConditionPathExists=/etc/slurm-llnl/slurm.conf
+       ConditionPathExists=/etc/slurm/slurm.conf
 
        [Service]
        Type=forking
-       User=slurm
+       User=root
        ExecStart=/usr/sbin/slurmctld
        ExecReload=/bin/kill -HUN $MAINPID
        PIDFile={{ slurm_config.SlurmctldPidFile }}

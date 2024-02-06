@@ -1,5 +1,5 @@
 conda_store_enabled: false
-conda_store_version: "0.3.11"
+conda_store_version: "2024.1.1"
 conda_store_port: "5000"
 conda_store_environment: "environments/conda-store.yaml"
 conda_store_prefix: "/conda-store"
@@ -17,6 +17,9 @@ mysql_databases:
   - slurm
   - conda-store
 
+postgresql_databases:
+  - conda-store
+
 mysql_users:
   - username: slurm
     password: W9T0N4ejQBR4RmQCU6GmbbZa
@@ -24,6 +27,11 @@ mysql_users:
   - username: conda-store
     password: eIbmUditL4RbQm0YPeLozRme
     privileges: "*.*:ALL"
+
+postgres_users:
+  - username: conda-store
+    password: eIbmUditL4RbQm0YPeLozRme
+    role: 'CREATEDB,CREATEROLE'
 
 # role: keycloak
 keycloak_port: "30020"

@@ -15,7 +15,7 @@
  - name: ensure that slurm configuration directory exists
    become: true
    file:
-     path: /etc/slurm-llnl
+     path: /etc/slurm
      state: directory
      mode: '0755'
      owner: root
@@ -25,7 +25,7 @@
    become: true
    template:
      src: "templates/slurm.conf"
-     dest: "/etc/slurm-llnl/slurm.conf"
+     dest: "/etc/slurm/slurm.conf"
      owner: root
      group: root
      mode: 0444
@@ -39,7 +39,7 @@
        ConstrainCores=yes
        ConstrainRAMSpace=yes
        ConstrainSwapSpace=yes
-     dest: "/etc/slurm-llnl/cgroup.conf"
+     dest: "/etc/slurm/cgroup.conf"
      owner: root
      group: root
      mode: 0444

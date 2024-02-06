@@ -9,7 +9,7 @@ jupyterhub_proxy_auth_token: "m8dfdKvyVJ0bWTNpbVCQyoCt"
 cdsdashboards_enabled: true
 
 jupyterhub_enabled: false
-jupyterhub_version: "==2.3.0"
+jupyterhub_version: "==4.0.2"
 jupyterhub_port: "15001"
 jupyterhub_base_url: "/"
 jupyterhub_hub_environment: "environments/jupyterhub.yaml"
@@ -21,7 +21,7 @@ jupyterhub_qhub_options_form: true
 
 jupyterhub_config:
   spawner:
-    start_timeout: 60 # seconds
+    start_timeout: 180 # seconds
 
 jupyterhub_services:
   dask_gateway:
@@ -48,7 +48,7 @@ jupyterhub_services:
 jupyterhub_theme:
   template_vars:
     hub_title: "This is QHub HPC"
-    hub_subtitle: "your scalable open source data science laboratory."
+    hub_subtitle: "Your scalable open source data science laboratory."
     welcome: "have fun."
     logo: "https://www.smsu.edu/_files/images/svg/southwest-minnesota-state-university-white-gold-logo.svg"
     primary_color: "#3a1807"
