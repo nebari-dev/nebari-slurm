@@ -22,8 +22,8 @@
    template:
      src: "templates/slurmdbd.conf"
      dest: "/etc/slurm/slurmdbd.conf"
-     owner: root
-     group: root
+     owner: slurm
+     group: slurm
      mode: 0600
    register: _slurmdbd_config
 

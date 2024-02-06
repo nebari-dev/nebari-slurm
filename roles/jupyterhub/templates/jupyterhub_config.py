@@ -322,14 +322,14 @@ c.JupyterHub.services = [
 #==================== THEMING =====================#
 
 import tornado.web
-import qhub_jupyterhub_theme
+import nebari_jupyterhub_theme
 
 c.JupyterHub.extra_handlers = [
-    (r'/custom/(.*)', tornado.web.StaticFileHandler, {"path": qhub_jupyterhub_theme.STATIC_PATH}),
+    (r'/custom/(.*)', tornado.web.StaticFileHandler, {"path": nebari_jupyterhub_theme.STATIC_PATH}),
 ] + c.JupyterHub.extra_handlers
 
 c.JupyterHub.template_paths = [
-    qhub_jupyterhub_theme.TEMPLATE_PATH
+    nebari_jupyterhub_theme.TEMPLATE_PATH
 ] + c.JupyterHub.template_paths
 
 c.JupyterHub.template_vars = {
