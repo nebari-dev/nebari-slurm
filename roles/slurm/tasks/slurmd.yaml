@@ -33,7 +33,7 @@
        [Unit]
        Description=Slurm node daemon
        After=network.target munge.service remote-fs.target
-       ConditionPathExists=/etc/slurm-llnl/slurm.conf
+       ConditionPathExists=/etc/slurm/slurm.conf
 
        [Service]
        Type=forking
