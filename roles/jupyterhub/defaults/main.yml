@@ -48,7 +48,7 @@ jupyterhub_services:
 jupyterhub_theme:
   template_vars:
     hub_title: "This is QHub HPC"
-    hub_subtitle: "your scalable open source data science laboratory."
+    hub_subtitle: "Your scalable open source data science laboratory."
     welcome: "have fun."
     logo: "https://www.smsu.edu/_files/images/svg/southwest-minnesota-state-university-white-gold-logo.svg"
     primary_color: "#3a1807"
