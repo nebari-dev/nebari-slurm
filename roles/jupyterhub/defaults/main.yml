@@ -21,7 +21,7 @@ jupyterhub_qhub_options_form: true
 
 jupyterhub_config:
   spawner:
-    start_timeout: 60 # seconds
+    start_timeout: 180 # seconds
 
 jupyterhub_services:
   dask_gateway:
