@@ -38,7 +38,7 @@
 
        [Service]
        Type=forking
-       User=root
+       User=slurm
        ExecStart=/usr/sbin/slurmdbd
        ExecReload=/bin/kill -HUN $MAINPID
        PIDFile={{ slurmdbd_config.PidFile }}
