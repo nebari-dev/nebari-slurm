@@ -1,0 +1,8 @@
+postgres_enabled: true
+postgres_databases:
+  - conda-store
+
+postgres_users:
+  - username: conda-store
+    password: eIbmUditL4RbQm0YPeLozRme
+    role: 'CREATEDB,CREATEROLE'

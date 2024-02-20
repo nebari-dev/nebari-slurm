@@ -1,0 +1,4 @@
+---
+ - name: Install postgres
+   include_tasks: postgres.yaml
+   when: postgres_enabled
