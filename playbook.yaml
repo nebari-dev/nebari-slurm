@@ -23,6 +23,7 @@
     - cifs
     - nfs
     - mysql
+    - postgresql
     - minio
     - backups
     - traefik
