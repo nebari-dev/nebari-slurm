@@ -5,6 +5,7 @@
     name:
       - postgresql
       - postgresql-contrib
+      - python3-psycopg2
     state: latest
     cache_valid_time: 3600
 
