@@ -41,3 +41,8 @@ mysql_users:
   - username: conda-store
     password: eIbmUditL4RbQm0YPeLozRme
     privileges: "*.*:ALL"
+
+postgres_users:
+  - username: conda-store
+    password: eIbmUditL4RbQm0YPeLozRme
+    role: 'CREATEDB,CREATEROLE'
