@@ -31,4 +31,3 @@
      role_attr_flags: "{{ item.role }}"
    with_items: "{{ postgres_users }}"
    become_user: postgres
-   become: yes
