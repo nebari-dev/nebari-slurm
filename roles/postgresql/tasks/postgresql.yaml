@@ -20,6 +20,7 @@
      state: present
      name: "{{ item }}"
    become_user: postgres
+   become: yes
    with_items: "{{ postgres_databases }}"
 
  - name: Create PostgreSQL User
