@@ -19,7 +19,6 @@
    postgresql_db:
      state: present
      name: "{{ item }}"
-   become: yes
    become_user: postgres
    with_items: "{{ postgres_databases }}"
 
