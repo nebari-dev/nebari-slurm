@@ -1,8 +1,10 @@
-# QHub HPC
+# Nebari Slurm
 
-QHub HPC is an opinionated open source deployment of
+*This project is being renamed from QHub HPC to Nebari Slurm.*
+
+Nebari Slurm is an opinionated open source deployment of
 [jupyterhub](https://jupyterhub.readthedocs.io/en/stable/) based on an
-HPC jobscheduler. QHub HPC is a "distribution" of these packages
+HPC jobscheduler. Nebari Slurm is a "distribution" of these packages
 much like [Debian](https://www.debian.org/) and
 [Ubuntu](https://ubuntu.com/) are distributions of
 [Linux](https://en.wikipedia.org/wiki/Linux). The high level goal of
@@ -57,7 +59,7 @@ ansible-galaxy collection install -r requirements.yaml
 
 # Testing
 
-There are tests for deploying QHub HPC on a virtual machine
+There are tests for deploying Nebari Slurm on a virtual machine
 provisioner and in the cloud.
 
 ## Virtual Machines
@@ -107,7 +109,7 @@ Grafana is accessible via `<master node ip>:3000`
 
 # License
 
-[QHub HPC is BSD3 licensed](LICENSE).
+[Nebari Slurm is BSD3 licensed](LICENSE).
 
 
 # Contributing
