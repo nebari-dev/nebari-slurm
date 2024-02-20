@@ -27,7 +27,7 @@
 - name: Create keycloak client for conda_store
   community.general.keycloak_client:
     auth_client_id: admin-cli
-    auth_keycloak_url: "http://localhost:{{ keycloak_port }}/auth"
+    auth_keycloak_url: "https://localhost:{{ keycloak_port }}/auth"
     auth_realm: master
     auth_username: "{{ keycloak_admin_username }}"
     auth_password: "{{ keycloak_admin_password }}"
@@ -62,7 +62,7 @@
 - name: Create conda-store keycloak roles
   community.general.keycloak_role:
     auth_client_id: admin-cli
-    auth_keycloak_url: "http://localhost:{{ keycloak_port }}/auth"
+    auth_keycloak_url: "https://localhost:{{ keycloak_port }}/auth"
     auth_realm: master
     auth_username: "{{ keycloak_admin_username }}"
     auth_password: "{{ keycloak_admin_password }}"
@@ -82,7 +82,7 @@
 - name: Create conda-store keycloak role mappings to groups
   community.general.keycloak_client_rolemapping:
     auth_client_id: admin-cli
-    auth_keycloak_url: "http://localhost:{{ keycloak_port }}/auth"
+    auth_keycloak_url: "https://localhost:{{ keycloak_port }}/auth"
     auth_realm: master
     auth_username: "{{ keycloak_admin_username }}"
     auth_password: "{{ keycloak_admin_password }}"
