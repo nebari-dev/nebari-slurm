@@ -189,10 +189,10 @@ resource "local_file" "ansible_inventory" {
   all:
     hosts:
       ${azurerm_linux_virtual_machine.master-node.name}:
-        ansible_host: ${azurerm_linux_virtual_machine.master-node.public_ip_address} 
+        ansible_ssh_host: ${azurerm_linux_virtual_machine.master-node.public_ip_address}
         ansible_user: ubuntu
         ansible_ssh_private_key_file: ${var.ssh-private-key}
-      ${join("\n    ", formatlist("%s:\n      ansible_host: %s\n      ansible_user: ubuntu\n      ansible_ssh_private_key_file: ${var.ssh-private-key}\n      ansible_ssh_common_args: '-o ProxyCommand=\"ssh -i id_rsa -W %%h:%%p -q ubuntu@${azurerm_linux_virtual_machine.master-node.public_ip_address}\"'", azurerm_linux_virtual_machine.worker-nodes.*.name, azurerm_linux_virtual_machine.worker-nodes.*.private_ip_address))}
+      ${join("\n    ", formatlist("%s:\n      ansible_ssh_host: %s\n      ansible_user: ubuntu\n      ansible_ssh_private_key_file: ${var.ssh-private-key}\n      ansible_ssh_common_args: '-o ProxyCommand=\"ssh -i id_rsa -W %%h:%%p -q ubuntu@${azurerm_linux_virtual_machine.master-node.public_ip_address}\"'", azurerm_linux_virtual_machine.worker-nodes.*.name, azurerm_linux_virtual_machine.worker-nodes.*.private_ip_address))}
     children:
       hpc_master:
         hosts:

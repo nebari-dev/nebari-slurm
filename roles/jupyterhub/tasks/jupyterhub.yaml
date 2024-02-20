@@ -69,7 +69,7 @@
          protocol: openid-connect
          protocolMapper: oidc-group-membership-mapper
      redirect_uris:
-       - "https://{{ traefik_domain | default(hostvars[groups['hpc_master'][0]].ansible_host) }}/hub/oauth_callback"
+       - "https://{{ traefik_domain | default(hostvars[groups['hpc_master'][0]].ansible_ssh_host) }}/hub/oauth_callback"
    register: jupyterhub_client
 
  - name: Create JupyterHub Keycloak roles

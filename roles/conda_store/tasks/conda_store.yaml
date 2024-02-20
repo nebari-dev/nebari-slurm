@@ -56,7 +56,7 @@
          protocol: openid-connect
          protocolMapper: oidc-group-membership-mapper
      redirect_uris:
-       - "https://{{ traefik_domain | default(hostvars[groups['hpc_master'][0]].ansible_host) }}/conda-store/oauth_callback"
+       - "https://{{ traefik_domain | default(hostvars[groups['hpc_master'][0]].ansible_ssh_host) }}/conda-store/oauth_callback"
    register: conda_store_client
 
  - name: Create conda-store keycloak roles
