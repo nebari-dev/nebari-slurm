@@ -8,7 +8,6 @@ import os
 import sys
 import glob
 
-from jupyterhub_traefik_proxy import TraefikTomlProxy
 from batchspawner import SlurmSpawner
 from traitlets import Unicode, Callable
 import keycloak
