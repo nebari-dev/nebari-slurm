@@ -6,6 +6,7 @@
       - postgresql
       - postgresql-contrib
       - python3-psycopg2
+      - acl
     state: latest
     cache_valid_time: 3600
 
@@ -31,3 +32,4 @@
      role_attr_flags: "{{ item.role }}"
    with_items: "{{ postgres_users }}"
    become_user: postgres
+   become: yes
