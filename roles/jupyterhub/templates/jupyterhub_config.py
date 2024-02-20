@@ -184,44 +184,12 @@ class QHubHPCSpawnerBase(SlurmSpawner):
     return ''.join([self.main_options_form, self.conda_options_form])
 {% endif %}
 
-{% if cdsdashboards_enabled %}
-# -------------------- Specify Dashboard Instance Size --------------------
-from cdsdashboards.app import CDS_TEMPLATE_PATHS
-from cdsdashboards.hubextension import cds_extra_handlers
-
-from cdsdashboards.hubextension.spawners.variablemixin import VariableMixin, MetaVariableMixin
-
-dashboard_packages = ['cdsdashboards-singleuser']
-
-class QHubHPCSpawner(QHubHPCSpawnerBase, VariableMixin, metaclass=MetaVariableMixin):
-    pass
-
-c.VariableMixin.default_presentation_cmd = ['jhsingle-native-proxy']
-
-c.JupyterHub.allow_named_servers = True
-
-c.CDSDashboardsConfig.builder_class = 'cdsdashboards.builder.processbuilder.ProcessBuilder'
-
-c.JupyterHub.template_paths = CDS_TEMPLATE_PATHS
-c.JupyterHub.extra_handlers = cds_extra_handlers
-
-c.CDSDashboardsConfig.conda_envs = conda_envs_w_packages(jupyterlab_packages + dashboard_packages, names_only=True)
-
-# Force dashboard creator to select an instance size
-c.CDSDashboardsConfig.spawn_default_options = False
-
-c.JupyterHub.default_url = '/hub/home'
-
-{% else %}
-
 # Assign Qhub Spawner
 class QHubHPCSpawner(QHubHPCSpawnerBase):
     pass
 
 c.JupyterHub.template_paths = []
 c.JupyterHub.extra_handlers = []
-
-{% endif %}
 
 c.JupyterHub.spawner_class = QHubHPCSpawner
 
@@ -274,16 +242,7 @@ echo '{"condaStoreUrl": "/conda-store"}' > $HOME/.jupyter/lab/user-settings/@mam
 echo '{"CondaKernelSpecManager": {"name_format": "{environment}"}}' > $HOME/.jupyter/jupyter_config.json
 {% endif %}
 
-{% if cdsdashboards_enabled %}
-# Overwrite conda_environment_prefix when using cdsdashboards
-if [ -n '{{ '{{ conda_env }}' }}' ]; then
-    export PATH={{miniforge_home}}/envs/{{ '{{ conda_env }}' }}/bin:$PATH
-else
-    export PATH={{ '{{ conda_environment_prefix }}' }}/bin:$PATH
-fi
-{% else %}
 export PATH={{ '{{ conda_environment_prefix }}' }}/bin:$PATH
-{% endif %}
 
 {% raw %}
 which jupyterhub-singleuser
@@ -336,7 +295,6 @@ c.JupyterHub.template_vars = {
 {% for key, value in jupyterhub_theme.template_vars.items() %}
     '{{ key }}': '{{ value }}',
 {% endfor %}
-{% if cdsdashboards_enabled %}'cdsdashboards_enabled': True{% endif %}
 }
 
 # ======================= CUSTOM ==================
