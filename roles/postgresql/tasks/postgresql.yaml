@@ -5,8 +5,8 @@
     name:
       - postgresql
       - postgresql-contrib
-   state: latest
-   cache_valid_time: 3600
+    state: latest
+    cache_valid_time: 3600
 
  - name: Ensure PostgreSQL service is running
    systemd:
