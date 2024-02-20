@@ -199,9 +199,9 @@ by setting the following ansible variables to copy files onto all
 nodes, all nodes in a particular group or only onto a particular node
 respectively.
 
-    - `copy_files_all`
-    - `copy_files_[ansible_group_name]`
-    - `copy_files_[ansible_host_name]`
+- `copy_files_all`
+- `copy_files_[ansible_group_name]`
+- `copy_files_[ansible_ssh_host_name]`
 
 Copying two files/folders onto the hpc02-test node could be done by
 setting the following ansible variable e.g. in the

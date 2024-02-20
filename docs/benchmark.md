@@ -87,7 +87,7 @@ client to test the other direction.
 ### Latency
 
 [ping](https://linux.die.net/man/8/ping) is a great way to watch the
-latency between `<src>` and `<dest>`. 
+latency between `<src>` and `<dest>`.
 
 From the src machine run
 
