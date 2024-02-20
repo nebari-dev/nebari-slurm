@@ -5,3 +5,4 @@ dependencies:
  - conda-store-server=={{ conda_store_version }}
  - pymysql==1.0.2
  - pydantic<2.0
+ - psycopg2
