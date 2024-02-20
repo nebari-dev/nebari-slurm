@@ -15,6 +15,14 @@
      state: started
      enabled: yes
 
+ - name: "Create database"
+   postgresql_db:
+     state: present
+     name: "{{ item }}"
+   become: yes
+   become_user: postgres
+   with_items: "{{ postgres_databases }}"
+
  - name: Create PostgreSQL User
    postgresql_user:
      db: postgres
@@ -23,3 +31,4 @@
      role_attr_flags: "{{ item.role }}"
    with_items: "{{ postgres_users }}"
    become_user: postgres
+   become: yes
