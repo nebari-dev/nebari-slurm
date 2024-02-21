@@ -60,14 +60,15 @@ repository.
 ## Modify the ansible inventory
 
 Below is an example ansible inventory file used for
-`ansible-playbook`. There are [great docs on modifying the ansible
-inventory
-file](https://docs.ansible.com/ansible/latest/user_guide/intro_inventory.html). The important keys to set:
+`ansible-playbook`. There are [great docs on modifying the ansible inventory file](https://docs.ansible.com/ansible/latest/user_guide/intro_inventory.html).
+The important keys to set:
+
 
 - `ansible_ssh_host` which is the DNS accessible name
 - `ansible_port` default is `22`
 - `ansible_user` which is the username to login into node by default is the user that the `ansible-playbook` command is run as
 - `ansible_ssh_private_key_file` is the path to the ssh key to login to node
+
 
 Next you must configure the groups. In this case the `hpc_master` and
 `hpc_worker` groups. There must only be one node in the `hpc_master`
@@ -75,10 +76,10 @@ group. `N` nodes can be in the `hpc_worker` section (including the
 hpc_master node which is not recommended).
 
 ```
-hpc02-test ansible_host=192.168.121.124 ansible_port=22 ansible_user='vagrant' ansible_ssh_private_key_file='/home/costrouc/.vagrant.d/insecure_private_key'
-hpc03-test ansible_host=192.168.121.176 ansible_port=22 ansible_user='vagrant' ansible_ssh_private_key_file='/home/costrouc/.vagrant.d/insecure_private_key'
-hpc04-test ansible_host=192.168.121.133 ansible_port=22 ansible_user='vagrant' ansible_ssh_private_key_file='/home/costrouc/.vagrant.d/insecure_private_key'
-hpc01-test ansible_host=192.168.121.35 ansible_port=22 ansible_user='vagrant' ansible_ssh_private_key_file='/home/costrouc/.vagrant.d/insecure_private_key'
+hpc02-test ansible_ssh_host=192.168.121.124 ansible_port=22 ansible_user='vagrant' ansible_ssh_private_key_file='/home/costrouc/.vagrant.d/insecure_private_key'
+hpc03-test ansible_ssh_host=192.168.121.176 ansible_port=22 ansible_user='vagrant' ansible_ssh_private_key_file='/home/costrouc/.vagrant.d/insecure_private_key'
+hpc04-test ansible_ssh_host=192.168.121.133 ansible_port=22 ansible_user='vagrant' ansible_ssh_private_key_file='/home/costrouc/.vagrant.d/insecure_private_key'
+hpc01-test ansible_ssh_host=192.168.121.35 ansible_port=22 ansible_user='vagrant' ansible_ssh_private_key_file='/home/costrouc/.vagrant.d/insecure_private_key'
 
 [hpc_master]
 hpc01-test

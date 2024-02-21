@@ -12,7 +12,7 @@
      content: |
        gateway:
          address: "http://{{ groups['hpc_master'][0] }}:{{ dask_gateway_api_port }}"
-         public-address:  "https://{{ hostvars[groups['hpc_master'][0]].ansible_host }}"
+         public-address:  "https://{{ hostvars[groups['hpc_master'][0]].ansible_ssh_host }}"
          proxy-address: "tls://{{ groups['hpc_master'][0] }}:{{ dask_gateway_scheduler_external_port }}"
          auth:
            type: jupyterhub
