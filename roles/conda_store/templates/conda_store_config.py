@@ -39,6 +39,7 @@ c.CondaStoreServer.enable_registry = True
 c.CondaStoreServer.enable_metrics = True
 c.CondaStoreServer.address = "0.0.0.0"
 c.CondaStoreServer.port = {{ conda_store_port }}
+c.CondaStoreServer.behind_proxy = True
 c.CondaStoreServer.url_prefix = "{{ conda_store_prefix }}"
 
 
