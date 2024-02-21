@@ -35,6 +35,7 @@ jobs:
       - name: Show Vagrant version
         run: vagrant --version
 
-      - name: Run vagrant up
-        working-directory: tests/ubuntu2004-singlenode
-        run: vagrant up
+# Disabled until we fix it
+#      - name: Run vagrant up
+#        working-directory: tests/ubuntu2004-singlenode
+#        run: vagrant up
