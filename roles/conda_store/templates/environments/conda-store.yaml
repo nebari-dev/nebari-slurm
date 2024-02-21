@@ -2,6 +2,7 @@ name: conda-store
 channels:
  - conda-forge
 dependencies:
+ - python==3.9
  - conda-store-server=={{ conda_store_version }}
  - pymysql==1.0.2
  - pydantic<2.0
