@@ -1,22 +1,23 @@
+---
 jupyterhub_ssh_enabled: false
 jupyterhub_ssh_internal_port: "8021"
 jupyterhub_ssh_external_port: "8022"
 
 jupyterhub_proxy_port: "15002"
 jupyterhub_proxy_api_port: "15003"
-jupyterhub_proxy_auth_token: "m8dfdKvyVJ0bWTNpbVCQyoCt"
+jupyterhub_proxy_auth_token: m8dfdKvyVJ0bWTNpbVCQyoCt
 
 cdsdashboards_enabled: true
 
 jupyterhub_enabled: false
-jupyterhub_version: "==4.0.2"
+jupyterhub_version: ==4.0.2
 jupyterhub_port: "15001"
-jupyterhub_base_url: "/"
-jupyterhub_hub_environment: "environments/jupyterhub.yaml"
-jupyterhub_lab_environment: "environments/jupyterlab.yaml"
-jupyterhub_dashboard_environment: "environments/dashboards.yaml"
-jupyterhub_client_id: "jupyterhub"
-jupyterhub_client_secret: "SUPERSECRETPASSWORDJUPYTERHUB"
+jupyterhub_base_url: /
+jupyterhub_hub_environment: environments/jupyterhub.yaml
+jupyterhub_lab_environment: environments/jupyterlab.yaml
+jupyterhub_dashboard_environment: environments/dashboards.yaml
+jupyterhub_client_id: jupyterhub
+jupyterhub_client_secret: SUPERSECRETPASSWORDJUPYTERHUB
 jupyterhub_qhub_options_form: true
 
 jupyterhub_config:
@@ -28,13 +29,13 @@ jupyterhub_services:
 
 jupyterhub_theme:
   template_vars:
-    hub_title: "This is Nebari Slurm"
-    hub_subtitle: "Your scalable open source data science laboratory."
-    welcome: "have fun."
-    logo: "/hub/custom/images/jupyter_qhub_logo.svg"
-    primary_color: '#4f4173'
-    secondary_color: '#957da6'
-    accent_color: '#32C574'
+    hub_title: This is Nebari Slurm
+    hub_subtitle: Your scalable open source data science laboratory.
+    welcome: have fun.
+    logo: /hub/custom/images/jupyter_qhub_logo.svg
+    primary_color: "#4f4173"
+    secondary_color: "#957da6"
+    accent_color: "#32C574"
     text_color: "#111111"
     h1_color: "#652e8e"
     h2_color: "#652e8e"
@@ -42,24 +43,22 @@ jupyterhub_theme:
 # for each key
 #    c.{classname}.{attribute} = {value}
 jupyterhub_custom: {}
-
 # "name": "<local-path>"
 # use variable: inventory_dir to point to use inventory directory
 jupyterhub_additional_config: {}
-
 idle_culler:
   enabled: true
   timeout: 86400 # 1 day
   cull_every: 3600 # 1 hour
 
 # role: miniforge
-miniforge_home: "/opt/conda"
+miniforge_home: /opt/conda
 
 # role: traefik
 # traefik_domain: ...
 
 # role: keycloak
 keycloak_port: "30020"
-keycloak_admin_username: "admin"
+keycloak_admin_username: admin
 keycloak_admin_password: XLWUMUu8OG0XqlMREZK9id9o
 keycloak_realm: qhub-hpc

@@ -1,4 +1,4 @@
 ---
- - name: Install mysql
-   include_tasks: mysql.yaml
-   when: mysql_enabled
+- name: Install mysql
+  ansible.builtin.include_tasks: mysql.yaml
+  when: mysql_enabled

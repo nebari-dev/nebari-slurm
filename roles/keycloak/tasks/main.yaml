@@ -1,8 +1,8 @@
 ---
- - name: Install keycloak
-   include_tasks: keycloak.yaml
-   when: keycloak_enabled
+- name: Install keycloak
+  ansible.builtin.include_tasks: keycloak.yaml
+  when: keycloak_enabled
 
- - name: Install keycloak realm, groups, and roles
-   include_tasks: realm.yaml
-   when: keycloak_enabled
+- name: Install keycloak realm, groups, and roles
+  ansible.builtin.include_tasks: realm.yaml
+  when: keycloak_enabled

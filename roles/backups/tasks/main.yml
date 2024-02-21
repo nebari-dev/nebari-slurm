@@ -1,4 +1,4 @@
 ---
- - name: Backup configuration
-   include_tasks: backup.yaml
-   when: backup_enabled
+- name: Backup configuration
+  ansible.builtin.include_tasks: backup.yaml
+  when: backup_enabled

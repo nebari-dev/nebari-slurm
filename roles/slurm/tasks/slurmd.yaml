@@ -1,74 +1,74 @@
 ---
- - name: Create slurm spool directory
-   become: true
-   file:
-     path: "{{ slurm_config.SlurmdSpoolDir }}"
-     owner: root
-     group: root
-     mode: 0755
-     state: directory
+- name: Create slurm spool directory
+  become: true
+  ansible.builtin.file:
+    path: "{{ slurm_config.SlurmdSpoolDir }}"
+    owner: root
+    group: root
+    mode: "0755"
+    state: directory
 
- - name: Create slurm log directory
-   become: true
-   file:
-     path: "{{ slurm_config.SlurmdLogFile | dirname }}"
-     owner: slurm
-     group: slurm
-     mode: 0755
-     state: directory
+- name: Create slurm log directory
+  become: true
+  ansible.builtin.file:
+    path: "{{ slurm_config.SlurmdLogFile | dirname }}"
+    owner: slurm
+    group: slurm
+    mode: "0755"
+    state: directory
 
- - name: Ensure slurm pid directory exists
-   become: true
-   file:
-     path: "{{ slurm_config.SlurmdPidFile | dirname }}"
-     state: directory
-     mode: '0755'
-     owner: slurm
-     group: slurm
+- name: Ensure slurm pid directory exists
+  become: true
+  ansible.builtin.file:
+    path: "{{ slurm_config.SlurmdPidFile | dirname }}"
+    state: directory
+    mode: "0755"
+    owner: slurm
+    group: slurm
 
- - name: Copy the slurmctl systemd service file
-   become: true
-   copy:
-     content: |
-       [Unit]
-       Description=Slurm node daemon
-       After=network.target munge.service remote-fs.target
-       ConditionPathExists=/etc/slurm/slurm.conf
+- name: Copy the slurmctl systemd service file
+  become: true
+  ansible.builtin.copy:
+    content: |
+      [Unit]
+      Description=Slurm node daemon
+      After=network.target munge.service remote-fs.target
+      ConditionPathExists=/etc/slurm/slurm.conf
 
-       [Service]
-       Type=forking
-       User=root
-       ExecStart=/usr/sbin/slurmd
-       ExecReload=/bin/kill -HUN $MAINPID
-       PIDFile={{ slurm_config.SlurmdPidFile }}
-       KillMode=process
-       LimitNOFILE=131072
-       LimitMEMLOCK=infinity
-       LimitSTACK=infinity
-       Delegate=yes
-       TasksMax=infinity
+      [Service]
+      Type=forking
+      User=root
+      ExecStart=/usr/sbin/slurmd
+      ExecReload=/bin/kill -HUN $MAINPID
+      PIDFile={{ slurm_config.SlurmdPidFile }}
+      KillMode=process
+      LimitNOFILE=131072
+      LimitMEMLOCK=infinity
+      LimitSTACK=infinity
+      Delegate=yes
+      TasksMax=infinity
 
-       [Install]
-       WantedBy=multi-user.target
-     dest: /etc/systemd/system/slurmd.service
-     owner: root
-     group: root
-     mode: 0644
-   register: _slurmd_service
+      [Install]
+      WantedBy=multi-user.target
+    dest: /etc/systemd/system/slurmd.service
+    owner: root
+    group: root
+    mode: "0644"
+  register: _slurmd_service
 
- - name: Install Slurmd execution host packages
-   become: true
-   package:
-     name: slurmd
-     cache_valid_time: 3600
-     state: present
-   register: _slurmd_package
+- name: Install Slurmd execution host packages
+  become: true
+  ansible.builtin.package:
+    name: slurmd
+    cache_valid_time: 3600
+    state: present
+  register: _slurmd_package
 
- - name: Ensure slurmd is enabled on boot
-   become: true
-   systemd:
-     daemon_reload: true
-     name: slurmd
-     enabled: true
-     state: restarted
-   when: _slurm_config.changed or _slurm_cgroup_config.changed or _slurmd_service.changed or _slurmd_package.changed
+- name: Ensure slurmd is enabled on boot
+  become: true
+  ansible.builtin.systemd:
+    daemon_reload: true
+    name: slurmd
+    enabled: true
+    state: restarted
+  when: _slurm_config.changed or _slurm_cgroup_config.changed or _slurmd_service.changed or _slurmd_package.changed

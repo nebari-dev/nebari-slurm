@@ -1,64 +1,64 @@
 ---
- - name: Install cifs
-   become: true
-   apt:
-     state: latest
-     cache_valid_time: 3600
-     name:
-       - cifs-utils
+- name: Install cifs
+  become: true
+  ansible.builtin.apt:
+    state: latest
+    cache_valid_time: 3600
+    name:
+      - cifs-utils
 
- - name: Wait for samba server at host to be available
-   wait_for:
-     host: "{{ item.host }}"
-     port: 445
-     timeout: 600
-   with_items: "{{ samba_client_mounts }}"
-   no_log: True  # Avoid logging user creds
+- name: Wait for samba server at host to be available
+  ansible.builtin.wait_for:
+    host: "{{ item.host }}"
+    port: 445
+    timeout: 600
+  with_items: "{{ samba_client_mounts }}"
+  no_log: true # Avoid logging user creds
 
- - name: Ensure samba mounted directories exist
-   become: true
-   file:
-     path: "{{ item.path }}"
-     state: directory
-   with_items: "{{ samba_client_mounts }}"
-   no_log: True  # Avoid logging user creds
+- name: Ensure samba mounted directories exist
+  become: true
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+  with_items: "{{ samba_client_mounts }}"
+  no_log: true # Avoid logging user creds
 
- - name: Ensure samba credentials directory exists
-   become: true
-   file:
-     path: "/etc/samba/credentials"
-     state: directory
-     owner: root
-     group: root
-     mode: 0700
+- name: Ensure samba credentials directory exists
+  become: true
+  ansible.builtin.file:
+    path: /etc/samba/credentials
+    state: directory
+    owner: root
+    group: root
+    mode: "0700"
 
- - name: Add credentials for particular mount
-   become: true
-   copy:
-     content: |
-       {% if item.username is defined %}
-       username={{ item.username }}
-       {% endif %}
-       {% if item.password is defined %}
-       password={{ item.password }}
-       {% endif %}
-       {% if item.domain is defined %}
-       domain={{ item.domain }}
-       {% endif %}
-     dest: "/etc/samba/credentials/{{ item.name }}"
-     owner: root
-     group: root
-     mode: 0600
-   with_items: "{{ samba_client_mounts }}"
-   no_log: True  # Avoid logging user creds
+- name: Add credentials for particular mount
+  become: true
+  ansible.builtin.copy:
+    content: |
+      {% if item.username is defined %}
+      username={{ item.username }}
+      {% endif %}
+      {% if item.password is defined %}
+      password={{ item.password }}
+      {% endif %}
+      {% if item.domain is defined %}
+      domain={{ item.domain }}
+      {% endif %}
+    dest: /etc/samba/credentials/{{ item.name }}
+    owner: root
+    group: root
+    mode: "0600"
+  with_items: "{{ samba_client_mounts }}"
+  no_log: true # Avoid logging user creds
 
- - name: Add fstab entries for nfs mounts
-   become: true
-   ansible.posix.mount:
-     src: "//{{ item.host }}/{{ item.name }}"
-     path: "{{ item.path }}"
-     opts: 'credentials=/etc/samba/credentials/{{ item.name }},{{ item.options | default("rw") }}'
-     state: mounted
-     fstype: cifs
-   with_items: "{{ samba_client_mounts }}"
-   no_log: True  # Avoid logging user creds
+- name: Add fstab entries for nfs mounts
+  become: true
+  ansible.posix.mount:
+    src: //{{ item.host }}/{{ item.name }}
+    path: "{{ item.path }}"
+    opts: credentials=/etc/samba/credentials/{{ item.name }},{{ item.options | default("rw") }}
+    state: mounted
+    fstype: cifs
+  with_items: "{{ samba_client_mounts }}"
+  no_log: true # Avoid logging user creds

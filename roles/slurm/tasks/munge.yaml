@@ -1,52 +1,52 @@
 ---
- # https://stackoverflow.com/questions/57079707/slurm-and-munge-invalid-credential
- - name: Ensure munge gid is fixed
-   become: true
-   group:
-     name: munge
-     gid: 151
+# https://stackoverflow.com/questions/57079707/slurm-and-munge-invalid-credential
+- name: Ensure munge gid is fixed
+  become: true
+  ansible.builtin.group:
+    name: munge
+    gid: 151
 
- - name: Ensure munge uid fixed
-   become: true
-   user:
-     name: munge
-     groups: munge
-     append: true
-     shell: /usr/sbin/nologin
-     system: true
-     create_home: false
-     home: /
-     uid: 150
+- name: Ensure munge uid fixed
+  become: true
+  ansible.builtin.user:
+    name: munge
+    groups: munge
+    append: true
+    shell: /usr/sbin/nologin
+    system: true
+    create_home: false
+    home: /
+    uid: 150
 
- - name: Check munge directory
-   become: yes
-   file:
-     path: /etc/munge
-     owner: munge
-     group: munge
-     mode: 0700
-     state: directory
+- name: Check munge directory
+  become: true
+  ansible.builtin.file:
+    path: /etc/munge
+    owner: munge
+    group: munge
+    mode: "0700"
+    state: directory
 
- - name: Install munge key
-   become: yes
-   copy:
-     content: "{{ munge_key }}"
-     dest: /etc/munge/munge.key
-     owner: munge
-     group: munge
-     mode: 0400
+- name: Install munge key
+  become: true
+  ansible.builtin.copy:
+    content: "{{ munge_key }}"
+    dest: /etc/munge/munge.key
+    owner: munge
+    group: munge
+    mode: "0400"
 
- - name: Install munge controller packages
-   become: true
-   apt:
-     state: latest
-     cache_valid_time: 3600
-     name:
-       - munge
+- name: Install munge controller packages
+  become: true
+  ansible.builtin.apt:
+    state: latest
+    cache_valid_time: 3600
+    name:
+      - munge
 
- - name: Ensure Munge is enabled and running
-   become: yes
-   service:
-     name: munge
-     enabled: true
-     state: started
+- name: Ensure Munge is enabled and running
+  become: true
+  ansible.builtin.service:
+    name: munge
+    enabled: true
+    state: started

@@ -1,4 +1,4 @@
 ---
- - name: Install bodo
-   include_tasks: bodo.yaml
-   when: bodo_enabled
+- name: Install bodo
+  ansible.builtin.include_tasks: bodo.yaml
+  when: bodo_enabled

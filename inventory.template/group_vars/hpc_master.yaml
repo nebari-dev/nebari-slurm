@@ -1,3 +1,4 @@
+---
 dask_gateway_enabled: true
 firewall_enabled: true
 grafana_enabled: true
@@ -21,6 +22,6 @@ openldap_server_enabled: true
 openldap_client_enabled: true
 
 nfs_server_exports:
-  - "/home"
-  - "/opt/conda"
-  - "/opt/conda-store"
+  - /home
+  - /opt/conda
+  - /opt/conda-store

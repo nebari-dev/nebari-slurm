@@ -1,3 +1,4 @@
+---
 samba_server_enabled: false
 samba_server_shares: []
 # - name: example_mout

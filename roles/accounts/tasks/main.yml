@@ -1,38 +1,38 @@
 ---
- - name: Ensure groups are present
-   become: true
-   group:
-     name: "{{ item.name }}"
-     gid: "{{ item.gid }}"
-     state: present
-   with_items: "{{ enabled_groups }}"
+- name: Ensure groups are present
+  become: true
+  ansible.builtin.group:
+    name: "{{ item.name }}"
+    gid: "{{ item.gid }}"
+    state: present
+  with_items: "{{ enabled_groups }}"
 
- - name: Ensure users are present
-   become: true
-   user:
-     name: "{{ item.username }}"
-     uid: "{{ item.uid }}"
-     shell: /bin/bash
-     createhome: true
-     generate_ssh_key: false
-     comment: "{{ item.fullname }},,,,{{ item.email }}"
-     group: "{{ item.primary_group | default(omit) }}"
-     groups: "{{ item.groups | default(omit) }}"
-     password: "{{ item.password | default(omit) }}"
-     home: /home/{{ item.username }}
-     state: present
-   with_items: "{{ enabled_users }}"
+- name: Ensure users are present
+  become: true
+  ansible.builtin.user:
+    name: "{{ item.username }}"
+    uid: "{{ item.uid }}"
+    shell: /bin/bash
+    createhome: true
+    generate_ssh_key: false
+    comment: "{{ item.fullname }},,,,{{ item.email }}"
+    group: "{{ item.primary_group | default(omit) }}"
+    groups: "{{ item.groups | default(omit) }}"
+    password: "{{ item.password | default(omit) }}"
+    home: /home/{{ item.username }}
+    state: present
+  with_items: "{{ enabled_users }}"
 
- - name: Ensure users are disabled
-   become: true
-   user:
-     name: "{{ item }}"
-     state: absent
-   with_items: "{{ disabled_users }}"
+- name: Ensure users are disabled
+  become: true
+  ansible.builtin.user:
+    name: "{{ item }}"
+    state: absent
+  with_items: "{{ disabled_users }}"
 
- - name: Ensure groups are disabled
-   become: true
-   group:
-     name: "{{ item }}"
-     state: absent
-   with_items: "{{ disabled_groups }}"
+- name: Ensure groups are disabled
+  become: true
+  ansible.builtin.group:
+    name: "{{ item }}"
+    state: absent
+  with_items: "{{ disabled_groups }}"

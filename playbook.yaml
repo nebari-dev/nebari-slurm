@@ -1,56 +1,57 @@
 ---
- - hosts: all
-   pre_tasks:
-     - name: Gather facts from ALL hosts (regardless of limit or tags)
-       setup:
-       delegate_to: "{{ item }}"
-       delegate_facts: True
-       when: hostvars[item]['ansible_default_ipv4'] is not defined
-       with_items: "{{ groups['all'] }}"
-     - name: Copy files
-       include_tasks: tasks/copy_files.yaml
-       loop: '{{ ["all"] + group_names + [inventory_hostname_short] }}'
-       loop_control:
-         loop_var: myhost
+- hosts: all
+  pre_tasks:
+    - name: Gather facts from ALL hosts (regardless of limit or tags)
+      ansible.builtin.setup:
+      delegate_to: "{{ item }}"
+      delegate_facts: true
+      when: hostvars[item]['ansible_default_ipv4'] is not defined
+      with_items: "{{ groups['all'] }}"
+    - name: Copy files
+      ansible.builtin.include_tasks: tasks/copy_files.yaml
+      loop: '{{ ["all"] + group_names + [inventory_hostname_short] }}'
+      loop_control:
+        loop_var: myhost
 
-   roles:
-     # core services
-     - hosts
-     - firewall
-     - accounts
-     - apt_packages
-     - miniforge
-     - cifs
-     - nfs
-     - mysql
-     - postgresql
-     - minio
-     - backups
-     - traefik
-     - openldap
-     - keycloak
-     # workflows
-     - slurm
-     # monitoring
-     - prometheus
-     - grafana
-     # data-science services
-     - conda_store
-     - jupyterhub
-     - dask_gateway
-     - ipyparallel
-     # plugins
-     - bodo
+  roles:
+    # core services
+    - hosts
+    - firewall
+    - accounts
+    - apt_packages
+    - miniforge
+    - cifs
+    - nfs
+    - mysql
+    - postgresql
+    - minio
+    - backups
+    - traefik
+    - openldap
+    - keycloak
+    # workflows
+    - slurm
+    # monitoring
+    - prometheus
+    - grafana
+    # data-science services
+    - conda_store
+    - jupyterhub
+    - dask_gateway
+    - ipyparallel
+    # plugins
+    - bodo
 
-   tasks:
-     - name: Additional ansible tasks
-       include_tasks: "{{ item }}"
-       with_items: "{{ additional_tasks | default([]) }}"
+  tasks:
+    - name: Additional ansible tasks
+      ansible.builtin.include_tasks: "{{ item }}"
+      with_items: "{{ additional_tasks | default([]) }}"
 
-     - name: Keycloak administration credentials
-       ansible.builtin.debug:
-         msg: "Keycloak administration username={{ keycloak_admin_username }} via https://{{ traefik_domain | default(hostvars[groups['hpc_master'][0]].ansible_ssh_host) }}/auth/admin/"
+    - name: Keycloak administration credentials
+      ansible.builtin.debug:
+        msg: Keycloak administration username={{ keycloak_admin_username }} via https://{{ traefik_domain | default(hostvars[groups['hpc_master'][0]].ansible_ssh_host)
+          }}/auth/admin/
 
-     - name: Accessing cluster
-       ansible.builtin.debug:
-         msg: "Access cluster via following url: https://{{ traefik_domain | default(hostvars[groups['hpc_master'][0]].ansible_ssh_host) }}"
+    - name: Accessing cluster
+      ansible.builtin.debug:
+        msg: "Access cluster via following url: https://{{ traefik_domain | default(hostvars[groups['hpc_master'][0]].ansible_ssh_host) }}"

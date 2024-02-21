@@ -1,3 +1,4 @@
+---
 # or set these variables in group_vars/hpc_worker.yaml if all
 # workers have the same resources
 slurm_memory: 5900

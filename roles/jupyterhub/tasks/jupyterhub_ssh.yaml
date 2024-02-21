@@ -1,43 +1,43 @@
 ---
 # jupyterhub-ssh uses the jupyterhub conda environment
- - name: Ensure that jupyterhub-ssh configuration directory exists
-   become: true
-   file:
-     path: /etc/jupyterhub-ssh
-     state: directory
-     mode: '0700'
+- name: Ensure that jupyterhub-ssh configuration directory exists
+  become: true
+  ansible.builtin.file:
+    path: /etc/jupyterhub-ssh
+    state: directory
+    mode: "0700"
 
- - name: Copy the jupyterhub_ssh configuration
-   become: true
-   template:
-     src: templates/jupyterhub_ssh_config.py
-     dest: /etc/jupyterhub-ssh/jupyterhub_ssh_config.py
-     owner: root
-     group: root
-     mode: 0644
-   notify: restart services jupyterhub-ssh
+- name: Copy the jupyterhub_ssh configuration
+  become: true
+  ansible.builtin.template:
+    src: templates/jupyterhub_ssh_config.py
+    dest: /etc/jupyterhub-ssh/jupyterhub_ssh_config.py
+    owner: root
+    group: root
+    mode: "0644"
+  notify: restart services jupyterhub-ssh
 
- - name: Setup JupyterHub-SSH systemd unit
-   become: true
-   copy:
-     content: |
-       [Service]
-       User=root
-       Restart=always
-       WorkingDirectory=/etc/jupyterhub-ssh
-       Environment=PATH={{ miniforge_home }}/envs/{{ jupyterhub_hub_environment | basename | splitext | first }}/bin:$PATH:/bin:/usr/bin:/usr/local/bin
-       ExecStart={{ miniforge_home }}/envs/{{ jupyterhub_hub_environment | basename | splitext | first }}/bin/python -m jupyterhub_ssh
+- name: Setup JupyterHub-SSH systemd unit
+  become: true
+  ansible.builtin.copy:
+    content: |
+      [Service]
+      User=root
+      Restart=always
+      WorkingDirectory=/etc/jupyterhub-ssh
+      Environment=PATH={{ miniforge_home }}/envs/{{ jupyterhub_hub_environment | basename | splitext | first }}/bin:$PATH:/bin:/usr/bin:/usr/local/bin
+      ExecStart={{ miniforge_home }}/envs/{{ jupyterhub_hub_environment | basename | splitext | first }}/bin/python -m jupyterhub_ssh
 
-       [Install]
-       WantedBy=multi-user.target
-     dest: /etc/systemd/system/jupyterhub-ssh.service
-     mode: '0544'
-   notify: restart services jupyterhub-ssh
+      [Install]
+      WantedBy=multi-user.target
+    dest: /etc/systemd/system/jupyterhub-ssh.service
+    mode: "0544"
+  notify: restart services jupyterhub-ssh
 
- - name: Restart JupyterHub SSH
-   become: true
-   systemd:
-     name: jupyterhub-ssh
-     enabled: true
-     state: started
-     daemon_reload: true
+- name: Restart JupyterHub SSH
+  become: true
+  ansible.builtin.systemd:
+    name: jupyterhub-ssh
+    enabled: true
+    state: started
+    daemon_reload: true
