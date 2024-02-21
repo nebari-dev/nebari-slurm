@@ -12,7 +12,7 @@ and should be used to quickly check the health of the cluster.
 sinfo
 ```
 
-```
+```shell
 PARTITION AVAIL  TIMELIMIT  NODES  STATE NODELIST
 general*     up   infinite      1    mix hpc02-test
 general*     up   infinite      2   idle hpc03-test,hpc04-test
@@ -30,7 +30,7 @@ squeue
 scontrol show job <job-id>
 ```
 
-```
+```shell
 JobId=37 JobName=spawner-jupyterhub
    UserId=vagrant(1000) GroupId=vagrant(1000) MCS_label=N/A
    Priority=4294901724 Nice=0 Account=(null) QOS=normal
@@ -90,7 +90,7 @@ their programs on the hardware.
 slurmd -C
 ```
 
-```
+```shell
 NodeName=hpc02-test CPUs=4 Boards=1 SocketsPerBoard=4 CoresPerSocket=1 ThreadsPerCore=1 RealMemory=7976
 UpTime=0-01:46:52
 ```
@@ -118,10 +118,10 @@ The full list of [node
 states](https://slurm.schedmd.com/sinfo.html#lbAG). Here we outline
 some of the common ones.
 
- - ALLOCATED :: node is completely consumed
- - MIXED :: node is partially consumed
- - IDLE :: node is idle and has no running jobs
- - DRAIN :: node is unable to schedule new jobs but running jobs will finish
+- ALLOCATED :: node is completely consumed
+- MIXED :: node is partially consumed
+- IDLE :: node is idle and has no running jobs
+- DRAIN :: node is unable to schedule new jobs but running jobs will finish
 
 ## Adding Slurm Partitions
 
