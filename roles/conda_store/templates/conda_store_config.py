@@ -11,7 +11,6 @@ from conda_store_server.server.auth import GenericOAuthAuthentication
 # ==================================
 c.CondaStore.storage_class = S3Storage
 c.CondaStore.store_directory = "/opt/conda-store/conda-store/"
-c.CondaStore.conda_command = "conda"
 c.CondaStore.database_url = "postgresql+psycopg2://{{ postgres_users[0].username }}:{{ postgres_users[0].password }}@localhost/{{ postgres_databases[0] }}"
 c.CondaStore.default_uid = 1000
 c.CondaStore.default_gid = 100
@@ -32,7 +31,7 @@ c.S3Storage.bucket_name = "conda-store"
 # ==================================
 #        server settings
 # ==================================
-c.CondaStoreServer.log_level = logging.INFO
+c.CondaStoreServer.log_level = logging.DEBUG
 c.CondaStoreServer.enable_ui = True
 c.CondaStoreServer.enable_api = True
 c.CondaStoreServer.enable_registry = True
@@ -119,6 +118,6 @@ c.CondaStoreServer.authentication_class = KeyCloakAuthentication
 # ==================================
 #         worker settings
 # ==================================
-c.CondaStoreWorker.log_level = logging.INFO
+c.CondaStoreWorker.log_level = logging.DEBUG
 c.CondaStoreWorker.watch_paths = ["/opt/environments"]
 c.CondaStoreWorker.concurrency = 4
