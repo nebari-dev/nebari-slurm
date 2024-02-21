@@ -37,40 +37,40 @@
     state: directory
     mode: "0755"
 
-- name: Create keycloak client for jupyterhub
-  community.general.keycloak_client:
-    auth_client_id: admin-cli
-    auth_keycloak_url: "http://localhost:{{ keycloak_port }}/auth"
-    auth_realm: master
-    auth_username: "{{ keycloak_admin_username }}"
-    auth_password: "{{ keycloak_admin_password }}"
-    realm: "{{ keycloak_realm }}"
-    state: present
-    client_id: "{{ jupyterhub_client_id }}"
-    client_authenticator_type: client-secret
-    secret: "{{ jupyterhub_client_secret }}"
-    protocol_mappers:
-      - config:
-          access.token.claim: True
-          userinfo.token.claim: True
-          id.token.claim: True
-          claim.name: "roles"
-          jsonType.label: String
-          multivalued: True
-        name: clientroles
-        protocol: openid-connect
-        protocolMapper: oidc-usermodel-client-role-mapper
-      - config:
-          access.token.claim: True
-          userinfo.token.claim: True
-          id.token.claim: True
-          claim.name: "groups"
-        name: clientgroups
-        protocol: openid-connect
-        protocolMapper: oidc-group-membership-mapper
-    redirect_uris:
-      - "https://{{ traefik_domain | default(hostvars[groups['hpc_master'][0]].ansible_ssh_host) }}/hub/oauth_callback"
-  register: jupyterhub_client
+ - name: Create keycloak client for jupyterhub
+   community.general.keycloak_client:
+     auth_client_id: admin-cli
+     auth_keycloak_url: "http://localhost:{{ keycloak_port }}/auth"
+     auth_realm: master
+     auth_username: "{{ keycloak_admin_username }}"
+     auth_password: "{{ keycloak_admin_password }}"
+     realm: "{{ keycloak_realm }}"
+     state: present
+     client_id: "{{ jupyterhub_client_id }}"
+     client_authenticator_type: client-secret
+     secret: "{{ jupyterhub_client_secret }}"
+     protocol_mappers:
+       - config:
+           access.token.claim: True
+           userinfo.token.claim: True
+           id.token.claim: True
+           claim.name: "roles"
+           jsonType.label: String
+           multivalued: True
+         name: clientroles
+         protocol: openid-connect
+         protocolMapper: oidc-usermodel-client-role-mapper
+       - config:
+           access.token.claim: True
+           userinfo.token.claim: True
+           id.token.claim: True
+           claim.name: "groups"
+         name: clientgroups
+         protocol: openid-connect
+         protocolMapper: oidc-group-membership-mapper
+     redirect_uris:
+       - "https://{{ traefik_domain | default(hostvars[groups['hpc_master'][0]].ansible_ssh_host) }}/hub/oauth_callback"
+   register: jupyterhub_client
 
 - name: Create JupyterHub Keycloak roles
   community.general.keycloak_role:
