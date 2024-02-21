@@ -18,7 +18,7 @@
     enabled: true
 
 - name: Register encripted password
-  ansible.builtin.command: slappasswd -s "{{openldap_bind_password}}"
+  ansible.builtin.command: slappasswd -s "{{ openldap_bind_password }}"
   register: openldap_encripted_password
 
 - name: Copy Grafana Configuration

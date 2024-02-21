@@ -1,0 +1,12 @@
+---
+# .ansible-lint
+
+skip_list:
+  - var-naming
+  - package-latest
+  - yaml[line-length]
+  - risky-file-permissions
+  - no-changed-when
+  - no-handler
+  - risky-octal
+  - args[module]

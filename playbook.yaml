@@ -1,5 +1,6 @@
 ---
-- hosts: all
+- name: Setup Nebari Slurm
+  hosts: all
   pre_tasks:
     - name: Gather facts from ALL hosts (regardless of limit or tags)
       ansible.builtin.setup:
