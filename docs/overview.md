@@ -1,61 +1,57 @@
 # Overview
 
-QHub HPC is a deployment of HPC with
-[jupyterhub](https://jupyterhub.readthedocs.io/en/stable/) here we
-talk about the services that run and how they are connected. The
-architecture is based off of the typical hpc setup of a master/login
-node with `N` worker nodes. The worker nodes are designed to have
-minimal dependencies which most of the setup involves configuring the
-master node. At a high level there are several services: monitoring,
-the job scheduler ([slurm](https://slurm.schedmd.com/overview.html)),
-and jupyterhub and related python services.
+QHub HPC is a High-Performance Computing (HPC) deployment using [JupyterHub](https://jupyterhub.readthedocs.io/en/stable/). In this document, we will discuss the services that run within this architecture and how they are interconnected. The setup follows a standard HPC configuration with a master/login node and 'N' worker nodes.
 
-Important urls:
- - `https://<master node ip>/` jupyterhub server
- - `https://<master node ip>/monitoring/` grafana server
- - `https://<master node ip>/auth/` keycloak server
- - `https://<master node ip>/gateway/` dask-gateway server for remote connection
- - `ssh <master node ip> -p 8022` to ssh into jupyterlab session for user (requires jupyterhub token)
+The master node serves as the central control and coordination hub for the entire cluster. It plays a pivotal role in managing and optimizing cluster resources and ensuring secure, efficient, and reliable operations. In contrast, worker nodes primarily focus on executing computational tasks and rely on instructions from the master node for job execution.
 
-## All Nodes
+At a high level, the architecture comprises several key services: monitoring, the job scheduler ([Slurm](https://slurm.schedmd.com/overview.html)), and JupyterHub along with related Python services.
 
-### Services
+Important URLs:
 
- - [node_exporter](https://github.com/prometheus/node_exporter) node metrics (default port 9100)
+- `https://<master node ip>/`: JupyterHub server
+- `https://<master node ip>/monitoring/`: Grafana server
+- `https://<master node ip>/auth/`: Keycloak server
+- `https://<master node ip>/gateway/`: Dask-Gateway server for remote connections
+- `ssh <master node ip> -p 8022`: SSH into a JupyterLab session for users (requires a JupyterHub token)
+
+## Services (All Nodes)
+
+- [node_exporter](https://github.com/prometheus/node_exporter): Collects node metrics (default port 9100)
 
 ## Master Node
 
 ### Services
 
-Authentication
- - [keycloak](https://www.keycloak.org/) for enterprise grade open source authentication
+#### Authentication
 
-Reverse Proxy
- - [traefik](https://traefik.io/) open source network proxy
+- [Keycloak](https://www.keycloak.org/): Provides enterprise-grade open-source authentication
 
-Monitoring
- - [grafana](https://grafana.com/) :: central place to view monitoring information (default port 3000)
- - [prometheus](https://prometheus.io/docs/introduction/overview/) :: metrics scraper (default port 9090)
- - [slurm_exporter](https://github.com/vpenso/prometheus-slurm-exporter) :: slurm metrics (default port 9341)
- - [Traefik exported metrics](https://doc.traefik.io/traefik/observability/metrics/overview/)
- - [JupyterHub exported metrics](https://jupyterhub.readthedocs.io/en/stable/reference/metrics.html)
+#### Control and Coordination
 
-Slurm
- - [slurmctld](https://slurm.schedmd.com/slurmctld.html) :: slurm central management daemon
- - [slurmdbd](https://slurm.schedmd.com/slurmdbd.html) :: slurm accounting 
- - [mysql](https://www.mysql.com/) :: database for slurm accounting
+- [Slurm](https://slurm.schedmd.com/overview.html): Manages job scheduling, resource allocation, and cluster control
+- [slurmctld](https://slurm.schedmd.com/slurmctld.html): Manages the Slurm central management daemon
+- [slurmdbd](https://slurm.schedmd.com/slurmdbd.html): Handles Slurm accounting
+- [MySQL](https://www.mysql.com/): Acts as the database for Slurm accounting
 
-Python Ecosystem
- - [jupyterhub](https://jupyter.org/hub) :: scalable interactive compute (default port 8000)
- - [dask-gateway](https://gateway.dask.org/) :: scalable distributed computing
- - [nfs server](https://en.wikipedia.org/wiki/Network_File_System) for
-   sharing conda environments and home directories between all users
- - [conda-store](https://conda-store.readthedocs.io/en/latest/) for
-   managing conda environments within nodes
+#### Reverse Proxy and Routing
+
+- [Traefik](https://traefik.io/): Serves as an open-source network proxy, routing network traffic efficiently
+
+#### Monitoring and Metrics
+
+- [Grafana](https://grafana.com/): Acts as a central place to view monitoring information (default port 3000)
+- [Prometheus](https://prometheus.io/docs/introduction/overview/): Scrapes metrics (default port 9090)
+- [slurm_exporter](https://github.com/vpenso/prometheus-slurm-exporter): Provides Slurm metrics (default port 9341)
+- [Traefik exported metrics](https://doc.traefik.io/traefik/observability/metrics/overview/)
+- [JupyterHub exported metrics](https://jupyterhub.readthedocs.io/en/stable/reference/metrics.html)
+
+#### Python Ecosystem
+
+- [JupyterHub](https://jupyter.org/hub): Provides scalable interactive computing (default port 8000)
+- [Dask-Gateway](https://gateway.dask.org/): Enables scalable distributed computing
+- [NFS server](https://en.wikipedia.org/wiki/Network_File_System): Facilitates sharing Conda environments and home directories among all users
+- [conda-store](https://conda-store.readthedocs.io/en/latest/): Manages Conda environments within nodes
 
 ## Worker Nodes
 
-### Services
-
-Slurm
- - [slurmd](https://slurm.schedmd.com/slurmd.html) :: slurm agent that runs on all worker nodes
+Worker nodes primarily focus on executing computational tasks and have minimal dependencies, making them efficient for running parallel workloads. They rely on instructions from the master node for job execution and do not have the same level of control and coordination responsibilities as the master node. The master node's role is pivotal in orchestrating the overall cluster's functionality and ensuring efficient and secure operations.
