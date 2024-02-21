@@ -92,7 +92,7 @@ class KeyCloakAuthentication(GenericOAuthAuthentication):
         namespaces = {username, 'default', 'filesystem'}
         role_bindings = {
             f'{username}/*': {'admin'},
-            f'filesystem/*': {'reader'},
+            f'filesystem/*': {'viewer'},
             f'default/*': roles,
         }
 
