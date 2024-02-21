@@ -121,3 +121,4 @@ c.CondaStoreServer.authentication_class = KeyCloakAuthentication
 c.CondaStoreWorker.log_level = logging.DEBUG
 c.CondaStoreWorker.watch_paths = ["/opt/environments"]
 c.CondaStoreWorker.concurrency = 4
+c.CondaStore.environment_directory = "/opt/conda-store/conda-store/{namespace}/envs/{namespace}-{name}"
