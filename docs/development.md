@@ -103,11 +103,11 @@ In the example above, the directory structure should be as follows:
 ```bash
 tests/ubuntu2004/.vagrant/provisioners/ansible/inventory/
 ├── group_vars
-│   ├── all.yaml
-│   ├── hpc_master.yaml
-│   └── hpc_worker.yaml
+│   ├── all.yaml
+│   ├── hpc_master.yaml
+│   └── hpc_worker.yaml
 ├── host_vars
-│   └── hpc01-test.yaml
+│   └── hpc01-test.yaml
 └── vagrant_ansible_inventory
 ```
 

@@ -1,177 +1,177 @@
 ---
-- name: Check that the conda-store-server exists
-  stat:
-    path: "/opt/conda/envs/conda-store/bin/conda-store-server"
-  register: _conda_store_stat
+ - name: Check that the conda-store-server exists
+   stat:
+     path: "/opt/conda/envs/conda-store/bin/conda-store-server"
+   register: _conda_store_stat
 
-- name: Install conda-store environment
-  include_role:
-    name: conda_environment
-  vars:
-    environment_path: "{{ conda_store_environment }}"
+ - name: Install conda-store environment
+   include_role:
+     name: conda_environment
+   vars:
+     environment_path: "{{ conda_store_environment }}"
 
-- name: Create conda-store config directory
-  become: true
-  file:
-    path: /etc/conda-store
-    state: directory
-    mode: "0755"
+ - name: Create conda-store config directory
+   become: true
+   file:
+     path: /etc/conda-store
+     state: directory
+     mode: '0755'
 
-- name: Create conda-store state directory
-  become: true
-  file:
-    path: /opt/conda-store
-    state: directory
-    mode: "0755"
+ - name: Create conda-store state directory
+   become: true
+   file:
+     path: /opt/conda-store
+     state: directory
+     mode: '0755'
 
-- name: Create keycloak client for conda_store
-  community.general.keycloak_client:
-    auth_client_id: admin-cli
-    auth_keycloak_url: "http://localhost:{{ keycloak_port }}/auth"
-    auth_realm: master
-    auth_username: "{{ keycloak_admin_username }}"
-    auth_password: "{{ keycloak_admin_password }}"
-    realm: "{{ keycloak_realm }}"
-    state: present
-    client_id: "{{ conda_store_client_id }}"
-    client_authenticator_type: client-secret
-    secret: "{{ conda_store_client_secret }}"
-    protocol_mappers:
-      - config:
-          access.token.claim: True
-          userinfo.token.claim: True
-          id.token.claim: True
-          claim.name: "roles"
-          jsonType.label: String
-          multivalued: True
-        name: clientroles
-        protocol: openid-connect
-        protocolMapper: oidc-usermodel-client-role-mapper
-      - config:
-          access.token.claim: True
-          userinfo.token.claim: True
-          id.token.claim: True
-          claim.name: "groups"
-        name: clientgroups
-        protocol: openid-connect
-        protocolMapper: oidc-group-membership-mapper
-    redirect_uris:
-      - "https://{{ traefik_domain | default(hostvars[groups['hpc_master'][0]].ansible_ssh_host) }}/conda-store/oauth_callback"
-  register: conda_store_client
+ - name: Create keycloak client for conda_store
+   community.general.keycloak_client:
+     auth_client_id: admin-cli
+     auth_keycloak_url: "http://localhost:{{ keycloak_port }}/auth"
+     auth_realm: master
+     auth_username: "{{ keycloak_admin_username }}"
+     auth_password: "{{ keycloak_admin_password }}"
+     realm: "{{ keycloak_realm }}"
+     state: present
+     client_id: "{{ conda_store_client_id }}"
+     client_authenticator_type: client-secret
+     secret: "{{ conda_store_client_secret }}"
+     protocol_mappers:
+       - config:
+           access.token.claim: True
+           userinfo.token.claim: True
+           id.token.claim: True
+           claim.name: "roles"
+           jsonType.label: String
+           multivalued: True
+         name: clientroles
+         protocol: openid-connect
+         protocolMapper: oidc-usermodel-client-role-mapper
+       - config:
+           access.token.claim: True
+           userinfo.token.claim: True
+           id.token.claim: True
+           claim.name: "groups"
+         name: clientgroups
+         protocol: openid-connect
+         protocolMapper: oidc-group-membership-mapper
+     redirect_uris:
+       - "https://{{ traefik_domain | default(hostvars[groups['hpc_master'][0]].ansible_ssh_host) }}/conda-store/oauth_callback"
+   register: conda_store_client
 
-- name: Create conda-store keycloak roles
-  community.general.keycloak_role:
-    auth_client_id: admin-cli
-    auth_keycloak_url: "http://localhost:{{ keycloak_port }}/auth"
-    auth_realm: master
-    auth_username: "{{ keycloak_admin_username }}"
-    auth_password: "{{ keycloak_admin_password }}"
-    realm: "{{ keycloak_realm }}"
-    client_id: "{{ conda_store_client_id }}"
-    name: "{{ item.name }}"
-    description: "{{ item.description }}"
-    state: present
-  with_items:
-    - name: conda_store_admin
-      description: Conda-Store Administrator
-    - name: conda_store_developer
-      description: Conda-Store Developer
-    - name: conda_store_viewer
-      description: Conda-Store Viewer
+ - name: Create conda-store keycloak roles
+   community.general.keycloak_role:
+     auth_client_id: admin-cli
+     auth_keycloak_url: "http://localhost:{{ keycloak_port }}/auth"
+     auth_realm: master
+     auth_username: "{{ keycloak_admin_username }}"
+     auth_password: "{{ keycloak_admin_password }}"
+     realm: "{{ keycloak_realm }}"
+     client_id: "{{ conda_store_client_id }}"
+     name: "{{ item.name }}"
+     description: "{{ item.description }}"
+     state: present
+   with_items:
+     - name: conda_store_admin
+       description: Conda-Store Administrator
+     - name: conda_store_developer
+       description: Conda-Store Developer
+     - name: conda_store_viewer
+       description: Conda-Store Viewer
 
-- name: Create conda-store keycloak role mappings to groups
-  community.general.keycloak_client_rolemapping:
-    auth_client_id: admin-cli
-    auth_keycloak_url: "http://localhost:{{ keycloak_port }}/auth"
-    auth_realm: master
-    auth_username: "{{ keycloak_admin_username }}"
-    auth_password: "{{ keycloak_admin_password }}"
-    realm: "{{ keycloak_realm }}"
-    client_id: "{{ conda_store_client_id }}"
-    group_name: "{{ item.group }}"
-    roles:
-      - name: "{{ item.role }}"
-    state: present
-  with_items:
-    - group: admin
-      role: conda_store_admin
-    - group: developer
-      role: conda_store_developer
-    - group: viewer
-      role: conda_store_viewer
+ - name: Create conda-store keycloak role mappings to groups
+   community.general.keycloak_client_rolemapping:
+     auth_client_id: admin-cli
+     auth_keycloak_url: "http://localhost:{{ keycloak_port }}/auth"
+     auth_realm: master
+     auth_username: "{{ keycloak_admin_username }}"
+     auth_password: "{{ keycloak_admin_password }}"
+     realm: "{{ keycloak_realm }}"
+     client_id: "{{ conda_store_client_id }}"
+     group_name: "{{ item.group }}"
+     roles:
+       - name: "{{ item.role }}"
+     state: present
+   with_items:
+     - group: admin
+       role: conda_store_admin
+     - group: developer
+       role: conda_store_developer
+     - group: viewer
+       role: conda_store_viewer
 
-- name: Copy conda_store_config.py file
-  become: true
-  template:
-    src: conda_store_config.py
-    dest: /etc/conda-store/conda_store_config.py
-  register: _conda_store_config
+ - name: Copy conda_store_config.py file
+   become: true
+   template:
+     src: conda_store_config.py
+     dest: /etc/conda-store/conda_store_config.py
+   register: _conda_store_config
 
-- name: Copy the conda-store server systemd service file
-  become: true
-  copy:
-    content: |
-      [Unit]
-      Description=Conda-Store Server
-      Wants=network-online.target
-      After=network-online.target
-      AssertFileIsExecutable=/opt/conda/envs/conda-store/bin/conda-store-server
+ - name: Copy the conda-store server systemd service file
+   become: true
+   copy:
+     content: |
+       [Unit]
+       Description=Conda-Store Server
+       Wants=network-online.target
+       After=network-online.target
+       AssertFileIsExecutable=/opt/conda/envs/conda-store/bin/conda-store-server
 
-      [Service]
-      WorkingDirectory=/opt/conda-store/
-      User=root
-      Group=root
-      ExecStart=/opt/conda/envs/conda-store/bin/conda-store-server --config /etc/conda-store/conda_store_config.py
-      Restart=always
+       [Service]
+       WorkingDirectory=/opt/conda-store/
+       User=root
+       Group=root
+       ExecStart=/opt/conda/envs/conda-store/bin/conda-store-server --config /etc/conda-store/conda_store_config.py
+       Restart=always
 
-      [Install]
-      WantedBy=multi-user.target
-    dest: /etc/systemd/system/conda-store-server.service
-    owner: root
-    group: root
-    mode: 0644
-  register: _conda_store_server_service
+       [Install]
+       WantedBy=multi-user.target
+     dest: /etc/systemd/system/conda-store-server.service
+     owner: root
+     group: root
+     mode: 0644
+   register: _conda_store_server_service
 
-- name: Copy the conda-store worker systemd service file
-  become: true
-  copy:
-    content: |
-      [Unit]
-      Description=Conda-Store Worker
-      Wants=network-online.target
-      After=network-online.target
-      AssertFileIsExecutable=/opt/conda/envs/conda-store/bin/conda-store-worker
+ - name: Copy the conda-store worker systemd service file
+   become: true
+   copy:
+     content: |
+       [Unit]
+       Description=Conda-Store Worker
+       Wants=network-online.target
+       After=network-online.target
+       AssertFileIsExecutable=/opt/conda/envs/conda-store/bin/conda-store-worker
 
-      [Service]
-      WorkingDirectory=/opt/conda-store/
-      User=root
-      Group=root
-      Environment=PATH=/opt/conda/bin:/opt/conda/envs/conda-store/bin:PATH:/bin:/usr/bin:/usr/local/bin
-      ExecStart=/opt/conda/envs/conda-store/bin/conda-store-worker --config /etc/conda-store/conda_store_config.py
-      Restart=always
+       [Service]
+       WorkingDirectory=/opt/conda-store/
+       User=root
+       Group=root
+       Environment=PATH=/opt/conda/bin:/opt/conda/envs/conda-store/bin:PATH:/bin:/usr/bin:/usr/local/bin
+       ExecStart=/opt/conda/envs/conda-store/bin/conda-store-worker --config /etc/conda-store/conda_store_config.py
+       Restart=always
 
-      [Install]
-      WantedBy=multi-user.target
-    dest: /etc/systemd/system/conda-store-worker.service
-    owner: root
-    group: root
-    mode: 0644
-  register: _conda_store_worker_service
+       [Install]
+       WantedBy=multi-user.target
+     dest: /etc/systemd/system/conda-store-worker.service
+     owner: root
+     group: root
+     mode: 0644
+   register: _conda_store_worker_service
 
-- name: Ensure Conda-Store Server is enabled on boot
-  become: true
-  systemd:
-    daemon_reload: true
-    name: conda-store-server
-    enabled: true
-    state: restarted
-  when: _conda_store_server_service.changed or _conda_store_config.changed
+ - name: Ensure Conda-Store Server is enabled on boot
+   become: true
+   systemd:
+     daemon_reload: true
+     name: conda-store-server
+     enabled: true
+     state: restarted
+   when: _conda_store_server_service.changed or _conda_store_config.changed
 
-- name: Ensure Conda-Store Worker is enabled on boot
-  become: true
-  systemd:
-    daemon_reload: true
-    name: conda-store-worker
-    enabled: true
-    state: restarted
-  when: _conda_store_worker_service.changed or _conda_store_config.changed
+ - name: Ensure Conda-Store Worker is enabled on boot
+   become: true
+   systemd:
+     daemon_reload: true
+     name: conda-store-worker
+     enabled: true
+     state: restarted
+   when: _conda_store_worker_service.changed or _conda_store_config.changed

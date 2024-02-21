@@ -1,174 +1,174 @@
 ---
-- name: Add apt keys for grafana
-  become: true
-  apt_key:
-    url: "https://packages.grafana.com/gpg.key"
-    state: present
+ - name: Add apt keys for grafana
+   become: true
+   apt_key:
+     url: "https://packages.grafana.com/gpg.key"
+     state: present
 
-- name: Add apt repository for grafana
-  become: true
-  apt_repository:
-    repo: "deb https://apt.grafana.com stable main"
+ - name: Add apt repository for grafana
+   become: true
+   apt_repository:
+     repo: "deb https://apt.grafana.com stable main"
 
-- name: Install grafana
-  become: true
-  apt:
-    name: grafana{{ grafana_version }}
-    state: "{% if grafana_version %}present{% else %}latest{% endif %}"
-    cache_valid_time: 3600
+ - name: Install grafana
+   become: true
+   apt:
+     name: grafana{{ grafana_version }}
+     state: "{% if grafana_version %}present{% else %}latest{% endif %}"
+     cache_valid_time: 3600
 
-- name: Create keycloak client for grafana
-  community.general.keycloak_client:
-    auth_client_id: admin-cli
-    auth_keycloak_url: "http://localhost:{{ keycloak_port }}/auth"
-    auth_realm: master
-    auth_username: "{{ keycloak_admin_username }}"
-    auth_password: "{{ keycloak_admin_password }}"
-    realm: "{{ keycloak_realm }}"
-    state: present
-    client_id: "{{ grafana_client_id }}"
-    client_authenticator_type: client-secret
-    secret: "{{ grafana_client_secret }}"
-    protocol_mappers:
-      - config:
-          access.token.claim: True
-          userinfo.token.claim: True
-          id.token.claim: True
-          claim.name: "roles"
-          jsonType.label: String
-          multivalued: True
-        name: clientroles
-        protocol: openid-connect
-        protocolMapper: oidc-usermodel-client-role-mapper
-      - config:
-          access.token.claim: True
-          userinfo.token.claim: True
-          id.token.claim: True
-          claim.name: "groups"
-        name: clientgroups
-        protocol: openid-connect
-        protocolMapper: oidc-group-membership-mapper
-    redirect_uris:
-      - "https://{{ traefik_domain | default(hostvars[groups['hpc_master'][0]].ansible_ssh_host) }}{{ grafana_base_url }}/login/generic_oauth"
-  register: grafana_client
+ - name: Create keycloak client for grafana
+   community.general.keycloak_client:
+     auth_client_id: admin-cli
+     auth_keycloak_url: "http://localhost:{{ keycloak_port }}/auth"
+     auth_realm: master
+     auth_username: "{{ keycloak_admin_username }}"
+     auth_password: "{{ keycloak_admin_password }}"
+     realm: "{{ keycloak_realm }}"
+     state: present
+     client_id: "{{ grafana_client_id }}"
+     client_authenticator_type: client-secret
+     secret: "{{ grafana_client_secret }}"
+     protocol_mappers:
+       - config:
+           access.token.claim: True
+           userinfo.token.claim: True
+           id.token.claim: True
+           claim.name: "roles"
+           jsonType.label: String
+           multivalued: True
+         name: clientroles
+         protocol: openid-connect
+         protocolMapper: oidc-usermodel-client-role-mapper
+       - config:
+           access.token.claim: True
+           userinfo.token.claim: True
+           id.token.claim: True
+           claim.name: "groups"
+         name: clientgroups
+         protocol: openid-connect
+         protocolMapper: oidc-group-membership-mapper
+     redirect_uris:
+       - "https://{{ traefik_domain | default(hostvars[groups['hpc_master'][0]].ansible_ssh_host) }}{{ grafana_base_url }}/login/generic_oauth"
+   register: grafana_client
 
-- name: Create grafana keycloak roles
-  community.general.keycloak_role:
-    auth_client_id: admin-cli
-    auth_keycloak_url: "http://localhost:{{ keycloak_port }}/auth"
-    auth_realm: master
-    auth_username: "{{ keycloak_admin_username }}"
-    auth_password: "{{ keycloak_admin_password }}"
-    realm: "{{ keycloak_realm }}"
-    client_id: "{{ grafana_client_id }}"
-    name: "{{ item.name }}"
-    description: "{{ item.description }}"
-    state: present
-  with_items:
-    - name: grafana_admin
-      description: Grafana Administrator
-    - name: grafana_developer
-      description: Grafana Developer
-    - name: grafana_viewer
-      description: Grafana Viewer
+ - name: Create grafana keycloak roles
+   community.general.keycloak_role:
+     auth_client_id: admin-cli
+     auth_keycloak_url: "http://localhost:{{ keycloak_port }}/auth"
+     auth_realm: master
+     auth_username: "{{ keycloak_admin_username }}"
+     auth_password: "{{ keycloak_admin_password }}"
+     realm: "{{ keycloak_realm }}"
+     client_id: "{{ grafana_client_id }}"
+     name: "{{ item.name }}"
+     description: "{{ item.description }}"
+     state: present
+   with_items:
+     - name: grafana_admin
+       description: Grafana Administrator
+     - name: grafana_developer
+       description: Grafana Developer
+     - name: grafana_viewer
+       description: Grafana Viewer
 
-- name: Create grafana keycloak role mappings to groups
-  community.general.keycloak_client_rolemapping:
-    auth_client_id: admin-cli
-    auth_keycloak_url: "http://localhost:{{ keycloak_port }}/auth"
-    auth_realm: master
-    auth_username: "{{ keycloak_admin_username }}"
-    auth_password: "{{ keycloak_admin_password }}"
-    realm: "{{ keycloak_realm }}"
-    client_id: "{{ grafana_client_id }}"
-    group_name: "{{ item.group }}"
-    roles:
-      - name: "{{ item.role }}"
-    state: present
-  with_items:
-    - group: admin
-      role: grafana_admin
-    - group: developer
-      role: grafana_developer
-    - group: viewer
-      role: grafana_viewer
+ - name: Create grafana keycloak role mappings to groups
+   community.general.keycloak_client_rolemapping:
+     auth_client_id: admin-cli
+     auth_keycloak_url: "http://localhost:{{ keycloak_port }}/auth"
+     auth_realm: master
+     auth_username: "{{ keycloak_admin_username }}"
+     auth_password: "{{ keycloak_admin_password }}"
+     realm: "{{ keycloak_realm }}"
+     client_id: "{{ grafana_client_id }}"
+     group_name: "{{ item.group }}"
+     roles:
+       - name: "{{ item.role }}"
+     state: present
+   with_items:
+     - group: admin
+       role: grafana_admin
+     - group: developer
+       role: grafana_developer
+     - group: viewer
+       role: grafana_viewer
 
-- name: Copy grafana datasource provision file
-  become: true
-  template:
-    src: grafana-datasources.yaml
-    dest: /etc/grafana/provisioning/datasources/grafana-datasources.yaml
-    owner: root
-    group: grafana
-    mode: 0440
-  register: _grafana_provision_datasource
+ - name: Copy grafana datasource provision file
+   become: true
+   template:
+     src: grafana-datasources.yaml
+     dest: /etc/grafana/provisioning/datasources/grafana-datasources.yaml
+     owner: root
+     group: grafana
+     mode: 0440
+   register: _grafana_provision_datasource
 
-- name: Copy grafana dashboard provision file
-  become: true
-  template:
-    src: grafana-dashboards.yaml
-    dest: /etc/grafana/provisioning/dashboards/dashboard.yaml
-    owner: root
-    group: grafana
-    mode: 0440
-  register: _grafana_provision_dashboard
+ - name: Copy grafana dashboard provision file
+   become: true
+   template:
+     src: grafana-dashboards.yaml
+     dest: /etc/grafana/provisioning/dashboards/dashboard.yaml
+     owner: root
+     group: grafana
+     mode: 0440
+   register: _grafana_provision_dashboard
 
-- name: Copy grafana dashboards
-  become: true
-  copy:
-    src: "dashboards/{{ item }}.json"
-    dest: "/etc/grafana/provisioning/dashboards/{{ item }}.json"
-    owner: root
-    group: grafana
-    mode: 0440
-  with_items: "{{ grafana_dashboards }}"
-  register: _grafana_dashboards
+ - name: Copy grafana dashboards
+   become: true
+   copy:
+     src: "dashboards/{{ item }}.json"
+     dest: "/etc/grafana/provisioning/dashboards/{{ item }}.json"
+     owner: root
+     group: grafana
+     mode: 0440
+   with_items: "{{ grafana_dashboards }}"
+   register: _grafana_dashboards
 
-- name: Copy Grafana Configuration
-  become: true
-  copy:
-    content: |
-      [server]
-      protocol = http
-      http_port = {{ grafana_port }}
-      domain = {{ traefik_domain | default(hostvars[groups['hpc_master'][0]].ansible_ssh_host) }}
-      root_url = https://%(domain)s{{ grafana_base_url }}
-      serve_from_sub_path = true
+ - name: Copy Grafana Configuration
+   become: true
+   copy:
+     content: |
+       [server]
+       protocol = http
+       http_port = {{ grafana_port }}
+       domain = {{ traefik_domain | default(hostvars[groups['hpc_master'][0]].ansible_ssh_host) }}
+       root_url = https://%(domain)s{{ grafana_base_url }}
+       serve_from_sub_path = true
 
-      [auth]
-      oauth_auto_login = true
+       [auth]
+       oauth_auto_login = true
 
-      [auth.basic]
-      enabled = false
+       [auth.basic]
+       enabled = false
 
-      [auth.generic_oauth]
-      enabled = true
-      name = Login Keycloak
-      allow_sign_up = true
-      client_id = {{ grafana_client_id }}
-      client_secret = {{ grafana_client_secret }}
-      scopes = profile
-      auth_url = "https://{{ traefik_domain | default(hostvars[groups['hpc_master'][0]].ansible_ssh_host) }}/auth/realms/{{ keycloak_realm }}/protocol/openid-connect/auth"
-      token_url = "https://{{ traefik_domain | default(hostvars[groups['hpc_master'][0]].ansible_ssh_host) }}/auth/realms/{{ keycloak_realm }}/protocol/openid-connect/token"
-      api_url = "https://{{ traefik_domain | default(hostvars[groups['hpc_master'][0]].ansible_ssh_host) }}/auth/realms/{{ keycloak_realm }}/protocol/openid-connect/userinfo"
-      tls_skip_verify_insecure = true
-      login_attribute_path: preferred_username
-      role_attribute_path: "contains(roles[*], 'grafana_admin') && 'Admin' || contains(roles[*], 'grafana_developer') && 'Editor' || contains(roles[*], 'grafana_viewer') || 'Viewer'"
+       [auth.generic_oauth]
+       enabled = true
+       name = Login Keycloak
+       allow_sign_up = true
+       client_id = {{ grafana_client_id }}
+       client_secret = {{ grafana_client_secret }}
+       scopes = profile
+       auth_url = "https://{{ traefik_domain | default(hostvars[groups['hpc_master'][0]].ansible_ssh_host) }}/auth/realms/{{ keycloak_realm }}/protocol/openid-connect/auth"
+       token_url = "https://{{ traefik_domain | default(hostvars[groups['hpc_master'][0]].ansible_ssh_host) }}/auth/realms/{{ keycloak_realm }}/protocol/openid-connect/token"
+       api_url = "https://{{ traefik_domain | default(hostvars[groups['hpc_master'][0]].ansible_ssh_host) }}/auth/realms/{{ keycloak_realm }}/protocol/openid-connect/userinfo"
+       tls_skip_verify_insecure = true
+       login_attribute_path: preferred_username
+       role_attribute_path: "contains(roles[*], 'grafana_admin') && 'Admin' || contains(roles[*], 'grafana_developer') && 'Editor' || contains(roles[*], 'grafana_viewer') || 'Viewer'"
 
-      [dashboards]
-      min_refresh_interval = 1s
+       [dashboards]
+       min_refresh_interval = 1s
 
-      {{ grafana_additional_config }}
-    dest: /etc/grafana/grafana.ini
-    owner: root
-    group: grafana
-    mode: 0440
-  register: _grafana_configuration
+       {{ grafana_additional_config }}
+     dest: /etc/grafana/grafana.ini
+     owner: root
+     group: grafana
+     mode: 0440
+   register: _grafana_configuration
 
-- name: Ensure granfana is started
-  become: true
-  service:
-    name: grafana-server
-    enabled: true
-    state: restarted
-  when: _grafana_configuration.changed or _grafana_provision_dashboard.changed or _grafana_provision_datasource.changed or _grafana_dashboards.changed
+ - name: Ensure granfana is started
+   become: true
+   service:
+     name: grafana-server
+     enabled: true
+     state: restarted
+   when: _grafana_configuration.changed or _grafana_provision_dashboard.changed or _grafana_provision_datasource.changed or _grafana_dashboards.changed

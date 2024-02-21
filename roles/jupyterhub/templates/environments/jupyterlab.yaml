@@ -2,9 +2,7 @@ name: jupyterlab
 channels:
   - conda-forge
 dependencies:
-
   - pip
-
   # jupyterhub/jupyterlab
   - nb_conda_kernels
   - ipython > 7
@@ -13,7 +11,7 @@ dependencies:
   - jupyterlab >=4
   - jupyter_client
   - jupyter_console
-  - jupyterhub==4.0.2
+  - jupyterhub{{ jupyterhub_version }}
   - nbconvert
   - nbval
 
@@ -30,7 +28,6 @@ dependencies:
   - jupyterlab-spellchecker >= 0.7.3
   - jupyterlab-pioneer
   - jupyter-ai
-
   - jhsingle-native-proxy==0.8.0
 
   # viz tools

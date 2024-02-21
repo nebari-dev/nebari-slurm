@@ -1,205 +1,204 @@
 ---
-- name: Install Environments
-  include_role:
-    name: conda_environment
-  vars:
-    environment_path: "{{ item }}"
-  with_items:
-    - "{{ jupyterhub_hub_environment }}"
-    - "{{ jupyterhub_lab_environment }}"
-    - "{{ jupyterhub_dashboard_environment }}"
+ - name: Install Environments
+   include_role:
+     name: conda_environment
+   vars:
+     environment_path: "{{ item }}"
+   with_items:
+     - "{{ jupyterhub_hub_environment }}"
+     - "{{ jupyterhub_lab_environment }}"
+     - "{{ jupyterhub_dashboard_environment }}"
 
-- name: Create hub config directory
-  become: true
-  file:
-    path: /etc/jupyterhub
-    state: directory
-    mode: "0755"
+ - name: Create hub config directory
+   become: true
+   file:
+     path: /etc/jupyterhub
+     state: directory
+     mode: '0755'
 
-- name: Create hub user config directory
-  become: true
-  file:
-    path: /etc/jupyterhub/additional
-    state: directory
-    mode: "0755"
+ - name: Create hub user config directory
+   become: true
+   file:
+     path: /etc/jupyterhub/additional
+     state: directory
+     mode: '0755'
 
-- name: Create hub state directory
-  become: true
-  file:
-    path: /var/lib/jupyterhub
-    state: directory
-    mode: "0755"
+ - name: Create hub state directory
+   become: true
+   file:
+     path: /var/lib/jupyterhub
+     state: directory
+     mode: '0755'
 
-- name: Create hub proxy state directory
-  become: true
-  file:
-    path: /var/lib/jupyterhub-proxy
-    state: directory
-    mode: "0755"
+ - name: Create hub proxy state directory
+   become: true
+   file:
+     path: /var/lib/jupyterhub-proxy
+     state: directory
+     mode: '0755'
 
-- name: Create keycloak client for jupyterhub
-  community.general.keycloak_client:
-    auth_client_id: admin-cli
-    auth_keycloak_url: "http://localhost:{{ keycloak_port }}/auth"
-    auth_realm: master
-    auth_username: "{{ keycloak_admin_username }}"
-    auth_password: "{{ keycloak_admin_password }}"
-    realm: "{{ keycloak_realm }}"
-    state: present
-    client_id: "{{ jupyterhub_client_id }}"
-    client_authenticator_type: client-secret
-    secret: "{{ jupyterhub_client_secret }}"
-    protocol_mappers:
-      - config:
-          access.token.claim: True
-          userinfo.token.claim: True
-          id.token.claim: True
-          claim.name: "roles"
-          jsonType.label: String
-          multivalued: True
-        name: clientroles
-        protocol: openid-connect
-        protocolMapper: oidc-usermodel-client-role-mapper
-      - config:
-          access.token.claim: True
-          userinfo.token.claim: True
-          id.token.claim: True
-          claim.name: "groups"
-        name: clientgroups
-        protocol: openid-connect
-        protocolMapper: oidc-group-membership-mapper
-    redirect_uris:
-      - "https://{{ traefik_domain | default(hostvars[groups['hpc_master'][0]].ansible_ssh_host) }}/hub/oauth_callback"
-  register: jupyterhub_client
+ - name: Create keycloak client for jupyterhub
+   community.general.keycloak_client:
+     auth_client_id: admin-cli
+     auth_keycloak_url: "http://localhost:{{ keycloak_port }}/auth"
+     auth_realm: master
+     auth_username: "{{ keycloak_admin_username }}"
+     auth_password: "{{ keycloak_admin_password }}"
+     realm: "{{ keycloak_realm }}"
+     state: present
+     client_id: "{{ jupyterhub_client_id }}"
+     client_authenticator_type: client-secret
+     secret: "{{ jupyterhub_client_secret }}"
+     protocol_mappers:
+       - config:
+           access.token.claim: True
+           userinfo.token.claim: True
+           id.token.claim: True
+           claim.name: "roles"
+           jsonType.label: String
+           multivalued: True
+         name: clientroles
+         protocol: openid-connect
+         protocolMapper: oidc-usermodel-client-role-mapper
+       - config:
+           access.token.claim: True
+           userinfo.token.claim: True
+           id.token.claim: True
+           claim.name: "groups"
+         name: clientgroups
+         protocol: openid-connect
+         protocolMapper: oidc-group-membership-mapper
+     redirect_uris:
+       - "https://{{ traefik_domain | default(hostvars[groups['hpc_master'][0]].ansible_ssh_host) }}/hub/oauth_callback"
+   register: jupyterhub_client
 
-- name: Create JupyterHub Keycloak roles
-  community.general.keycloak_role:
-    auth_client_id: admin-cli
-    auth_keycloak_url: "http://localhost:{{ keycloak_port }}/auth"
-    auth_realm: master
-    auth_username: "{{ keycloak_admin_username }}"
-    auth_password: "{{ keycloak_admin_password }}"
-    realm: "{{ keycloak_realm }}"
-    client_id: "{{ jupyterhub_client_id }}"
-    name: "{{ item.name }}"
-    description: "{{ item.description }}"
-    state: present
-  with_items:
-    - name: jupyterhub_admin
-      description: JupyterHub Administrator
-    - name: jupyterhub_developer
-      description: JupyterHub Developer
+ - name: Create JupyterHub Keycloak roles
+   community.general.keycloak_role:
+     auth_client_id: admin-cli
+     auth_keycloak_url: "http://localhost:{{ keycloak_port }}/auth"
+     auth_realm: master
+     auth_username: "{{ keycloak_admin_username }}"
+     auth_password: "{{ keycloak_admin_password }}"
+     realm: "{{ keycloak_realm }}"
+     client_id: "{{ jupyterhub_client_id }}"
+     name: "{{ item.name }}"
+     description: "{{ item.description }}"
+     state: present
+   with_items:
+     - name: jupyterhub_admin
+       description: JupyterHub Administrator
+     - name: jupyterhub_developer
+       description: JupyterHub Developer
 
-- name: Create JupyterHub Keycloak role mappings to groups
-  community.general.keycloak_client_rolemapping:
-    auth_client_id: admin-cli
-    auth_keycloak_url: "http://localhost:{{ keycloak_port }}/auth"
-    auth_realm: master
-    auth_username: "{{ keycloak_admin_username }}"
-    auth_password: "{{ keycloak_admin_password }}"
-    realm: "{{ keycloak_realm }}"
-    client_id: "{{ jupyterhub_client_id }}"
-    group_name: "{{ item.group }}"
-    roles:
-      - name: "{{ item.role }}"
-    state: present
-  with_items:
-    - group: admin
-      role: jupyterhub_admin
-    - group: developer
-      role: jupyterhub_developer
+ - name: Create JupyterHub Keycloak role mappings to groups
+   community.general.keycloak_client_rolemapping:
+     auth_client_id: admin-cli
+     auth_keycloak_url: "http://localhost:{{ keycloak_port }}/auth"
+     auth_realm: master
+     auth_username: "{{ keycloak_admin_username }}"
+     auth_password: "{{ keycloak_admin_password }}"
+     realm: "{{ keycloak_realm }}"
+     client_id: "{{ jupyterhub_client_id }}"
+     group_name: "{{ item.group }}"
+     roles:
+       - name: "{{ item.role }}"
+     state: present
+   with_items:
+     - group: admin
+       role: jupyterhub_admin
+     - group: developer
+       role: jupyterhub_developer
 
-- name: Copy jupyterhub_config.py file
-  become: true
-  template:
-    src: templates/jupyterhub_config.py
-    dest: /etc/jupyterhub/jupyterhub_config.py
-  notify: restart services jupyterhub
+ - name: Copy jupyterhub_config.py file
+   become: true
+   template:
+     src: templates/jupyterhub_config.py
+     dest: /etc/jupyterhub/jupyterhub_config.py
+   notify: restart services jupyterhub
 
-- name: Copy jupyterhub_config.py files
-  become: true
-  template:
-    src: "{{ item.value }}"
-    dest: "/etc/jupyterhub/additional/{{ item.key }}.py"
-  with_dict: "{{ jupyterhub_additional_config }}"
-  notify: restart services jupyterhub
+ - name: Copy jupyterhub_config.py files
+   become: true
+   template:
+     src: "{{ item.value }}"
+     dest: "/etc/jupyterhub/additional/{{ item.key }}.py"
+   with_dict: "{{ jupyterhub_additional_config }}"
+   notify: restart services jupyterhub
 
-- name: Setup External Proxy for JupyterHub systemd unit
-  become: true
-  copy:
-    content: |
-      [Service]
-      User=root
-      Restart=always
-      WorkingDirectory=/var/lib/jupyterhub-proxy
-      # Protect bits that are normally shared across the system
-      ProtectHome=tmpfs
-      ProtectSystem=strict
-      PrivateTmp=yes
-      PrivateDevices=yes
-      ProtectKernelTunables=yes
-      ProtectKernelModules=yes
+ - name: Setup External Proxy for JupyterHub systemd unit
+   become: true
+   copy:
+     content: |
+       [Service]
+       User=root
+       Restart=always
+       WorkingDirectory=/var/lib/jupyterhub-proxy
+       # Protect bits that are normally shared across the system
+       ProtectHome=tmpfs
+       ProtectSystem=strict
+       PrivateTmp=yes
+       PrivateDevices=yes
+       ProtectKernelTunables=yes
+       ProtectKernelModules=yes
 
-      Environment=PATH={{ miniforge_home }}/condabin:{{ miniforge_home }}/envs/{{ jupyterhub_hub_environment | basename | splitext | first }}/bin:$PATH:/bin:/usr/bin:/usr/local/bin
-      Environment=CONFIGPROXY_AUTH_TOKEN={{ jupyterhub_proxy_auth_token }}
-      ExecStart={{ miniforge_home }}/envs/{{ jupyterhub_hub_environment | basename | splitext | first }}/bin/configurable-http-proxy \
-        --ip=127.0.0.1 \
-        --port={{ jupyterhub_proxy_port }} \
-        --api-ip=127.0.0.1 \
-        --api-port={{ jupyterhub_proxy_api_port }} \
-        --default-target=http://localhost:{{ jupyterhub_port }}/ \
-        --error-target=http://localhost:{{ jupyterhub_port }}/hub/error
+       Environment=PATH={{ miniforge_home }}/condabin:{{ miniforge_home }}/envs/{{ jupyterhub_hub_environment | basename | splitext | first }}/bin:$PATH:/bin:/usr/bin:/usr/local/bin
+       Environment=CONFIGPROXY_AUTH_TOKEN={{ jupyterhub_proxy_auth_token }}
+       ExecStart={{ miniforge_home }}/envs/{{ jupyterhub_hub_environment | basename | splitext | first }}/bin/configurable-http-proxy \
+         --ip=127.0.0.1 \
+         --port={{ jupyterhub_proxy_port }} \
+         --api-ip=127.0.0.1 \
+         --api-port={{ jupyterhub_proxy_api_port }} \
+         --default-target=http://localhost:{{ jupyterhub_port }}/ \
+         --error-target=http://localhost:{{ jupyterhub_port }}/hub/error
 
-      [Install]
-      WantedBy=multi-user.target
-    dest: /etc/systemd/system/jupyterhub-proxy.service
-    mode: "0544"
-  notify: restart services jupyterhub-proxy
+       [Install]
+       WantedBy=multi-user.target
+     dest: /etc/systemd/system/jupyterhub-proxy.service
+     mode: '0544'
+   notify: restart services jupyterhub-proxy
 
-- name: Setup JupyterHub systemd unit
-  become: true
-  copy:
-    content: |
-      [Unit]
-      # CHP must have successfully started *before* we launch JupyterHub
-      Requires=jupyterhub-proxy.service
-      After=jupyterhub-proxy.service
+ - name: Setup JupyterHub systemd unit
+   become: true
+   copy:
+     content: |
+       [Unit]
+       # CHP must have successfully started *before* we launch JupyterHub
+       Requires=jupyterhub-proxy.service
+       After=jupyterhub-proxy.service
 
-      [Service]
-      User=root
-      Restart=always
-      WorkingDirectory=/var/lib/jupyterhub
-      # Protect bits that are normally shared across the system
-      PrivateTmp=yes
-      PrivateDevices=yes
-      ProtectKernelTunables=yes
-      ProtectKernelModules=yes
-      # By default, $PATH is pretty bare (thanks, systemd)
-      # We add the conda dir & /bin
-      # batchspawner uses sudo, which is in /bin (at least on CentOS)
-      Environment=OAUTH2_TLS_VERIFY=0
-      Environment=PATH={{ miniforge_home }}/condabin:{{ miniforge_home }}/envs/{{ jupyterhub_hub_environment | basename | splitext | first }}/bin:$PATH:/bin:/usr/bin:/usr/local/bin
-      ExecStart={{ miniforge_home }}/envs/{{ jupyterhub_hub_environment | basename | splitext | first }}/bin/jupyterhub --config /etc/jupyterhub/jupyterhub_config.py --debug
-      KillMode=process
+       [Service]
+       User=root
+       Restart=always
+       WorkingDirectory=/var/lib/jupyterhub
+       # Protect bits that are normally shared across the system
+       PrivateTmp=yes
+       PrivateDevices=yes
+       ProtectKernelTunables=yes
+       ProtectKernelModules=yes
+       # By default, $PATH is pretty bare (thanks, systemd)
+       # We add the conda dir & /bin
+       # batchspawner uses sudo, which is in /bin (at least on CentOS)
+       Environment=PATH={{ miniforge_home }}/condabin:{{ miniforge_home }}/envs/{{ jupyterhub_hub_environment | basename | splitext | first }}/bin:$PATH:/bin:/usr/bin:/usr/local/bin
+       ExecStart={{ miniforge_home }}/envs/{{ jupyterhub_hub_environment | basename | splitext | first }}/bin/jupyterhub --config /etc/jupyterhub/jupyterhub_config.py --debug
+       KillMode=process
 
-      [Install]
-      WantedBy=multi-user.target
-    dest: /etc/systemd/system/jupyterhub.service
-    mode: "0544"
-  notify: restart services jupyterhub
+       [Install]
+       WantedBy=multi-user.target
+     dest: /etc/systemd/system/jupyterhub.service
+     mode: '0544'
+   notify: restart services jupyterhub
 
-- name: Ensure JupyterHub Started
-  become: true
-  systemd:
-    name: jupyterhub
-    enabled: true
-    state: started
-    daemon_reload: true
+ - name: Ensure JupyterHub Started
+   become: true
+   systemd:
+     name: jupyterhub
+     enabled: true
+     state: started
+     daemon_reload: true
 
-- name: Ensure JupyterHub Proxy Started
-  become: true
-  systemd:
-    name: jupyterhub-proxy
-    enabled: true
-    state: started
-    daemon_reload: true
+ - name: Ensure JupyterHub Proxy Started
+   become: true
+   systemd:
+     name: jupyterhub-proxy
+     enabled: true
+     state: started
+     daemon_reload: true

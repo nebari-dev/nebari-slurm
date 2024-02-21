@@ -135,12 +135,13 @@ idle_culler:
   cull_every: 3600 # 1 hour
 ```
 
- - `timeout` is the time that a user is inactive
- - `cull_every` is the interval to delete inactive jupyterlab instances
+- `timeout` is the time that a user is inactive
+- `cull_every` is the interval to delete inactive jupyterlab instances
 
 ### Set default UI to classic jupyter notebooks
 
 As of JupyterHub 2.0, the default user interface is Jupyterlab.  If the classic Jupyter notebook UI is preferred, this can be configured as shown below.
+
 ```yaml
 jupyterhub_custom:
   QHubHPCSpawner:
@@ -151,7 +152,9 @@ jupyterhub_custom:
 ```
 
 ### Turn off resource selection user options form
+
 The resource selection options form allows users to choose the cpu, memory, and partition on which to run their user server.  This feature is enabled by default, but can be disabled as shown below.  This controls the option form for both the user and CDSDashboards.
+
 ```yaml
 jupyterhub_qhub_options_form: false
 ```
@@ -199,9 +202,9 @@ by setting the following ansible variables to copy files onto all
 nodes, all nodes in a particular group or only onto a particular node
 respectively.
 
-    - `copy_files_all`
-    - `copy_files_[ansible_group_name]`
-    - `copy_files_[ansible_host_name]`
+- `copy_files_all`
+- `copy_files_[ansible_group_name]`
+- `copy_files_[ansible_ssh_host_name]`
 
 Copying two files/folders onto the hpc02-test node could be done by
 setting the following ansible variable e.g. in the
@@ -224,9 +227,7 @@ copy_files_hpc02-test:
     directory_mode: 'ugo+rwx'
 ```
 
-The owner, group, and mode fields are optional. See
-https://docs.ansible.com/ansible/latest/collections/ansible/builtin/copy_module.html#id2
-for more detail about each field.
+The owner, group, and mode fields are optional. See [copying modules](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/copy_module.html#id2) for more detail about each field.
 
 Remember that the home directory of users is a network file system so
 it would only be necessary to copy files in the user directories into
@@ -259,7 +260,7 @@ with the domain by setting the `traefik_domain` ansible variable.
 
 For example, if you had the example.com domain set up to point to the
 hpc_master node, then you could add the following to the all.yaml file
-and redeploy, after which navigating to https://example.com in a web
+and redeploy, after which navigating to `https://example.com` in a web
 browser would bring up your Qhub HPC deployment sign in page.
 
 ```yaml
@@ -373,10 +374,11 @@ backup_environment:
   AWS_ACCESS_KEY_ID: accesskey
   AWS_SECRET_ACCESS_KEY: mylongsecretaccesskey
 ```
- - `backup_enabled` :: determines whether backups are enabled
- - `backup_on_calendar` :: determines the frequency to perform backups. Consult [systemd timer](https://www.freedesktop.org/software/systemd/man/systemd.timer.html) documentation for syntax
- - `backup_randomized_delay` :: is the random delay in seconds to apply to backups. Usefull to prevent backups from all being performed at an exact time each day
-  - `backup_environment` :: are all the key value pairs used to configure restic. RESTIC_REPOSITORY and RESTIC_PASSWORD are required. The rest are environment variables for the specific [backup repository](https://restic.readthedocs.io/en/stable/030_preparing_a_new_repo.html).
+
+- `backup_enabled` :: determines whether backups are enabled
+- `backup_on_calendar` :: determines the frequency to perform backups. Consult [systemd timer](https://www.freedesktop.org/software/systemd/man/systemd.timer.html) documentation for syntax
+- `backup_randomized_delay` :: is the random delay in seconds to apply to backups. Usefull to prevent backups from all being performed at an exact time each day
+- `backup_environment` :: are all the key value pairs used to configure restic. RESTIC_REPOSITORY and RESTIC_PASSWORD are required. The rest are environment variables for the specific [backup repository](https://restic.readthedocs.io/en/stable/030_preparing_a_new_repo.html).
 
 ### Manual backup
 
