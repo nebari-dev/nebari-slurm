@@ -3,7 +3,7 @@
 - name: Restart services ldap
   become: true
   ansible.builtin.service:
-    name: "{{item}}"
+    name: "{{ item }}"
     enabled: "yes"
     state: restarted
     cmd: ""

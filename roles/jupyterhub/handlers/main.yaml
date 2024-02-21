@@ -2,7 +2,7 @@
 - name: Restart services jupyterhub
   become: true
   ansible.builtin.service:
-    name: "{{item}}"
+    name: "{{ item }}"
     enabled: "yes"
     state: restarted
     cmd: ""
@@ -12,7 +12,7 @@
 - name: Restart services jupyterhub-proxy
   become: true
   ansible.builtin.service:
-    name: "{{item}}"
+    name: "{{ item }}"
     enabled: "yes"
     state: restarted
     cmd: ""
@@ -22,7 +22,7 @@
 - name: Restart services jupyterhub-ssh
   become: true
   ansible.builtin.service:
-    name: "{{item}}"
+    name: "{{ item }}"
     enabled: "yes"
     state: restarted
     cmd: ""
