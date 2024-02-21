@@ -1,10 +1,10 @@
 ---
-- name: Ensure that dask configuration directory exists
-  become: true
-  file:
-    path: /etc/dask
-    state: directory
-    mode: "0755"
+ - name: Ensure that dask configuration directory exists
+   become: true
+   file:
+     path: /etc/dask
+     state: directory
+     mode: '0755'
 
  - name: Copy the dask-gateway client configuration
    become: true

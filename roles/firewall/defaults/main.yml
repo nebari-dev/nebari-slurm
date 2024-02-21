@@ -1,2 +1,2 @@
 firewall_enabled: true
-firewall_internal_ip_range: "10.10.160.50/24"
+firewall_internal_ip_range: "192.168.0.0/16"
