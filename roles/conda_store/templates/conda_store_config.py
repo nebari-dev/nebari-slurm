@@ -31,7 +31,7 @@ c.S3Storage.bucket_name = "conda-store"
 # ==================================
 #        server settings
 # ==================================
-c.CondaStoreServer.log_level = logging.DEBUG
+c.CondaStoreServer.log_level = logging.INFO
 c.CondaStoreServer.enable_ui = True
 c.CondaStoreServer.enable_api = True
 c.CondaStoreServer.enable_registry = True
@@ -118,7 +118,7 @@ c.CondaStoreServer.authentication_class = KeyCloakAuthentication
 # ==================================
 #         worker settings
 # ==================================
-c.CondaStoreWorker.log_level = logging.DEBUG
+c.CondaStoreWorker.log_level = logging.INFO
 c.CondaStoreWorker.watch_paths = ["/opt/environments"]
 c.CondaStoreWorker.concurrency = 4
 c.CondaStore.environment_directory = "/opt/conda-store/conda-store/{namespace}/envs/{namespace}-{name}"
