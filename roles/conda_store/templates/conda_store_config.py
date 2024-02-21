@@ -1,5 +1,8 @@
 import logging
 
+import requests
+from conda_store_server import schema, api, orm
+from conda_store_server.server.dependencies import get_conda_store
 from conda_store_server.storage import S3Storage
 from conda_store_server.server.auth import GenericOAuthAuthentication
 
@@ -8,8 +11,7 @@ from conda_store_server.server.auth import GenericOAuthAuthentication
 # ==================================
 c.CondaStore.storage_class = S3Storage
 c.CondaStore.store_directory = "/opt/conda-store/conda-store/"
-c.CondaStore.conda_command = "conda"
-c.CondaStore.database_url = "mysql+pymysql://{{ mysql_users[1].username }}:{{ mysql_users[1].password }}@localhost/{{ mysql_databases[1] }}"
+c.CondaStore.database_url = "postgresql+psycopg2://{{ postgres_users[0].username }}:{{ postgres_users[0].password }}@localhost/{{ postgres_databases[0] }}"
 c.CondaStore.default_uid = 1000
 c.CondaStore.default_gid = 100
 c.CondaStore.default_permissions = "775"
@@ -36,6 +38,7 @@ c.CondaStoreServer.enable_registry = True
 c.CondaStoreServer.enable_metrics = True
 c.CondaStoreServer.address = "0.0.0.0"
 c.CondaStoreServer.port = {{ conda_store_port }}
+c.CondaStoreServer.behind_proxy = True
 c.CondaStoreServer.url_prefix = "{{ conda_store_prefix }}"
 
 
@@ -52,12 +55,8 @@ c.GenericOAuthAuthentication.access_scope = "profile"
 c.GenericOAuthAuthentication.user_data_key = "preferred_username"
 c.GenericOAuthAuthentication.tls_verify = False
 
-import requests
-from conda_store_server import schema, api, orm
-from conda_store_server.server.utils import get_conda_store
-
 class KeyCloakAuthentication(GenericOAuthAuthentication):
-    def authenticate(self, request):
+    async def authenticate(self, request):
         # 1. using the callback_url code and state in request
         oauth_access_token = self._get_oauth_token(request)
         if oauth_access_token is None:
@@ -71,17 +70,29 @@ class KeyCloakAuthentication(GenericOAuthAuthentication):
         response.raise_for_status()
         user_data = response.json()
 
+        username = user_data["preferred_username"]
+
+        # superadmin gets access to everything
+        if "conda_store_superadmin" in user_data.get("roles", []):
+            return schema.AuthenticationToken(
+                primary_namespace=username,
+                role_bindings={"*/*": {"admin"}},
+            )
+
         role_mappings = {
             'conda_store_admin': 'admin',
             'conda_store_developer': 'developer',
             'conda_store_viewer': 'viewer',
         }
-        roles = {role_mappings[role] for role in user_data.get('roles', []) if role in role_mappings}
-        username = user_data['preferred_username']
+        roles = {
+            role_mappings[role]
+            for role in user_data.get('roles', [])
+            if role in role_mappings
+        }
         namespaces = {username, 'default', 'filesystem'}
         role_bindings = {
             f'{username}/*': {'admin'},
-            f'filesystem/*': {'reader'},
+            f'filesystem/*': {'viewer'},
             f'default/*': roles,
         }
 
@@ -89,12 +100,13 @@ class KeyCloakAuthentication(GenericOAuthAuthentication):
             namespaces.add(group)
             role_bindings[f'{group}/*'] = roles
 
-        conda_store = get_conda_store()
-        for namespace in namespaces:
-            _namespace = api.get_namespace(conda_store.db, name=namespace)
-            if _namespace is None:
-                conda_store.db.add(orm.Namespace(name=namespace))
-                conda_store.db.commit()
+        conda_store = await get_conda_store(request)
+        with conda_store.session_factory() as db:
+            for namespace in namespaces:
+                _namespace = api.get_namespace(db, name=namespace)
+                if _namespace is None:
+                    db.add(orm.Namespace(name=namespace))
+                    db.commit()
 
         return schema.AuthenticationToken(
             primary_namespace=username,
@@ -109,3 +121,4 @@ c.CondaStoreServer.authentication_class = KeyCloakAuthentication
 c.CondaStoreWorker.log_level = logging.INFO
 c.CondaStoreWorker.watch_paths = ["/opt/environments"]
 c.CondaStoreWorker.concurrency = 4
+c.CondaStore.environment_directory = "/opt/conda-store/conda-store/{namespace}/envs/{namespace}-{name}"

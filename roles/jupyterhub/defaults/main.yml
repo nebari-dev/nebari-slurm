@@ -9,7 +9,7 @@ jupyterhub_proxy_auth_token: "m8dfdKvyVJ0bWTNpbVCQyoCt"
 cdsdashboards_enabled: true
 
 jupyterhub_enabled: false
-jupyterhub_version: "==2.3.0"
+jupyterhub_version: "==4.0.2"
 jupyterhub_port: "15001"
 jupyterhub_base_url: "/"
 jupyterhub_hub_environment: "environments/jupyterhub.yaml"
@@ -21,15 +21,15 @@ jupyterhub_qhub_options_form: true
 
 jupyterhub_config:
   spawner:
-    start_timeout: 60  # seconds
+    start_timeout: 180 # seconds
 
 jupyterhub_services:
   dask_gateway: CStgn1NN8DogQR1KajuoQfye1qNRqx6zsh
 
 jupyterhub_theme:
   template_vars:
-    hub_title: "This is QHub HPC"
-    hub_subtitle: "your scalable open source data science laboratory."
+    hub_title: "This is Nebari Slurm"
+    hub_subtitle: "Your scalable open source data science laboratory."
     welcome: "have fun."
     logo: "/hub/custom/images/jupyter_qhub_logo.svg"
     primary_color: '#4f4173'
@@ -49,7 +49,7 @@ jupyterhub_additional_config: {}
 
 idle_culler:
   enabled: true
-  timeout: 86400   # 1 day
+  timeout: 86400 # 1 day
   cull_every: 3600 # 1 hour
 
 # role: miniforge

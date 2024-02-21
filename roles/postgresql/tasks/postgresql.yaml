@@ -1,0 +1,35 @@
+---
+ - name: Install PostgreSQL
+   become: true
+   apt:
+    name:
+      - postgresql
+      - postgresql-contrib
+      - python3-psycopg2
+      - acl
+    state: latest
+    cache_valid_time: 3600
+
+ - name: Ensure PostgreSQL service is running
+   systemd:
+     name: postgresql
+     state: started
+     enabled: yes
+
+ - name: "Create database"
+   postgresql_db:
+     state: present
+     name: "{{ item }}"
+   become_user: postgres
+   become: yes
+   with_items: "{{ postgres_databases }}"
+
+ - name: Create PostgreSQL User
+   postgresql_user:
+     db: postgres
+     name: "{{ item.username }}"
+     password: "{{ item.password }}"
+     role_attr_flags: "{{ item.role }}"
+   with_items: "{{ postgres_users }}"
+   become_user: postgres
+   become: yes

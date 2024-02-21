@@ -4,16 +4,16 @@ channels:
 dependencies:
   - pip==21.1.2
   - jupyterhub{{ jupyterhub_version }}
-  - jupyterhub-kubespawner==1.1.0
-  - oauthenticator==14.1.0
+  - jupyterhub-kubespawner==4.2.0
+  - oauthenticator==15.1.0
   - escapism==1.0.1
-  - cdsdashboards==0.6.3
-  - jupyterhub-idle-culler==1.0
+  - jupyterhub-idle-culler==1.2.1
+  - sqlalchemy==1.4.46
   - pip:
       - nebari_jupyterhub_theme==2023.4.1
-      - sqlalchemy==1.4.4
       - python-keycloak==0.26.1
-      - jupyterhub-traefik-proxy==0.3.0
-      - batchspawner==1.1.0
+      - jupyterhub-traefik-proxy==1.1.0
       # jupyterhub-ssh has not made a release yet
       - git+https://github.com/yuvipanda/jupyterhub-ssh.git
+      - git+https://github.com/jupyterhub/batchspawner.git
+      - jhub-apps==2024.2.1rc1

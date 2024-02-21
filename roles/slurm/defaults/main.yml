@@ -9,9 +9,9 @@ slurm_config:
   ClusterName: cluster
   # slurmctld options
   SlurmctldPort: 6817
-  SlurmctldLogFile: /var/log/slurm-llnl/slurmctld.log
-  SlurmctldPidFile: /var/lib/slurm-llnl/slurmctld.pid
-  StateSaveLocation: /var/lib/slurm-llnl/slurmctld
+  SlurmctldLogFile: /var/log/slurm/slurmctld.log
+  SlurmctldPidFile: /var/lib/slurm/slurmctld.pid
+  StateSaveLocation: /var/lib/slurm/slurmctld
   SwitchType: switch/none
   TaskPlugin: task/affinity
   MpiDefault: pmi2
@@ -21,15 +21,15 @@ slurm_config:
   SelectTypeParameters: CR_CPU_Memory
   # slurmd options
   SlurmdPort: 6818
-  SlurmdLogFile: /var/log/slurm-llnl/slurmd.log
-  SlurmdPidFile: /var/lib/slurm-llnl/slurmd.pid
-  SlurmdSpoolDir: /var/lib/slurm-llnl/slurmd
+  SlurmdLogFile: /var/log/slurm/slurmd.log
+  SlurmdPidFile: /var/lib/slurm/slurmd.pid
+  SlurmdSpoolDir: /var/lib/slurm/slurmd
 
 slurmdbd_port: "6819"
 slurmdbd_config:
   # slurmdbd options
-  LogFile: /var/log/slurm-llnl/slurmdbd.log
-  PidFile: /var/lib/slurm-llnl/slurmdbd.pid
+  LogFile: /var/log/slurm/slurmdbd.log
+  PidFile: /var/lib/slurm/slurmdbd.pid
 
 golang_version: "1.15.6"
 golang_sha256: 3918e6cc85e7eaaa6f859f1bdbaac772e7a825b0eb423c63d3ae68b21f84b844

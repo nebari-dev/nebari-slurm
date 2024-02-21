@@ -53,7 +53,6 @@ http:
       loadBalancer:
         servers:
           - url: "localhost"
-
     minio:
       loadBalancer:
         servers:
@@ -88,7 +87,7 @@ http:
       service: "dummy"
 
     minio:
-      rule: "Host(`{{ traefik_domain | default(hostvars[groups['hpc_master'][0]].ansible_ssh_host) }}`)"
+      rule: "Host(`{{ traefik_domain | default(hostvars[groups['hpc_master'][0]].ansible_ssh_host) }}`) && PathPrefix(`/minio`)"
       entryPoints:
         - "minio"
       service: "minio"

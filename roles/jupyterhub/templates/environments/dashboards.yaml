@@ -5,9 +5,9 @@ dependencies:
   - pip
   - nb_conda_kernels
   # required to launch jupterlab from jupyterhub
-  - jupyterhub==2.3.0
+  - jupyterhub{{ jupyterhub_version }}
   # jupyterhub menu https://github.com/jupyterlab/jupyterlab/issues/9428
-  - jupyterlab>=3.4.0
+  - jupyterlab >=4
   - ipywidgets>=7.6.0
   - ipyparallel
   # dashboards (versions specified to narrow conda solve space)
@@ -16,6 +16,6 @@ dependencies:
   - voila >= 0.2.7
   - streamlit >= 0.76
   - dash >= 1.19
-  - cdsdashboards-singleuser==0.6.3
   - pip:
-      - batchspawner==1.1.0
+      - git+https://github.com/jupyterhub/batchspawner.git
+      - jhub-apps==2024.2.1rc1

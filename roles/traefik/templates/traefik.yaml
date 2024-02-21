@@ -15,6 +15,7 @@ certificatesResolvers:
       email: "{{ traefik_letsencrypt_email }}"
       storage: "/etc/traefik/acme/acme.json"
       tlsChallenge: {}
+      caserver: "https://acme-v02.api.letsencrypt.org/directory"
 {% endif %}
 
 ################################################################
