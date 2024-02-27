@@ -11,7 +11,7 @@ jobs:
   # https://github.com/jonashackt/vagrant-github-actions
   test-kvm:
     name: KVM Test
-    runs-on: macos-latest
+    runs-on: "cirun-runner--${{ github.run_id }}"
     steps:
       - uses: actions/checkout@v2
 
