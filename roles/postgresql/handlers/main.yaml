@@ -1,9 +1,10 @@
 ---
- - name: "restart services postgres"
-   become: true
-   service:
-     name={{item}}
-     enabled=yes
-     state=restarted
-   with_items:
-     - "postgresql"
+- name: Restart services postgres
+  become: true
+  ansible.builtin.service:
+    name: "{{ item }}"
+    enabled: "yes"
+    state: restarted
+    cmd: ""
+  with_items:
+    - postgresql

@@ -1,4 +1,4 @@
 ---
- - name: Install ipyparallel
-   include_tasks: ipyparallel.yaml
-   when: ipyparallel_enabled
+- name: Install ipyparallel
+  ansible.builtin.include_tasks: ipyparallel.yaml
+  when: ipyparallel_enabled

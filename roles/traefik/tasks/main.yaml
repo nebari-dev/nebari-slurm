@@ -1,4 +1,4 @@
 ---
- - name: Install traefik
-   include_tasks: traefik.yaml
-   when: traefik_enabled
+- name: Install traefik
+  ansible.builtin.include_tasks: traefik.yaml
+  when: traefik_enabled

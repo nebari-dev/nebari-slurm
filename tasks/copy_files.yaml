@@ -1,12 +1,12 @@
 ---
- - name: Copy arbitrary files onto nodes
-   become: True
-   copy:
-     src: "{{ item.src }}"
-     dest: "{{ item.dest }}"
-     owner: "{{ item.owner | default(omit) }}"
-     group: "{{ item.group | default(omit) }}"
-     mode: "{{ item.mode | default(omit) }}"
-     directory_mode: "{{ item.directory_mode | default(omit) }}"
-   when: (vars['copy_files_' + myhost]) is defined
-   loop: "{{ vars['copy_files_' + myhost] }}"
+- name: Copy arbitrary files onto nodes
+  become: true
+  ansible.builtin.copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "{{ item.owner | default(omit) }}"
+    group: "{{ item.group | default(omit) }}"
+    mode: "{{ item.mode | default(omit) }}"
+    directory_mode: "{{ item.directory_mode | default(omit) }}"
+  when: (vars['copy_files_' + myhost]) is defined
+  loop: "{{ vars['copy_files_' + myhost] }}"

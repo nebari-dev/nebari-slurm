@@ -1,9 +1,9 @@
 ---
- - name: Ensure hosts exist within /etc/hosts
-   become: true
-   lineinfile:
-     dest: /etc/hosts
-     regexp: '.*{{ item }}$'
-     line: '{{ hostvars[item]["ansible_" + hostvars[item].get("internal_interface", internal_interface)].ipv4.address }} {{item}}'
-     state: present
-   with_items: '{{ groups["all"] }}'
+- name: Ensure hosts exist within /etc/hosts
+  become: true
+  ansible.builtin.lineinfile:
+    dest: /etc/hosts
+    regexp: .*{{ item }}$
+    line: '{{ hostvars[item]["ansible_" + hostvars[item].get("internal_interface", internal_interface)].ipv4.address }} {{ item }}'
+    state: present
+  with_items: '{{ groups["all"] }}'

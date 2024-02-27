@@ -1,59 +1,58 @@
 ---
- - name: Install openldap packages
-   become: true
-   apt:
-     name:
-       - slapd
-       - ldap-utils
-       - python3-ldap
-     state: present
-     update_cache: yes
-     cache_valid_time: 3600
+- name: Install openldap packages
+  become: true
+  ansible.builtin.apt:
+    name:
+      - slapd
+      - ldap-utils
+      - python3-ldap
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
 
- - name: Start ldap service
-   become: true
-   service:
-     name: slapd
-     state: started
-     enabled: yes
+- name: Start ldap service
+  become: true
+  ansible.builtin.service:
+    name: slapd
+    state: started
+    enabled: true
 
- - name: Register encripted password
-   command: slappasswd -s "{{openldap_bind_password}}"
-   register: openldap_encripted_password
+- name: Register encripted password
+  ansible.builtin.command: slappasswd -s "{{ openldap_bind_password }}"
+  register: openldap_encripted_password
 
- - name: Copy Grafana Configuration
-   become: true
-   copy:
-     content: |
-       dn: olcDatabase={{openldap_db_type}},cn=config
-       changetype: modify
-       replace: olcSuffix
-       olcSuffix: {{openldap_base_dn}}
+- name: Copy Grafana Configuration
+  become: true
+  ansible.builtin.copy:
+    content: |
+      dn: olcDatabase={{ openldap_db_type }},cn=config
+      changetype: modify
+      replace: olcSuffix
+      olcSuffix: {{ openldap_base_dn }}
 
-       dn: olcDatabase={{openldap_db_type}},cn=config
-       changetype: modify
-       replace: olcRootDN
-       olcRootDN: {{openldap_base_dn}}
+      dn: olcDatabase={{ openldap_db_type }},cn=config
+      changetype: modify
+      replace: olcRootDN
+      olcRootDN: {{ openldap_base_dn }}
 
-       dn: olcDatabase={{openldap_db_type}},cn=config
-       changetype: modify
-       replace: olcRootPW
-       olcRootPW: {{openldap_encripted_password.stdout}}
-     dest: /tmp/db.ldif
-     owner: root
-     group: root
-     mode: 0664
+      dn: olcDatabase={{ openldap_db_type }},cn=config
+      changetype: modify
+      replace: olcRootPW
+      olcRootPW: {{ openldap_encripted_password.stdout }}
+    dest: /tmp/db.ldif
+    owner: root
+    group: root
+    mode: "0664"
 
- - name: Load ddbb template into ldap
-   become: true
-   command: ldapmodify -Y EXTERNAL -H ldapi:/// -f /tmp/db.ldif
-
- - name: Load ldap root entry
-   ldap_entry:
-     server_uri: "{{openldap_server_uri}}"
-     bind_dn: "{{openldap_base_dn}}"
-     bind_pw: "{{openldap_bind_password}}"
-     dn: "{{openldap_base_dn}}"
-     objectClass:
-       - top
-       - domain
+- name: Load ddbb template into ldap
+  become: true
+  ansible.builtin.command: ldapmodify -Y EXTERNAL -H ldapi:/// -f /tmp/db.ldif
+- name: Load ldap root entry
+  community.general.ldap_entry:
+    server_uri: "{{ openldap_server_uri }}"
+    bind_dn: "{{ openldap_base_dn }}"
+    bind_pw: "{{ openldap_bind_password }}"
+    dn: "{{ openldap_base_dn }}"
+    objectClass:
+      - top
+      - domain

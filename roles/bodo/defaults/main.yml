@@ -1,6 +1,7 @@
+---
 bodo_enabled: false
-bodo_environment_path: "environments/bodo.yaml"
-bodo_license: ...
+bodo_environment_path: environments/bodo.yaml
+bodo_license: "..."
 
 # role: miniforge
-miniforge_home: "/opt/conda"
+miniforge_home: /opt/conda

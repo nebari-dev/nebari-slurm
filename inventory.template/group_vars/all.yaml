@@ -1,3 +1,4 @@
+---
 # Any additional users and groups you would like added to all nodes
 enabled_users:
   - username: example-user
@@ -6,7 +7,7 @@ enabled_users:
     email: example-user@example.com
     # mkpasswd --method=sha-512
     # password: example-user
-    password: "$6$3aaf4gr8D$2T31r9/GtXM6rVY8oHOejn.sThwhBZehbPZC.ZkN0XJOZUuguR9VnRQRYmqYAt9eW3LgLR21q1kbqSYSEDm5U."
+    password: $6$3aaf4gr8D$2T31r9/GtXM6rVY8oHOejn.sThwhBZehbPZC.ZkN0XJOZUuguR9VnRQRYmqYAt9eW3LgLR21q1kbqSYSEDm5U.
     primary_group: example-user
     groups:
       - users
@@ -24,9 +25,9 @@ munge_key: eC36WeTj1JKUGyQEcfqkaRO0fDBoyTVHnkn7kE5sOZ1YUYyqWMSp3qeRZEmtEX9B
 
 openldap_bind_password: EsicntiZOhQaGomPiJZLWJEJ
 
-jupyterhub_client_secret: "SUPERSECRETPASSWORDJUPYTERHUB"
-conda_store_client_secret: "SUPERSECRETPASSWORDCONDASTORE"
-grafana_client_secret: "SUPERSECRETPASSWORDGRAFANA"
+jupyterhub_client_secret: SUPERSECRETPASSWORDJUPYTERHUB
+conda_store_client_secret: SUPERSECRETPASSWORDCONDASTORE
+grafana_client_secret: SUPERSECRETPASSWORDGRAFANA
 
 minio_password: mWdaGyPmNOApU93Vxk6sNTac
 keycloak_admin_password: XLWUMUu8OG0XqlMREZK9id9o
@@ -45,4 +46,4 @@ mysql_users:
 postgres_users:
   - username: conda-store
     password: eIbmUditL4RbQm0YPeLozRme
-    role: 'CREATEDB,CREATEROLE'
+    role: CREATEDB,CREATEROLE

@@ -1,5 +1,6 @@
+---
 minio_enabled: false
-minio_version: "RELEASE.2021-02-11T08-23-43Z"
+minio_version: RELEASE.2021-02-11T08-23-43Z
 minio_sha256: b965214b7e61ef04087addf0c5da62e4ceff88adb2a0af7e38566c40be306e28
 minio_internal_port: "9001"
 minio_external_port: "9000"

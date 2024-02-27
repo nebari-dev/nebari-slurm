@@ -1,3 +1,4 @@
+---
 mysql_enabled: false
 mysql_databases:
   - slurm
@@ -9,7 +10,7 @@ mysql_config:
 mysql_users:
   - username: slurm
     password: W9T0N4ejQBR4RmQCU6GmbbZa
-    privileges: '*.*:ALL'
+    privileges: "*.*:ALL"
   - username: conda-store
     password: eIbmUditL4RbQm0YPeLozRme
-    privileges: '*.*:ALL'
+    privileges: "*.*:ALL"

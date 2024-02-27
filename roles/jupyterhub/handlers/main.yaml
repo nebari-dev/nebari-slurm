@@ -1,27 +1,30 @@
 ---
- - name: "restart services jupyterhub"
-   become: true
-   service:
-     name={{item}}
-     enabled=yes
-     state=restarted
-   with_items:
-     - "jupyterhub"
+- name: Restart services jupyterhub
+  become: true
+  ansible.builtin.service:
+    name: "{{ item }}"
+    enabled: "yes"
+    state: restarted
+    cmd: ""
+  with_items:
+    - jupyterhub
 
- - name: "restart services jupyterhub-proxy"
-   become: true
-   service:
-     name={{item}}
-     enabled=yes
-     state=restarted
-   with_items:
-     - "jupyterhub-proxy"
+- name: Restart services jupyterhub-proxy
+  become: true
+  ansible.builtin.service:
+    name: "{{ item }}"
+    enabled: "yes"
+    state: restarted
+    cmd: ""
+  with_items:
+    - jupyterhub-proxy
 
- - name: "restart services jupyterhub-ssh"
-   become: true
-   service:
-     name={{item}}
-     enabled=yes
-     state=restarted
-   with_items:
-     - "jupyterhub-ssh"
+- name: Restart services jupyterhub-ssh
+  become: true
+  ansible.builtin.service:
+    name: "{{ item }}"
+    enabled: "yes"
+    state: restarted
+    cmd: ""
+  with_items:
+    - jupyterhub-ssh

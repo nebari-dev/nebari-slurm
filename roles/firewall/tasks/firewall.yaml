@@ -1,20 +1,20 @@
 ---
- - name: Always allow ssh traffic
-   become: true
-   community.general.ufw:
-     rule: allow
-     name: OpenSSH
+- name: Always allow ssh traffic
+  become: true
+  community.general.ufw:
+    rule: allow
+    name: OpenSSH
 
- - name: By default deny all incoming network requests
-   become: true
-   community.general.ufw:
-     state: enabled
-     policy: deny
-     proto: any
+- name: By default deny all incoming network requests
+  become: true
+  community.general.ufw:
+    state: enabled
+    policy: deny
+    proto: any
 
- - name: Allow any network requests witin internal ip range
-   become: true
-   community.general.ufw:
-     rule: allow
-     src: "{{ firewall_internal_ip_range }}"
-     proto: any
+- name: Allow any network requests witin internal ip range
+  become: true
+  community.general.ufw:
+    rule: allow
+    src: "{{ firewall_internal_ip_range }}"
+    proto: any

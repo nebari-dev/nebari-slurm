@@ -1,9 +1,10 @@
 ---
- - name: "restart services samba"
-   become: true
-   service:
-     name={{item}}
-     enabled=yes
-     state=restarted
-   with_items:
-     - "smbd"
+- name: Restart services samba
+  become: true
+  ansible.builtin.service:
+    name: "{{ item }}"
+    enabled: "yes"
+    state: restarted
+    cmd: ""
+  with_items:
+    - smbd

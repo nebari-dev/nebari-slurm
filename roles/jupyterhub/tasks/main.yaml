@@ -1,8 +1,8 @@
 ---
- - name: Install jupyterhub server
-   include_tasks: jupyterhub.yaml
-   when: jupyterhub_enabled
+- name: Install jupyterhub server
+  ansible.builtin.include_tasks: jupyterhub.yaml
+  when: jupyterhub_enabled
 
- - name: Install jupyterhub_ssh server
-   include_tasks: jupyterhub_ssh.yaml
-   when: jupyterhub_ssh_enabled
+- name: Install jupyterhub_ssh server
+  ansible.builtin.include_tasks: jupyterhub_ssh.yaml
+  when: jupyterhub_ssh_enabled

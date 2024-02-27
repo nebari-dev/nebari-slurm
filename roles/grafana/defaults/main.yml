@@ -1,6 +1,7 @@
+---
 grafana_enabled: false
 grafana_port: "3000"
-grafana_base_url: "/monitoring"
+grafana_base_url: /monitoring
 grafana_client_id: grafana
 grafana_client_secret: SUPERSECRETPASSWORDGRAFANA
 grafana_dashboards:
@@ -19,6 +20,6 @@ prometheus_port: "9090"
 
 # role: keycloak
 keycloak_port: "30020"
-keycloak_admin_username: "admin"
+keycloak_admin_username: admin
 keycloak_admin_password: XLWUMUu8OG0XqlMREZK9id9o
 keycloak_realm: qhub-hpc

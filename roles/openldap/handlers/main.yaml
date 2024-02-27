@@ -1,11 +1,12 @@
 # handlers file for ansible-role-ldap
 ---
- - name: "restart services ldap"
-   become: true
-   service:
-     name={{item}}
-     enabled=yes
-     state=restarted
-   with_items:
-     - "nscd"
-     - "nslcd"
+- name: Restart services ldap
+  become: true
+  ansible.builtin.service:
+    name: "{{ item }}"
+    enabled: "yes"
+    state: restarted
+    cmd: ""
+  with_items:
+    - nscd
+    - nslcd

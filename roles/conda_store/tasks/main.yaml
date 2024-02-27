@@ -1,4 +1,4 @@
 ---
- - name: Install conda_store
-   include_tasks: conda_store.yaml
-   when: conda_store_enabled
+- name: Install conda_store
+  ansible.builtin.include_tasks: conda_store.yaml
+  when: conda_store_enabled

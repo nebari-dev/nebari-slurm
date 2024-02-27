@@ -1,4 +1,4 @@
 ---
- - name: Install minio
-   include_tasks: minio.yaml
-   when: minio_enabled
+- name: Install minio
+  ansible.builtin.include_tasks: minio.yaml
+  when: minio_enabled

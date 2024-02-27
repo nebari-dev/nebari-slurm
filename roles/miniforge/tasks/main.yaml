@@ -1,4 +1,4 @@
 ---
- - name: Install miniforge
-   include_tasks: miniforge.yaml
-   when: miniforge_enabled
+- name: Install miniforge
+  ansible.builtin.include_tasks: miniforge.yaml
+  when: miniforge_enabled

@@ -1,9 +1,10 @@
 ---
- - name: "restart services mysql"
-   become: true
-   service:
-     name={{item}}
-     enabled=yes
-     state=restarted
-   with_items:
-     - "mysql"
+- name: Restart services mysql
+  become: true
+  ansible.builtin.service:
+    name: "{{ item }}"
+    enabled: "yes"
+    state: restarted
+    cmd: ""
+  with_items:
+    - mysql

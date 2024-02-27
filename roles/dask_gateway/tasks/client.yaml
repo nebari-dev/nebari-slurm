@@ -1,20 +1,20 @@
 ---
- - name: Ensure that dask configuration directory exists
-   become: true
-   file:
-     path: /etc/dask
-     state: directory
-     mode: '0755'
+- name: Ensure that dask configuration directory exists
+  become: true
+  ansible.builtin.file:
+    path: /etc/dask
+    state: directory
+    mode: "0755"
 
- - name: Copy the dask-gateway client configuration
-   become: true
-   copy:
-     content: |
-       gateway:
-         address: "http://{{ groups['hpc_master'][0] }}:{{ dask_gateway_api_port }}"
-         public-address:  "https://{{ hostvars[groups['hpc_master'][0]].ansible_ssh_host }}"
-         proxy-address: "tls://{{ groups['hpc_master'][0] }}:{{ dask_gateway_scheduler_external_port }}"
-         auth:
-           type: jupyterhub
-     dest: "/etc/dask/gateway.yaml"
-     mode: '644'
+- name: Copy the dask-gateway client configuration
+  become: true
+  ansible.builtin.copy:
+    content: |
+      gateway:
+        address: "http://{{ groups['hpc_master'][0] }}:{{ dask_gateway_api_port }}"
+        public-address:  "https://{{ hostvars[groups['hpc_master'][0]].ansible_ssh_host }}"
+        proxy-address: "tls://{{ groups['hpc_master'][0] }}:{{ dask_gateway_scheduler_external_port }}"
+        auth:
+          type: jupyterhub
+    dest: /etc/dask/gateway.yaml
+    mode: "644"
