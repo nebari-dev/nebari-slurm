@@ -15,7 +15,7 @@
     owner: root
     group: root
     mode: "0644"
-  notify: restart services jupyterhub-ssh
+  notify: Restart services jupyterhub-ssh
 
 - name: Setup JupyterHub-SSH systemd unit
   become: true
@@ -32,7 +32,7 @@
       WantedBy=multi-user.target
     dest: /etc/systemd/system/jupyterhub-ssh.service
     mode: "0544"
-  notify: restart services jupyterhub-ssh
+  notify: Restart services jupyterhub-ssh
 
 - name: Restart JupyterHub SSH
   become: true
