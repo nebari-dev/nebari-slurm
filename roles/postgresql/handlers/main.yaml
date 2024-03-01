@@ -5,6 +5,5 @@
     name: "{{ item }}"
     enabled: "yes"
     state: restarted
-    cmd: ""
   with_items:
     - postgresql
