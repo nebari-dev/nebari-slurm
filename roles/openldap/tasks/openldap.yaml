@@ -47,6 +47,7 @@
 - name: Load ddbb template into ldap
   become: true
   ansible.builtin.command: ldapmodify -Y EXTERNAL -H ldapi:/// -f /tmp/db.ldif
+
 - name: Load ldap root entry
   community.general.ldap_entry:
     server_uri: "{{ openldap_server_uri }}"
