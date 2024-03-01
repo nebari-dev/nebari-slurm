@@ -6,6 +6,8 @@ slurmd_enabled: false
 slurmctld_enabled: false
 slurmdbd_enabled: false
 
+SlurmConfigFileDIr: /etc/slurm-llnl
+
 slurm_config:
   ClusterName: cluster
   # slurmctld options
