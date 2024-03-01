@@ -20,7 +20,7 @@
     mode: "0644"
     backup: true
   with_dict: "{{ mysql_config }}"
-  notify: restart services mysql
+  notify: Restart services mysql
 
 - name: Create mysql database
   become: true
