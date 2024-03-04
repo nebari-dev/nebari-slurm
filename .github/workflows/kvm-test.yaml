@@ -25,6 +25,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Check virtualization support
+        run: |
+          egrep -c '(vmx|svm)' /proc/cpuinfo
+          sudo kvm-ok
+
+      - name: Install KVM essentials
+        run: |
+          sudo apt install qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils
+          sudo adduser $(whoami) libvirt && sudo adduser $(whoami) kvm
+
       - name: Cache Vagrant boxes
         uses: actions/cache@v2
         with:
@@ -38,6 +48,12 @@ jobs:
           curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
           sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
           sudo apt update && sudo apt install -y vagrant
+
+      - name: Check Libvirt status
+        run: |
+          virsh --version
+          virsh list --all
+          sudo systemctl status libvirtd
 
       - name: Show Vagrant version
         run: vagrant --version
@@ -55,10 +71,6 @@ jobs:
         run: |
           ansible-galaxy collection install community.general
           ansible-galaxy collection install ansible.posix
-
-      - name: Check Libvirt status
-        run: |
-          virsh --version
 
       - name: Run vagrant up
         working-directory: tests/ubuntu2004-singlenode
