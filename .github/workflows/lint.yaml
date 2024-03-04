@@ -3,7 +3,17 @@ name: Ansible Lint
 
 on:
   push:
+    paths:
+      - 'roles/**'
+      - 'tasks/**'
+      - '.github/workflows/ansible-lint.yml'
+
   pull_request:
+    paths:
+      - 'roles/**'
+      - 'tasks/**'
+      - '.github/workflows/ansible-lint.yml'
+
 jobs:
   build:
     name: Ansible Lint
