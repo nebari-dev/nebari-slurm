@@ -3,9 +3,14 @@ name: Vagrant (KVM) Tests
 
 on:
   pull_request:
+    types: [opened, reopened]
   push:
     branches:
       - "*"
+# Cancel concurrent runs
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 env:
   # Prevents Vagrant from creating symlinks
@@ -37,7 +42,7 @@ jobs:
           cache: 'pip'
 
       - name: Install test dependencies.
-        run: sudo pip3 install ansible
+        run: pip install ansible
 
       - name: Install Ansible Dependencies
         working-directory: tests/ubuntu2004-singlenode
