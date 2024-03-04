@@ -36,7 +36,7 @@ jobs:
         run: |
           sudo apt update
           sudo apt-get install -y qemu libvirt-daemon-system ebtables libguestfs-tools vagrant ruby-fog-libvirt
-          sudo adduser $(whoami) libvirt && sudo adduser $(whoami) kvm
+          sudo adduser $USER libvirt && sudo adduser $USER kvm
 
       - name: Cache Vagrant boxes
         uses: actions/cache@v2
@@ -46,11 +46,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-vagrant-
 
-      - name: Install vagrant
-        run: |
-          curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
-          sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
-          sudo apt update && sudo apt install -y vagrant
+      # - name: Install vagrant
+      #   run: |
+      #     curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+      #     sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+      #     sudo apt update && sudo apt install -y vagrant
 
       - name: Check Libvirt status
         run: |
