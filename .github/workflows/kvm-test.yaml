@@ -31,10 +31,11 @@ jobs:
           sudo apt install cpu-checker
           sudo kvm-ok
 
+      # https://vagrant-libvirt.github.io/vagrant-libvirt/#installation
       - name: Install KVM essentials
         run: |
           sudo apt update
-          sudo apt install qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils
+          sudo apt-get install -y qemu libvirt-daemon-system ebtables libguestfs-tools vagrant ruby-fog-libvirt
           sudo adduser $(whoami) libvirt && sudo adduser $(whoami) kvm
 
       - name: Cache Vagrant boxes
@@ -59,6 +60,9 @@ jobs:
 
       - name: Show Vagrant version
         run: vagrant --version
+
+      - name: Install vagrant libvirt plugin
+        run: vagrant plugin install vagrant-libvirt
 
       - uses: actions/setup-python@v5
         with:
