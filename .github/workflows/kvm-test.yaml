@@ -32,9 +32,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-vagrant-
 
-      # - name: Install vagrant
-      #   run: |
-      #     sudo apt install -y virtualbox
+      - name: Install vagrant
+        run: |
+          curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+          sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+          sudo apt update && sudo apt install -y vagrant
+
+      - name: Show Vagrant version
+        run: vagrant --version
 
       - uses: actions/setup-python@v5
         with:
@@ -49,9 +54,6 @@ jobs:
         run: |
           ansible-galaxy collection install community.general
           ansible-galaxy collection install ansible.posix
-
-      - name: Show Vagrant version
-        run: vagrant --version
 
       - name: Check Libvirt status
         run: |
