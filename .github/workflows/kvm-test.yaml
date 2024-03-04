@@ -28,6 +28,7 @@ jobs:
       - name: Check virtualization support
         run: |
           egrep -c '(vmx|svm)' /proc/cpuinfo
+          sudo apt install cpu-checker
           sudo kvm-ok
 
       - name: Install KVM essentials
