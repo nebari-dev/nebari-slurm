@@ -2,15 +2,15 @@
 name: Vagrant (KVM) Tests
 
 on:
-  pull_request:
-    types: [opened, reopened]
   push:
     branches:
       - "*"
-# Cancel concurrent runs
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+    paths:
+      - "roles/**"
+      - "tasks/**"
+      - "tests/**"
+      - "Vagrantfile"
+      - ".github/workflows/kvm-test.yaml"
 
 env:
   # Prevents Vagrant from creating symlinks
