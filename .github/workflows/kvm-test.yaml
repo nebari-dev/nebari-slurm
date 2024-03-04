@@ -7,6 +7,9 @@ on:
     branches:
       - "*"
 
+env:
+  # Prevents Vagrant from creating symlinks
+  VAGRANT_DISABLE_VBOXSYMLINKCREATE: "1"
 
 jobs:
   # https://github.com/jonashackt/vagrant-github-actions
@@ -24,6 +27,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-vagrant-
 
+      # - name: Install vagrant
+      #   run: |
+      #     sudo apt install -y virtualbox
+
       - name: Install test dependencies.
         run: sudo pip3 install ansible
 
@@ -36,7 +43,44 @@ jobs:
       - name: Show Vagrant version
         run: vagrant --version
 
-# Disabled until we fix it
-#      - name: Run vagrant up
-#        working-directory: tests/ubuntu2004-singlenode
-#        run: vagrant up
+      - name: Check Libvirt status
+        run: |
+          virsh --version
+
+      - name: Run vagrant up
+        working-directory: tests/ubuntu2004-singlenode
+        run: vagrant up --provider=libvirt
+
+      - name: Check Vagrant status
+        run: |
+          vagrant status
+
+      - name: SSH into Vagrant VM
+        run: |
+          vagrant ssh -c "echo 'Hello from Vagrant VM'"
+
+      - name: Collect System Info and Metrics for Debugging
+        if: success()
+        run: |
+          vagrant ssh -c "
+          echo 'System Information:' && uname -a
+          echo 'Available Disk Space:' && df -h
+          echo 'Memory Usage:' && free -m
+          echo 'CPU Information:' && lscpu
+          echo 'Network Configuration:' && ifconfig
+          echo 'Firewall Status:' && sudo ufw status
+          echo 'System Logs:' && journalctl --no-pager | tail -n 100
+          "
+
+      - name: Copy inventory files to .vagrant provider directory
+        run: |
+          cp -r inventory.template/* tests/ubuntu2004-singlenode/.vagrant/provisioners/ansible/inventory/
+
+      - name: Run vagrant provision
+        working-directory: tests/ubuntu2004-singlenode
+        run: vagrant provision
+
+      - name: Cleanup
+        if: always()
+        run: |
+          vagrant destroy -f
