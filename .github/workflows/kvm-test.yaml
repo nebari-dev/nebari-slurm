@@ -33,6 +33,7 @@ jobs:
 
       - name: Install KVM essentials
         run: |
+          sudo apt update
           sudo apt install qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils
           sudo adduser $(whoami) libvirt && sudo adduser $(whoami) kvm
 
