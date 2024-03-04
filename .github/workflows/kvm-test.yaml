@@ -17,7 +17,7 @@ jobs:
     name: KVM Test
     runs-on: "cirun-runner--${{ github.run_id }}"
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Cache Vagrant boxes
         uses: actions/cache@v2
@@ -30,6 +30,11 @@ jobs:
       # - name: Install vagrant
       #   run: |
       #     sudo apt install -y virtualbox
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: 'pip'
 
       - name: Install test dependencies.
         run: sudo pip3 install ansible
