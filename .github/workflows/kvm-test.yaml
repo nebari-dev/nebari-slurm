@@ -25,17 +25,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Check virtualization support
-        run: |
-          egrep -c '(vmx|svm)' /proc/cpuinfo
-          sudo apt install cpu-checker
-          sudo kvm-ok
+      # - name: Check virtualization support
+      #   run: |
+      #     egrep -c '(vmx|svm)' /proc/cpuinfo
+      #     sudo apt install cpu-checker
+      #     sudo kvm-ok
 
       # https://vagrant-libvirt.github.io/vagrant-libvirt/#installation
       - name: Install KVM essentials
         run: |
           sudo apt update
-          sudo apt-get install -y qemu libvirt-daemon-system ebtables libguestfs-tools vagrant ruby-fog-libvirt
+          sudo apt-get install -y qemu libvirt-daemon-system ebtables libguestfs-tools vagrant
           sudo adduser $USER libvirt && sudo adduser $USER kvm
 
       - name: Cache Vagrant boxes
