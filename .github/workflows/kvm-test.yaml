@@ -32,6 +32,8 @@
             mkdir deploy
             cp -r inventory.template/* deploy/
             cp .github/inventory.ini deploy/inventory.ini
+            # Rename host_vars guest name
+            mv deploy/host_vars/hpc01-test.yaml deploy/host_vars/localhost.yaml
 
         - name: Update firwall_internal_ip_range
           run: |
