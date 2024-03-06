@@ -13,29 +13,34 @@ jobs:
     name: KVM Test
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
-      - name: Cache Vagrant boxes
-        uses: actions/cache@v2
+      - uses: actions/setup-python@v5
         with:
-          path: ~/.vagrant.d/boxes
-          key: ${{ runner.os }}-vagrant-${{ hashFiles('Vagrantfile') }}
-          restore-keys: |
-            ${{ runner.os }}-vagrant-
+          python-version: "3.10"
+          cache: "pip"
 
-      - name: Install test dependencies.
-        run: sudo pip3 install ansible
-
-      - name: Install Ansible Dependencies
-        working-directory: tests/ubuntu2004-singlenode
+      - name: Install dependencies
         run: |
-          ansible-galaxy collection install community.general
-          ansible-galaxy collection install ansible.posix
+          pip install ansible
 
-      - name: Show Vagrant version
-        run: vagrant --version
+      - name: Install Ansible dependencies
+        run: |
+          ansible-galaxy collection install -r requirements.yaml
 
-# Disabled until we fix it
-#      - name: Run vagrant up
-#        working-directory: tests/ubuntu2004-singlenode
-#        run: vagrant up
+      - name: Create deploy folder and move inventory files
+        run: |
+          mkdir deploy
+          cp -r inventory.template/* deploy/
+          cp .github/workflows/inventory.ini deploy/inventory.ini
+
+      - name: Update firwall_internal_ip_range
+        run: |
+          echo "firewall_internal_ip_range: $(ip addr show eth0 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)" >> deploy/group_vars/all.yaml
+
+      - name: Run ansible playbook
+        run: |
+          cd deploy
+          ansible-playbook ../playbook.yaml -i inventory.ini --connection=local -v
+        env:
+          ANSIBLE_FORCE_COLOR: True
