@@ -1,111 +1,45 @@
 ---
-name: Vagrant (KVM) Tests
+  name: Vagrant (KVM) Tests
 
-on:
-  push:
-    branches:
-      - "*"
-    paths:
-      - "roles/**"
-      - "tasks/**"
-      - "tests/**"
-      - "Vagrantfile"
-      - ".github/workflows/kvm-test.yaml"
+  on:
+    pull_request:
+    push:
+      branches:
+        - main
 
-env:
-  # Prevents Vagrant from creating symlinks
-  VAGRANT_DISABLE_VBOXSYMLINKCREATE: "1"
+  jobs:
+    test-kvm:
+      name: KVM Test
+      runs-on: "cirun-runner--${{ github.run_id }}"
+      steps:
+        - uses: actions/checkout@v4
 
-jobs:
-  # https://github.com/jonashackt/vagrant-github-actions
-  test-kvm:
-    name: KVM Test
-    runs-on: "cirun-runner--${{ github.run_id }}"
-    # runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+        - uses: actions/setup-python@v5
+          with:
+            python-version: "3.10"
+            cache: "pip"
 
-      # - name: Check virtualization support
-      #   run: |
-      #     egrep -c '(vmx|svm)' /proc/cpuinfo
-      #     sudo apt install cpu-checker
-      #     sudo kvm-ok
+        - name: Install dependencies
+          run: |
+            pip install ansible
 
-      # https://vagrant-libvirt.github.io/vagrant-libvirt/#installation
-      - name: Install KVM essentials
-        run: |
-          sudo apt update
-          sudo apt-get install -y qemu libvirt-daemon-system ebtables libguestfs-tools vagrant
-          sudo adduser $USER libvirt && sudo adduser $USER kvm
+        - name: Install Ansible dependencies
+          run: |
+            ansible-galaxy collection install -r requirements.yaml
 
-      - name: Cache Vagrant boxes
-        uses: actions/cache@v2
-        with:
-          path: ~/.vagrant.d/boxes
-          key: ${{ runner.os }}-vagrant-${{ hashFiles('Vagrantfile') }}
-          restore-keys: |
-            ${{ runner.os }}-vagrant-
+        - name: Create deploy folder and move inventory files
+          run: |
+            mkdir deploy
+            cp -r inventory.template/* deploy/
+            cp .github/inventory.ini deploy/inventory.ini
 
-      - name: Check Libvirt status
-        run: |
-          virsh --version
-          virsh list --all
-          sudo systemctl status libvirtd
+        - name: Update firwall_internal_ip_range
+          run: |
+            echo "firewall_internal_ip_range: $(ip addr show eth0 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)" >> deploy/group_vars/all.yaml
 
-      - name: Show Vagrant version
-        run: vagrant --version
-
-      - name: Install vagrant libvirt plugin
-        run: vagrant plugin install vagrant-libvirt
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
-          cache: 'pip'
-
-      - name: Install test dependencies.
-        run: pip install ansible
-
-      - name: Install Ansible Dependencies
-        working-directory: tests/ubuntu2004-singlenode
-        run: |
-          ansible-galaxy collection install community.general
-          ansible-galaxy collection install ansible.posix
-
-      - name: Run vagrant up
-        working-directory: tests/ubuntu2004-singlenode
-        run: vagrant up --provider=libvirt
-
-      - name: Check Vagrant status
-        run: |
-          vagrant status
-
-      - name: SSH into Vagrant VM
-        run: |
-          vagrant ssh -c "echo 'Hello from Vagrant VM'"
-
-      - name: Collect System Info and Metrics for Debugging
-        if: success()
-        run: |
-          vagrant ssh -c "
-          echo 'System Information:' && uname -a
-          echo 'Available Disk Space:' && df -h
-          echo 'Memory Usage:' && free -m
-          echo 'CPU Information:' && lscpu
-          echo 'Network Configuration:' && ifconfig
-          echo 'Firewall Status:' && sudo ufw status
-          echo 'System Logs:' && journalctl --no-pager | tail -n 100
-          "
-
-      - name: Copy inventory files to .vagrant provider directory
-        run: |
-          cp -r inventory.template/* tests/ubuntu2004-singlenode/.vagrant/provisioners/ansible/inventory/
-
-      - name: Run vagrant provision
-        working-directory: tests/ubuntu2004-singlenode
-        run: vagrant provision
-
-      - name: Cleanup
-        if: always()
-        run: |
-          vagrant destroy -f
+        - name: Run ansible playbook
+          run: |
+            cd deploy
+            ansible-playbook ../playbook.yaml -i inventory.ini --connection=local -v
+          env:
+            ANSIBLE_FORCE_COLOR: True
