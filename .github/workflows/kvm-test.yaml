@@ -10,7 +10,7 @@
   jobs:
     test-kvm:
       name: KVM Test
-      # Disable ci-run untill addressing apt-get lock issue
+      # Disable ci-run untill addressing /var/lib/dpkg/lock-frontend issue
       runs-on: "cirun-runner--${{ github.run_id }}"
       # runs-on: "ubuntu-latest"
       steps:
@@ -42,6 +42,10 @@
         - name: Check hosts
           run: |
             cat /etc/hosts
+        - name: Kill any process that helds the lock
+          run: |
+            sudo lsof /var/lib/dpkg/lock-frontend
+            sudo kill -9 $(sudo lsof /var/lib/dpkg/lock-frontend | awk '{print $2}')
 
         - name: Extract Network Information
           run: |
