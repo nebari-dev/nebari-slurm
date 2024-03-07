@@ -11,8 +11,8 @@
     test-kvm:
       name: KVM Test
       # Disable ci-run untill addressing apt-get lock issue
-      # runs-on: "cirun-runner--${{ github.run_id }}"
-      runs-on: "ubuntu-latest"
+      runs-on: "cirun-runner--${{ github.run_id }}"
+      # runs-on: "ubuntu-latest"
       steps:
         - uses: actions/checkout@v4
 
