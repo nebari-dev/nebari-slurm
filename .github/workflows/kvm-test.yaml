@@ -10,7 +10,9 @@
   jobs:
     test-kvm:
       name: KVM Test
-      runs-on: "cirun-runner--${{ github.run_id }}"
+      # Disable ci-run untill addressing apt-get lock issue
+      # runs-on: "cirun-runner--${{ github.run_id }}"
+      runs-on: "ubuntu-latest"
       steps:
         - uses: actions/checkout@v4
 
@@ -32,12 +34,26 @@
             mkdir deploy
             cp -r inventory.template/* deploy/
             cp .github/inventory.ini deploy/inventory.ini
-            # Rename host_vars guest name
-            mv deploy/host_vars/hpc01-test.yaml deploy/host_vars/localhost.yaml
 
-        - name: Update firwall_internal_ip_range
+        - name: Check network adapter
           run: |
-            echo "firewall_internal_ip_range: $(ip addr show eth0 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)" >> deploy/group_vars/all.yaml
+            ip a
+
+        - name: Check hosts
+          run: |
+            cat /etc/hosts
+
+        - name: Extract Network Information
+          run: |
+            chmod +x .github/scripts/extract_network_info.sh
+            ./.github/scripts/extract_network_info.sh
+            echo "adapter_name=$(cat network_info.txt | head -1 | awk '{print $2}')" >> $GITHUB_ENV
+            echo "ip_range=$(cat network_info.txt | awk 'NR > 1 && $3 {print $3}')" >> $GITHUB_ENV
+
+        - name: Update Firewall IP range and Host network adapter
+          run: |
+            echo "firewall_internal_ip_range: $ip_range" >> deploy/group_vars/all.yaml
+            echo "internal_interface: $adapter_name" >> deploy/group_vars/all.yaml
 
         - name: Run ansible playbook
           run: |
