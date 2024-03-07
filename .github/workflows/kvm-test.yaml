@@ -44,8 +44,7 @@
             cat /etc/hosts
         - name: Kill any process that helds the lock
           run: |
-            sudo lsof /var/lib/dpkg/lock-frontend
-            sudo kill -9 $(sudo lsof /var/lib/dpkg/lock-frontend | awk '{print $2}')
+            sudo killall apt apt-get
 
         - name: Extract Network Information
           run: |
