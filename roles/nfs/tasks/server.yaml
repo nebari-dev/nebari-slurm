@@ -1,6 +1,6 @@
 ---
-- name: Install nfs
-  become: true
+- name: Install nfs packages
+  timeout: 300
   ansible.builtin.apt:
     state: latest
     cache_valid_time: 3600

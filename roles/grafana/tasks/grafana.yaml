@@ -12,6 +12,7 @@
 
 - name: Install grafana
   become: true
+  timeout: 300
   ansible.builtin.apt:
     name: grafana{{ grafana_version }}
     state: "{% if grafana_version %}present{% else %}latest{% endif %}"
