@@ -42,9 +42,6 @@
         - name: Check hosts
           run: |
             cat /etc/hosts
-        - name: Kill any process that helds the lock
-          run: |
-            sudo killall apt apt-get
 
         - name: Extract Network Information
           run: |

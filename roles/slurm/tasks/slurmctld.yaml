@@ -1,22 +1,28 @@
 ---
+# Must be writable by user SlurmUser.
+# The file must be accessible by the primary and backup control machines.
 - name: Ensure slurm state directory exists
   become: true
   ansible.builtin.file:
     path: "{{ slurm_config.StateSaveLocation }}"
     state: directory
-    mode: "0700"
+    mode: "0755"
     owner: slurm
     group: slurm
 
+# Must be writable by user SlurmUser.
+# The file must be accessible by the primary and backup control machines.
 - name: Ensure slurm log directory exists
   become: true
   ansible.builtin.file:
     path: "{{ slurm_config.SlurmctldLogFile | dirname }}"
     state: directory
-    mode: "0700"
+    mode: "0755"
     owner: slurm
     group: slurm
 
+# Must be writable by user root. Preferably writable and removable by SlurmUser.
+# The file must be accessible by the primary and backup control machines.
 - name: Ensure slurm pid directory exists
   become: true
   ansible.builtin.file:
@@ -33,7 +39,7 @@
       [Unit]
       Description=Slurm controller daemon
       After=network.target munge.service
-      ConditionPathExists=/etc/slurm/slurm.conf
+      ConditionPathExists={{ SlurmConfigFileDIr }}/slurm.conf
 
       [Service]
       Type=forking

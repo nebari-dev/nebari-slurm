@@ -1,4 +1,6 @@
 ---
+# Permissions must be set to 755 so that job scripts can be executed from this directory.
+# A distinct file must exist on each compute node.
 - name: Create slurm spool directory
   become: true
   ansible.builtin.file:
@@ -8,6 +10,8 @@
     mode: "0755"
     state: directory
 
+# Must be writable by user root.
+# A distinct file must exist on each compute node.
 - name: Create slurm log directory
   become: true
   ansible.builtin.file:
@@ -17,6 +21,8 @@
     mode: "0755"
     state: directory
 
+# Must be writable by user root.
+# A distinct file must exist on each compute node.
 - name: Ensure slurm pid directory exists
   become: true
   ansible.builtin.file:
@@ -33,7 +39,7 @@
       [Unit]
       Description=Slurm node daemon
       After=network.target munge.service remote-fs.target
-      ConditionPathExists=/etc/slurm/slurm.conf
+      ConditionPathExists={{ SlurmConfigFileDIr }}/slurm.conf
 
       [Service]
       Type=forking

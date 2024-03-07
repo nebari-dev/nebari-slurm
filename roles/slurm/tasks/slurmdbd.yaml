@@ -1,13 +1,15 @@
 ---
+# Must be writable by user SlurmUser.
 - name: Ensure slurmdbd log directory exists
   become: true
   ansible.builtin.file:
     path: "{{ slurmdbd_config.LogFile | dirname }}"
     state: directory
-    mode: "0700"
+    mode: "0755"
     owner: slurm
     group: slurm
 
+# Must be writable by user SlurmUser.
 - name: Ensure slurm pid directory exists
   become: true
   ansible.builtin.file:
@@ -17,11 +19,15 @@
     owner: slurm
     group: slurm
 
+# This file should be only on the computer where SlurmDBD executes
+# and should only be readable by the user which executes SlurmDBD (e.g. "slurm").
+# This file should be protected from unauthorized access since
+# it contains a database password
 - name: Install slurmdbd.conf
   become: true
   ansible.builtin.template:
     src: templates/slurmdbd.conf
-    dest: /etc/slurm/slurmdbd.conf
+    dest: "{{ SlurmConfigFileDIr }}/slurmdbd.conf"
     owner: slurm
     group: slurm
     mode: "0600"
@@ -34,7 +40,7 @@
       [Unit]
       Description=Slurm DBD accounting daemon
       After=network.target munge.service
-      ConditionPathExists=/etc/slurm/slurmdbd.conf
+      ConditionPathExists={{ SlurmConfigFileDIr }}/slurmdbd.conf
 
       [Service]
       Type=forking
