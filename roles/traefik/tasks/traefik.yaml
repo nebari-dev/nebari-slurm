@@ -89,7 +89,7 @@
     owner: traefik
     group: traefik
   when: traefik_tls_certificate is defined
-  notify: restart services traefik
+  notify: Restart services traefik
   register: _traefik_tls_certificate
 
 - name: Copy TLS key if provided
@@ -102,7 +102,7 @@
     owner: traefik
     group: traefik
   when: traefik_tls_key is defined
-  notify: restart services traefik
+  notify: Restart services traefik
   register: _traefik_tls_key
 
 - name: Copy traefik configuration
@@ -113,7 +113,7 @@
     mode: "0600"
     owner: traefik
     group: traefik
-  notify: restart services traefik
+  notify: Restart services traefik
 
 - name: Copy traefik dynamic configuration
   become: true
@@ -123,7 +123,7 @@
     mode: "0600"
     owner: traefik
     group: traefik
-  notify: restart services traefik
+  notify: Restart services traefik
 
 - name: Copy the traefik systemd service file
   become: true
@@ -155,7 +155,7 @@
     owner: root
     group: root
     mode: "0644"
-  notify: restart services traefik
+  notify: Restart services traefik
 
 - name: Ensure Traefik is enabled on boot
   become: true

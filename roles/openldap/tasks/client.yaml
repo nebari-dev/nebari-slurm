@@ -16,7 +16,7 @@
     regexp: pam_mkhomedir\.so
     line: session required pam_mkhomedir.so skel=/etc/skel/ umask=0022
     state: present
-  notify: restart services ldap
+  notify: Restart services ldap
 
 - name: LDAP Authentication | Query ldap in nsswitch.conf
   become: true
@@ -29,7 +29,7 @@
     - passwd
     - shadow
     - group
-  notify: restart services ldap
+  notify: Restart services ldap
 
 - name: LDAP Authentication | no cache for ldap in nscd.conf
   become: true
@@ -41,7 +41,7 @@
   with_items:
     - passwd
     - group
-  notify: restart services ldap
+  notify: Restart services ldap
 
 - name: LDAP Authentication | Configure /etc/nslcd.conf
   become: true
@@ -49,4 +49,4 @@
     src: nslcd.conf.j2
     dest: /etc/nslcd.conf
     mode: "0600"
-  notify: restart services ldap
+  notify: Restart services ldap

@@ -5,7 +5,6 @@
     name: "{{ item }}"
     enabled: "yes"
     state: restarted
-    cmd: ""
   with_items:
     - jupyterhub
 
@@ -15,7 +14,6 @@
     name: "{{ item }}"
     enabled: "yes"
     state: restarted
-    cmd: ""
   with_items:
     - jupyterhub-proxy
 
@@ -25,6 +23,5 @@
     name: "{{ item }}"
     enabled: "yes"
     state: restarted
-    cmd: ""
   with_items:
     - jupyterhub-ssh
