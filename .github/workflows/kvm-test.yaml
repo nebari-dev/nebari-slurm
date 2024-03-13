@@ -33,7 +33,9 @@
           run: |
             mkdir deploy
             cp -r inventory.template/* deploy/
-            cp .github/inventory.ini deploy/inventory.ini
+
+            chmod +x .github/scripts/gen_inventory.sh
+            ./.github/scripts/gen_inventory.sh $(hostname -s) deploy/inventory.ini
 
         - name: Check network adapter
           run: |
@@ -50,10 +52,50 @@
             echo "adapter_name=$(cat network_info.txt | head -1 | awk '{print $2}')" >> $GITHUB_ENV
             echo "ip_range=$(cat network_info.txt | awk 'NR > 1 && $3 {print $3}')" >> $GITHUB_ENV
 
-        - name: Update Firewall IP range and Host network adapter
+        - name: Update group vars
           run: |
+            echo "Updating group vars for firewall and internal network"
             echo "firewall_internal_ip_range: $ip_range" >> deploy/group_vars/all.yaml
             echo "internal_interface: $adapter_name" >> deploy/group_vars/all.yaml
+            echo "SlurmConfigFileDIr: /etc/slurm" >> deploy/group_vars/all.yaml
+
+            echo "Replace hpc01-test with $(hostname -s) in group_vars/hpc_worker.yaml file"
+            sed -i "s/hpc01-test/$(hostname -s)/g" deploy/group_vars/hpc_worker.yaml
+
+        - name: Disable unattended-upgrades
+          run: |
+            # Ensure all commands are non-interactive by setting DEBIAN_FRONTEND to noninteractive
+            export DEBIAN_FRONTEND=noninteractive
+
+            # Check if unattended-upgrades service is active and stop it if it is
+            if systemctl is-active --quiet unattended-upgrades; then
+                echo "Stopping unattended-upgrades service..."
+                sudo systemctl stop unattended-upgrades
+            else
+                echo "unattended-upgrades service is not active. Skipping stop command."
+            fi
+
+            # Proceed with killing any running APT processes without manual confirmation
+            echo "Checking and killing running APT processes if necessary..."
+            sudo lsof /var/lib/dpkg/lock-frontend | awk '{print $2}' | tail -n +2 | while read PID; do
+                if [ ! -z "$PID" ]; then
+                    echo "Killing PID $PID"
+                    sudo kill -9 $PID
+                fi
+            done
+
+            # Configure any packages that are in an unclean state non-interactively
+            echo "Configuring any packages in an unclean state..."
+            sudo dpkg --configure -a
+
+            # Remove unattended-upgrades to avoid automatic background updates during script execution
+            echo "Disabling unattended upgrades..."
+            sudo apt-get remove --purge unattended-upgrades -y || true
+
+        # - name:  Run ssh session
+        #   uses: mxschmitt/action-tmate@v3
+        #   with:
+        #     detached: true
 
         - name: Run ansible playbook
           run: |
