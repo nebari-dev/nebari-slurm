@@ -15,7 +15,7 @@
 - name: Ensure that slurm configuration directory exists
   become: true
   ansible.builtin.file:
-    path: /etc/slurm
+    path: "{{ SlurmConfigFileDIr }}"
     state: directory
     mode: "0755"
     owner: root
@@ -25,10 +25,10 @@
   become: true
   ansible.builtin.template:
     src: templates/slurm.conf
-    dest: /etc/slurm/slurm.conf
+    dest: "{{ SlurmConfigFileDIr }}/slurm.conf"
     owner: root
     group: root
-    mode: "0444"
+    mode: "0755"
   register: _slurm_config
 
 - name: Install extra execution host configs
@@ -39,7 +39,7 @@
       ConstrainCores=yes
       ConstrainRAMSpace=yes
       ConstrainSwapSpace=yes
-    dest: /etc/slurm/cgroup.conf
+    dest: "{{ SlurmConfigFileDIr }}/cgroup.conf"
     owner: root
     group: root
     mode: "0444"

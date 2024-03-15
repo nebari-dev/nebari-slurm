@@ -1,6 +1,7 @@
 ---
 - name: Install golang
   ansible.builtin.include_tasks: golang.yaml
+
 - name: Check that the slurm exporter binary exists
   ansible.builtin.stat:
     path: /usr/local/bin/prometheus_slurm_exporter
