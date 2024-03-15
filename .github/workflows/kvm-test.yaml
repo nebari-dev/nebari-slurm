@@ -11,8 +11,8 @@
     test-kvm:
       name: KVM Test
       # Disable ci-run untill addressing /var/lib/dpkg/lock-frontend issue
-      # runs-on: "cirun-runner--${{ github.run_id }}"
-      runs-on: "ubuntu-latest"
+      runs-on: "cirun-runner--${{ github.run_id }}"
+      # runs-on: "ubuntu-latest"
       steps:
         - uses: actions/checkout@v4
 
@@ -54,6 +54,8 @@
 
         - name: Update group vars
           run: |
+            cp deploy/group_vars/all.yaml deploy/group_vars/all.yaml.bak
+
             echo "Updating group vars for firewall and internal network"
             echo "firewall_internal_ip_range: $ip_range" >> deploy/group_vars/all.yaml
             echo "internal_interface: $adapter_name" >> deploy/group_vars/all.yaml
@@ -61,6 +63,11 @@
 
             echo "Replace hpc01-test with $(hostname -s) in group_vars/hpc_worker.yaml file"
             sed -i "s/hpc01-test/$(hostname -s)/g" deploy/group_vars/hpc_worker.yaml
+
+            echo "Replace LDAP server URI with $(hostname -s) in group_vars/all.yaml file"
+            sed -i "s|ldap://hpc01-test:389|ldap://$(hostname -s):389|g" deploy/group_vars/all.yaml
+
+            diff deploy/group_vars/all.yaml.bak deploy/group_vars/all.yaml || true
 
         - name: Disable unattended-upgrades
           run: |
