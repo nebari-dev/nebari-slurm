@@ -1,41 +1,41 @@
 ---
-  name: Vagrant (KVM) Tests
+name: Vagrant (KVM) Tests
 
-  on:
-    pull_request:
-    push:
-      branches:
-        - main
+on:
+  pull_request:
+  push:
+    branches:
+      - main
 
-  jobs:
-    # https://github.com/jonashackt/vagrant-github-actions
-    test-kvm:
-      name: KVM Test
-      runs-on: macos-latest
-      steps:
-        - uses: actions/checkout@v2
+jobs:
+  # https://github.com/jonashackt/vagrant-github-actions
+  test-kvm:
+    name: KVM Test
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
 
-        - name: Cache Vagrant boxes
-          uses: actions/cache@v2
-          with:
-            path: ~/.vagrant.d/boxes
-            key: ${{ runner.os }}-vagrant-${{ hashFiles('Vagrantfile') }}
-            restore-keys: |
-              ${{ runner.os }}-vagrant-
+      - name: Cache Vagrant boxes
+        uses: actions/cache@v2
+        with:
+          path: ~/.vagrant.d/boxes
+          key: ${{ runner.os }}-vagrant-${{ hashFiles('Vagrantfile') }}
+          restore-keys: |
+            ${{ runner.os }}-vagrant-
 
-        - name: Install test dependencies.
-          run: sudo pip3 install ansible
+      - name: Install test dependencies.
+        run: sudo pip3 install ansible
 
-        - name: Install Ansible Dependencies
-          working-directory: tests/ubuntu2004-singlenode
-          run: |
-            ansible-galaxy collection install community.general
-            ansible-galaxy collection install ansible.posix
+      - name: Install Ansible Dependencies
+        working-directory: tests/ubuntu2004-singlenode
+        run: |
+          ansible-galaxy collection install community.general
+          ansible-galaxy collection install ansible.posix
 
-        - name: Show Vagrant version
-          run: vagrant --version
+      - name: Show Vagrant version
+        run: vagrant --version
 
-  # Disabled until we fix it
-  #      - name: Run vagrant up
-  #        working-directory: tests/ubuntu2004-singlenode
-  #        run: vagrant up
+# Disabled until we fix it
+#      - name: Run vagrant up
+#        working-directory: tests/ubuntu2004-singlenode
+#        run: vagrant up
