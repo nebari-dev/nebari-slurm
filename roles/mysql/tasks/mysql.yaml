@@ -19,7 +19,7 @@
 
 - name: Ensure MySQL packages are installed.
   become: true
-  timeout: 300
+  timeout: 600
   ansible.builtin.apt:
     name: "{{ mysql_packages }}"
     state: present
