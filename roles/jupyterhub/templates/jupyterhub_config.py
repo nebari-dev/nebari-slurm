@@ -8,9 +8,14 @@ import os
 import sys
 import glob
 
-from batchspawner import SlurmSpawner
-from traitlets import Unicode, Callable
+from batchspawner import SlurmSpawner, format_template
+from traitlets import Unicode, default, Union
 import keycloak
+from textwrap import dedent
+
+from jupyterhub.utils import maybe_future
+from jupyterhub.traitlets import Callable
+from tornado import gen
 
 # Find all conda environments that have dask jupyterlab, batchspawner, and jupyterhub installed
 jupyterlab_packages = ['jupyterlab', 'batchspawner', 'jupyterhub']
@@ -119,73 +124,94 @@ c.JupyterHub.authenticator_class = QHubAuthenticator
 # -------------------- Base Spawner --------------------
 
 class QHubHPCSpawnerBase(SlurmSpawner):
-  req_conda_environment_prefix = Unicode('',
+    req_conda_environment_prefix = Unicode('',
         help="Conda environment prefix to launch jupyterlab"
     ).tag(config=True)
 
+    batch_script = Union(
+        trait_types=[Unicode(), Callable(),],
+        help="Script to be run by the batch system to start the single-user server",
+        config=True
+    )
+
+    # This already exists in batchspawner, but we need to override
+    async def _get_batch_script(self, **subvars):
+        """Format batch script from vars"""
+
+        if callable(self.batch_script):
+            self.batch_script = await maybe_future(self.batch_script(self))
+
+        # Could be overridden by subclasses, but mainly useful for testing
+        return format_template(self.batch_script, **subvars)
+
+
+
+
 {% if jupyterhub_qhub_options_form %}
-  # data from form submission is {key: [value]}
-  # we need to convert the formdata to a key value dict
-  def options_from_form(self, data):
-      return {key: value[0] for key, value in data.items()}
+    # data from form submission is {key: [value]}
+    # we need to convert the formdata to a key value dict
+    def options_from_form(self, data):
+        return {key: value[0] for key, value in data.items()}
 
-  main_options_form = f'''
-<div class="form-group row">
-  <label for="memory" class="col-2 col-form-label">JupyterLab Memory (GB)</label>
-  <div class="col-10">
-    <input class="form-control" type="number" value="1" id="memory" name="memory">
-  </div>
-</div>
-<div class="form-group row">
-  <label for="nprocs" class="col-2 col-form-label">JupyterLab CPUs</label>
-  <div class="col-10">
-    <input class="form-control" type="number" value="1" id="nprocs" name="nprocs">
-  </div>
-</div>
-<div class="form-group row">
-  <label for="partition" class="col-2 col-form-label">Slurm Partition</label>
-  <div class="col-10">
-     <select class="form-select" aria-label="Slurm Queue" id="partition" name="partition">
-       <option value="general">general</option>
-{% for item in groups %}
-{% if item.startswith('partition-')%}
-       <option value="{{ item[10:] }}">{{ item[10:] }}</option>
-{% endif %}
-{% endfor %}
-     </select>
-  </div>
-</div>
-'''
+    main_options_form = f'''
+    <div class="form-group row">
+    <label for="memory" class="col-2 col-form-label">JupyterLab Memory (GB)</label>
+    <div class="col-10">
+        <input class="form-control" type="number" value="1" id="memory" name="memory">
+    </div>
+    </div>
+    <div class="form-group row">
+    <label for="nprocs" class="col-2 col-form-label">JupyterLab CPUs</label>
+    <div class="col-10">
+        <input class="form-control" type="number" value="1" id="nprocs" name="nprocs">
+    </div>
+    </div>
+    <div class="form-group row">
+    <label for="partition" class="col-2 col-form-label">Slurm Partition</label>
+    <div class="col-10">
+        <select class="form-select" aria-label="Slurm Queue" id="partition" name="partition">
+        <option value="general">general</option>
+    {% for item in groups %}
+    {% if item.startswith('partition-')%}
+        <option value="{{ item[10:] }}">{{ item[10:] }}</option>
+    {% endif %}
+    {% endfor %}
+        </select>
+    </div>
+    </div>
+    '''
 
-  conda_options_form = f'''
-{% raw %}
-<div class="form-group row">
-  <label for="conda_environment_prefix" class="col-2 col-form-label">Conda Environment</label>
-  <div class="col-10">
-     <select class="form-select" aria-label="Conda Environment" id="conda_environment_prefix" name="conda_environment_prefix">
-{''.join([f'<option value="{_[1]}">{_[0]}</option>' for _ in conda_envs_w_packages(jupyterlab_packages)])}
-     </select>
-  </div>
-</div>
-{% endraw %}
-'''
+    conda_options_form = f'''
+    {% raw %}
+    <div class="form-group row">
+    <label for="conda_environment_prefix" class="col-2 col-form-label">Conda Environment</label>
+    <div class="col-10">
+        <select class="form-select" aria-label="Conda Environment" id="conda_environment_prefix" name="conda_environment_prefix">
+    {''.join([f'<option value="{_[1]}">{_[0]}</option>' for _ in conda_envs_w_packages(jupyterlab_packages)])}
+        </select>
+    </div>
+    </div>
+    {% endraw %}
+    '''
 
-  def options_form(self, spawner):
+    def options_form(self, spawner):
+        ## Not currently working - idea is to omit conda env from spawner form
+        ## for dashboards, since already selected a conda env
+        #if spawner.orm_spawner.user_options and 'presentation_type' in spawner.orm_spawner.user_options:
+        #  self.log.info("In options_form")
+        #  if spawner.user_options['presentation_type']:
+        #    return self.main_options_form # Omit the conda env dropdown since that is chosen per dashboard
 
-    ## Not currently working - idea is to omit conda env from spawner form
-    ## for dashboards, since already selected a conda env
-    #if spawner.orm_spawner.user_options and 'presentation_type' in spawner.orm_spawner.user_options:
-    #  self.log.info("In options_form")
-    #  if spawner.user_options['presentation_type']:
-    #    return self.main_options_form # Omit the conda env dropdown since that is chosen per dashboard
-
-    # Display full form including conda env dropdown
-    return ''.join([self.main_options_form, self.conda_options_form])
+        # Display full form including conda env dropdown
+        return ''.join([self.main_options_form, self.conda_options_form])
 {% endif %}
 
 # Assign Qhub Spawner
 class QHubHPCSpawner(QHubHPCSpawnerBase):
     pass
+
+c.JupyterHub.allow_named_servers = True
+c.JupyterHub.default_url = '/hub/home'
 
 c.JupyterHub.template_paths = []
 c.JupyterHub.extra_handlers = []
@@ -211,46 +237,80 @@ cp -r /etc/jupyter/profile_default $HOME/.ipython/
 export PATH={{ miniforge_home }}/condabin:$PATH
 '''
 
+def populate_condarc(username):
+    """Generate condarc configuration string for the given username."""
+    condarc = json.dumps({
+        "envs_dirs": [
+            f"/opt/conda-store/conda-store/{dir_name}/envs" for dir_name in [username, "filesystem"]
+        ]
+    })
+    return f"printf '{condarc}' > /home/{username}/.condarc\n"
 
-c.QHubHPCSpawner.batch_script = """#!/bin/bash
-{% raw %}
-#SBATCH --output={{homedir}}/.jupyterhub_slurmspawner_%j.log
-#SBATCH --error={{homedir}}/.jupyterhub_slurmspawner_%j.log
-#SBATCH --job-name=spawner-jupyterhub
-#SBATCH --chdir={{homedir}}
-#SBATCH --export={{keepvars}}
-#SBATCH --get-user-env=L
-{% if partition  %}#SBATCH --partition={{partition}}
-{% endif %}{% if runtime    %}#SBATCH --time={{runtime}}
-{% endif %}{% if memory     %}#SBATCH --mem={{memory}}G
-{% endif %}{% if gres       %}#SBATCH --gres={{gres}}
-{% endif %}{% if nprocs     %}#SBATCH --cpus-per-task={{nprocs}}
-{% endif %}{% if reservation%}#SBATCH --reservation={{reservation}}
-{% endif %}{% if options    %}#SBATCH {{options}}{% endif %}
-set -euo pipefail
-trap 'echo SIGTERM received' TERM
-{{prologue}}
-{% endraw %}
+@gen.coroutine
+def generate_batch_script(spawner):
+    """Generate a batch script for SLURM and JupyterHub based on spawner settings."""
+    username = spawner.user.name
 
-{% if conda_store_enabled %}
-# Setting Conda-Store configuration
-mkdir -p "$HOME/.jupyter/lab/user-settings/@mamba-org/gator-lab/"
-echo '{"condaStoreUrl": "/conda-store"}' > $HOME/.jupyter/lab/user-settings/@mamba-org/gator-lab/plugin.jupyterlab-settings
+    auth_state = yield spawner.user.get_auth_state()
+    if auth_state:
+        print(f"auth_state: {auth_state}")
+        print("#######################")
 
-# Setting nb_conda_kernels settings
-echo '{"CondaKernelSpecManager": {"name_format": "{environment}"}}' > $HOME/.jupyter/jupyter_config.json
-{% endif %}
+    print(f"Generating batch script for {username}")
 
-export PATH={{ '{{ conda_environment_prefix }}' }}/bin:$PATH
+    sbatch_headers = dedent("""\
+        #!/bin/bash
+        {% raw %}
+        #SBATCH --output={{homedir}}/.jupyterhub_slurmspawner_%j.log
+        #SBATCH --error={{homedir}}/.jupyterhub_slurmspawner_%j.log
+        #SBATCH --job-name=spawner-jupyterhub
+        #SBATCH --chdir={{homedir}}
+        #SBATCH --export={{keepvars}}
+        #SBATCH --get-user-env=L
+        {% if partition %}#SBATCH --partition={{partition}}
+        {% endif %}{% if runtime %}#SBATCH --time={{runtime}}
+        {% endif %}{% if memory %}#SBATCH --mem={{memory}}G
+        {% endif %}{% if gres %}#SBATCH --gres={{gres}}
+        {% endif %}{% if nprocs %}#SBATCH --cpus-per-task={{nprocs}}
+        {% endif %}{% if reservation%}#SBATCH --reservation={{reservation}}
+        {% endif %}{% if options %}#SBATCH {{options}}{% endif %}
+        set -euo pipefail
+        trap 'echo SIGTERM received' TERM
+        {{prologue}}
+        {% endraw %}
+    """)
 
-{% raw %}
-which jupyterhub-singleuser
-echo "running command {{cmd}}"
-{% if srun %}{{srun}} {% endif %}{{cmd}}
-echo "jupyterhub-singleuser ended gracefully"
-{{epilogue}}
-"""
-{% endraw %}
+    conda_store_headers = dedent("""\
+        {% if conda_store_enabled %}
+        # Setting Conda-Store configuration
+        mkdir -p "$HOME/.jupyter/lab/user-settings/@mamba-org/gator-lab/"
+        echo '{"condaStoreUrl": "/conda-store"}' > $HOME/.jupyter/lab/user-settings/@mamba-org/gator-lab/plugin.jupyterlab-settings
+
+        # Setting nb_conda_kernels settings
+        echo '{"CondaKernelSpecManager": {"name_format": "{environment}"}}' > $HOME/.jupyter/jupyter_config.json
+        {% endif %}
+
+        export PATH={{ '{{ conda_environment_prefix }}' }}/bin:$PATH
+    """)
+
+    srun_jupyterhub_single_user = dedent("""\
+        {% raw %}
+        which jupyterhub-singleuser
+        echo "running command {{cmd}}"
+        {% if srun %}{{srun}} {% endif %}{{cmd}}
+        echo "jupyterhub-singleuser ended gracefully"
+        {{epilogue}}
+        {% endraw %}
+    """)
+
+    return "".join([
+        sbatch_headers,
+        populate_condarc(username),
+        conda_store_headers,
+        srun_jupyterhub_single_user
+    ])
+
+c.QHubHPCSpawner.batch_script = generate_batch_script
 
 
 # ===== adding api tokens for external services =======
