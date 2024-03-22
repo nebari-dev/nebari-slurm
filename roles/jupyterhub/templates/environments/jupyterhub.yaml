@@ -16,4 +16,5 @@ dependencies:
       - jupyterhub-traefik-proxy==1.1.0
       # jupyterhub-ssh has not made a release yet
       - git+https://github.com/yuvipanda/jupyterhub-ssh.git
+      - git+https://github.com/jupyterhub/wrapspawner.git
       - jhub-apps==2024.2.1rc1
