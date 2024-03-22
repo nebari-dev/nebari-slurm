@@ -44,6 +44,7 @@ dependencies:
   - black
   - isort
   - importnb
+  - batchspawner==1.3.0
 
   - pip:
       # vscode jupyterlab launcher
