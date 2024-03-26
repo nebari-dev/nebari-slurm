@@ -4,7 +4,7 @@
 
 ### Adding new user
 
-In order to add new users to QHub-HPC add to the `enabled_users`
+In order to add new users to Nebari-Slurm add to the `enabled_users`
 variable. The format for each user is:
 
 ```yaml
@@ -21,7 +21,7 @@ enabled_users:
 
 ### Adding new groups
 
-In order to add new groups to QHub-HPC add to the `enabled_groups`
+In order to add new groups to Nebari-Slurm add to the `enabled_groups`
 variable. The format for each group is:
 
 ```yaml
@@ -252,7 +252,7 @@ slurmdbd_config:
 
 ### Accessing Qhub HPC from a Domain
 
-By default, a qhub-hpc deployment must be accesssed using the ip
+By default, a Nebari-Slurm deployment must be accesssed using the ip
 address of the hpc_master node.  However, if a domain name has been
 set up to point to the hpc_master node, then Qhub HPC's router,
 [Traefik](https://doc.traefik.io/traefik/), can be configured to work
