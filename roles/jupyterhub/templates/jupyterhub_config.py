@@ -144,68 +144,6 @@ class QHubHPCSpawnerBase(SlurmSpawner):
         # Could be overridden by subclasses, but mainly useful for testing
         return format_template(self.batch_script, **subvars)
 
-
-
-
-{% if jupyterhub_qhub_options_form %}
-    # data from form submission is {key: [value]}
-    # we need to convert the formdata to a key value dict
-    def options_from_form(self, data):
-        return {key: value[0] for key, value in data.items()}
-
-    main_options_form = f'''
-    <div class="form-group row">
-    <label for="memory" class="col-2 col-form-label">JupyterLab Memory (GB)</label>
-    <div class="col-10">
-        <input class="form-control" type="number" value="1" id="memory" name="memory">
-    </div>
-    </div>
-    <div class="form-group row">
-    <label for="nprocs" class="col-2 col-form-label">JupyterLab CPUs</label>
-    <div class="col-10">
-        <input class="form-control" type="number" value="1" id="nprocs" name="nprocs">
-    </div>
-    </div>
-    <div class="form-group row">
-    <label for="partition" class="col-2 col-form-label">Slurm Partition</label>
-    <div class="col-10">
-        <select class="form-select" aria-label="Slurm Queue" id="partition" name="partition">
-        <option value="general">general</option>
-    {% for item in groups %}
-    {% if item.startswith('partition-')%}
-        <option value="{{ item[10:] }}">{{ item[10:] }}</option>
-    {% endif %}
-    {% endfor %}
-        </select>
-    </div>
-    </div>
-    '''
-
-    conda_options_form = f'''
-    {% raw %}
-    <div class="form-group row">
-    <label for="conda_environment_prefix" class="col-2 col-form-label">Conda Environment</label>
-    <div class="col-10">
-        <select class="form-select" aria-label="Conda Environment" id="conda_environment_prefix" name="conda_environment_prefix">
-    {''.join([f'<option value="{_[1]}">{_[0]}</option>' for _ in conda_envs_w_packages(jupyterlab_packages)])}
-        </select>
-    </div>
-    </div>
-    {% endraw %}
-    '''
-
-    def options_form(self, spawner):
-        ## Not currently working - idea is to omit conda env from spawner form
-        ## for dashboards, since already selected a conda env
-        #if spawner.orm_spawner.user_options and 'presentation_type' in spawner.orm_spawner.user_options:
-        #  self.log.info("In options_form")
-        #  if spawner.user_options['presentation_type']:
-        #    return self.main_options_form # Omit the conda env dropdown since that is chosen per dashboard
-
-        # Display full form including conda env dropdown
-        return ''.join([self.main_options_form, self.conda_options_form])
-{% endif %}
-
 # Assign Qhub Spawner
 class QHubHPCSpawner(QHubHPCSpawnerBase):
     pass
@@ -216,7 +154,7 @@ c.JupyterHub.default_url = '/hub/home'
 c.JupyterHub.template_paths = []
 c.JupyterHub.extra_handlers = []
 
-c.JupyterHub.spawner_class = QHubHPCSpawner
+c.JupyterHub.spawner_class = 'wrapspawner.ProfilesSpawner'
 
 c.SlurmSpawner.start_timeout = {{ jupyterhub_config.spawner.start_timeout }}
 c.QHubHPCSpawner.default_url = '/lab'
@@ -224,6 +162,7 @@ c.QHubHPCSpawner.default_url = '/lab'
 # default values for batch spawner
 c.QHubHPCSpawner.req_memory = '1' # GB
 c.QHubHPCSpawner.req_nprocs = '1'
+c.QHubHPCSpawner.req_partition = 'general'
 c.QHubHPCSpawner.req_conda_environment_prefix = '{{ miniforge_home }}/envs/{{ jupyterhub_lab_environment | basename | splitext | first }}'
 c.QHubHPCSpawner.req_prologue = '''
 # ensure user has link to the shared directory, if it exists
@@ -312,6 +251,24 @@ def generate_batch_script(spawner):
 
 c.QHubHPCSpawner.batch_script = generate_batch_script
 
+USER_PROFILES = {{ jupyterhub_profiles | tojson }}
+
+def set_profiles(user_profiles: list):
+    """Set the profiles for the ProfilesSpawner."""
+    profiles = []
+    for profile_dict in user_profiles:
+        profile_name, profile_data = next(iter(profile_dict.items()))
+        profiles.append((
+            profile_data['display_name'],
+            profile_name,
+            QHubHPCSpawner,
+            dict(**profile_data['options'])
+        ))
+    return profiles
+
+
+# User profiles
+c.ProfilesSpawner.profiles = set_profiles(USER_PROFILES)
 
 # ===== adding api tokens for external services =======
 c.JupyterHub.services = [

@@ -24,6 +24,13 @@ jupyterhub_config:
   spawner:
     start_timeout: 180 # seconds
 
+jupyterhub_profiles:
+  - default:
+      display_name: default
+      options:
+        req_memory: "2"
+        req_nprocs: "1"
+
 jupyterhub_services:
   dask_gateway: CStgn1NN8DogQR1KajuoQfye1qNRqx6zsh
 

@@ -1,7 +1,7 @@
 ---
 miniforge_enabled: false
-miniforge_version: 4.11.0-0
-miniforge_sha256: 49268ee30d4418be4de852dda3aa4387f8c95b55a76f43fb1af68dcbf8b205c3
+miniforge_version: 23.11.0-0
+miniforge_sha256: 3dfdcc162bf0df83b5025608dc2acdbbc575bd416b75701fb5863343c0517a78
 miniforge_home: /opt/conda
 miniforge_envs:
   - /opt/conda/envs/
