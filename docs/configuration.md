@@ -4,7 +4,7 @@
 
 ### Adding new user
 
-In order to add new users to QHub-HPC add to the `enabled_users`
+In order to add new users to Nebari-Slurm add to the `enabled_users`
 variable. The format for each user is:
 
 ```yaml
@@ -21,7 +21,7 @@ enabled_users:
 
 ### Adding new groups
 
-In order to add new groups to QHub-HPC add to the `enabled_groups`
+In order to add new groups to Nebari-Slurm add to the `enabled_groups`
 variable. The format for each group is:
 
 ```yaml
@@ -159,6 +159,31 @@ The resource selection options form allows users to choose the cpu, memory, and 
 jupyterhub_qhub_options_form: false
 ```
 
+### Profiles (Slurm jobs resources)
+
+Profiles in Nebari-Slurm are defined within a YAML configuration file. Each profile specifies a set of resources that will be allocated to the JupyterHub session or job when selected by the user. Below is an example of how to define profiles in the configuration file:
+
+```yaml
+jupyterhub_profiles:
+  - small:
+      display_name: Profile 1 [Small] (1CPU-2GB)
+      options:
+        req_memory: "2"
+        req_nprocs: "1"
+  - medium:
+      display_name: Profile 2 [Medium] (1CPU-4GB)
+      options:
+        req_memory: "4"
+        req_nprocs: "1"
+```
+
+In the example above, two profiles are defined: small and medium. Each profile has a display_name that describes the profile to users in a human-readable format, including the resources allocated by that profile (e.g., "Profile 1 [Small] (1CPU-2GB)"). The options section specifies the actual resources to be allocated:
+
+- **req_memory**: The amount of memory (in GB) to be allocated.
+- **req_nprocs**: The number of CPU processors to be allocated.
+
+*Note*: All slurm related configuration needs to be passed down as a string.
+
 ### Services
 
 Additional services can be added to the `jupyterhub_services`
@@ -252,7 +277,7 @@ slurmdbd_config:
 
 ### Accessing Qhub HPC from a Domain
 
-By default, a qhub-hpc deployment must be accesssed using the ip
+By default, a Nebari-Slurm deployment must be accesssed using the ip
 address of the hpc_master node.  However, if a domain name has been
 set up to point to the hpc_master node, then Qhub HPC's router,
 [Traefik](https://doc.traefik.io/traefik/), can be configured to work
