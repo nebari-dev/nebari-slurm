@@ -1,6 +1,7 @@
 ---
 - name: Install ldap client packages
   become: true
+  timeout: 300
   ansible.builtin.apt:
     name:
       - libpam-ldapd

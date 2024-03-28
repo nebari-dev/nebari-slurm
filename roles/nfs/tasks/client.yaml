@@ -11,7 +11,7 @@
   ansible.builtin.wait_for:
     host: "{{ item.host }}"
     port: 2049
-    timeout: 600
+    timeout: 600 # Set a timeout of 10 minutes
   with_items: "{{ nfs_client_mounts }}"
 
 - name: Ensure nfs mounted directories exist

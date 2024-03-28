@@ -1,5 +1,7 @@
 ---
 mysql_enabled: false
+mysql_config_file: /etc/mysql/my.cnf
+
 mysql_databases:
   - slurm
   - conda-store
@@ -14,3 +16,10 @@ mysql_users:
   - username: conda-store
     password: eIbmUditL4RbQm0YPeLozRme
     privileges: "*.*:ALL"
+
+# Define a custom list of packages to install
+mysql_packages:
+  - mysql-server
+  - mysql-common
+
+mysql_python_package: python3-mysqldb

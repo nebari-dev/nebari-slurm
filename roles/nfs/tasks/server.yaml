@@ -1,5 +1,6 @@
 ---
-- name: Install nfs
+- name: Install nfs packages
+  timeout: 300
   become: true
   ansible.builtin.apt:
     state: latest
