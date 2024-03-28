@@ -103,10 +103,26 @@
         #   uses: mxschmitt/action-tmate@v3
         #   with:
         #     detached: true
-
-        - name: Run ansible playbook
+        - name: Move hpc variables from group_vars to temp location
+          run: |
+            mv deploy/group_vars/hpc_*.yaml /tmp
+    
+        - name: Run ansible playbook (partial)
           run: |
             cd deploy
             ansible-playbook ../playbook.yaml -i inventory.ini --connection=local -v
           env:
             ANSIBLE_FORCE_COLOR: True
+            ANSIBLE_CALLBACKS_ENABLED: "profile_tasks"
+        
+        - name: Move hpc variables back to group_vars
+          run: |
+            mv /tmp/hpc_*.yaml deploy/group_vars/
+
+        - name: Run ansible playbook (Full)
+          run: |
+            cd deploy
+            ansible-playbook ../playbook.yaml -i inventory.ini --connection=local -v
+          env:
+            ANSIBLE_FORCE_COLOR: True
+            ANSIBLE_CALLBACKS_ENABLED: "profile_tasks"
