@@ -4,7 +4,7 @@ runners:
     cloud: aws
     # Instance Type has 4 vcpu, 16 GiB memory, Up to 5 Gbps Network Performance
     instance_type: t3.2xlarge
-    machine_image: ami-053053586808c3e70 
+    machine_image: ami-0b8b44ec9a8f90422
     # ami-0a388df278199ff52
     # Region: Oregon
     region: us-west-2
