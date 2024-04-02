@@ -148,6 +148,25 @@ class QHubHPCSpawnerBase(SlurmSpawner):
 class QHubHPCSpawner(QHubHPCSpawnerBase):
     pass
 
+# batchspawner does not support auth_state correctly right now, using Keycloak client to retrieve user-info
+@gen.coroutine
+def _get_user_groups_state(spawner):
+    user_name = spawner.user.name
+    keycloak_admin = keycloak.KeycloakAdmin(
+            server_url="https://{{ traefik_domain | default(hostvars[groups['hpc_master'][0]].ansible_ssh_host) }}/auth/",
+            username="{{ keycloak_admin_username }}",
+            password="{{ keycloak_admin_password }}",
+            realm_name="{{ keycloak_realm }}",
+            user_realm_name="master",
+            verify=False)
+    username_uid = keycloak_admin.get_user_id(user_name)
+    _user_groups = keycloak_admin.get_user_groups(username_uid)
+    spawner.environment.update(
+        {
+            "USER_GROUPS": [group['name'] for group in _user_groups]
+        }
+    )
+
 c.JupyterHub.allow_named_servers = True
 c.JupyterHub.default_url = '/hub/home'
 
@@ -155,6 +174,7 @@ c.JupyterHub.template_paths = []
 c.JupyterHub.extra_handlers = []
 
 c.JupyterHub.spawner_class = 'wrapspawner.ProfilesSpawner'
+c.Spawner.pre_spawn_hook = _get_user_groups_state
 
 c.SlurmSpawner.start_timeout = {{ jupyterhub_config.spawner.start_timeout }}
 c.QHubHPCSpawner.default_url = '/lab'
@@ -176,11 +196,13 @@ cp -r /etc/jupyter/profile_default $HOME/.ipython/
 export PATH={{ miniforge_home }}/condabin:$PATH
 '''
 
-def populate_condarc(username):
+
+def populate_condarc(username, groups):
     """Generate condarc configuration string for the given username."""
+    # # only run if conda-store is enabled and the jupyterhub service token is available
     condarc = json.dumps({
         "envs_dirs": [
-            f"/opt/conda-store/conda-store/{dir_name}/envs" for dir_name in [username, "filesystem"]
+            f"/opt/conda-store/conda-store/{dir_name}/envs" for dir_name in [username, "filesystem", *groups]
         ]
     })
     return f"printf '{condarc}' > /home/{username}/.condarc\n"
@@ -189,11 +211,7 @@ def populate_condarc(username):
 def generate_batch_script(spawner):
     """Generate a batch script for SLURM and JupyterHub based on spawner settings."""
     username = spawner.user.name
-
-    auth_state = yield spawner.user.get_auth_state()
-    if auth_state:
-        print(f"auth_state: {auth_state}")
-        print("#######################")
+    _groups = spawner.environment.get("USER_GROUPS", [])
 
     print(f"Generating batch script for {username}")
 
@@ -244,7 +262,7 @@ def generate_batch_script(spawner):
 
     return "".join([
         sbatch_headers,
-        populate_condarc(username),
+        populate_condarc(username, _groups),
         conda_store_headers,
         srun_jupyterhub_single_user
     ])
