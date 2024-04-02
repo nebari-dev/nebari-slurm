@@ -170,6 +170,9 @@ if [ -d "/shared" ] && [ ! -L "$HOME/share" ]; then
   ln -s /shared "$HOME/share"
 fi
 
+# Ensure home directory is private
+chmod go-rwx $HOME
+
 # ensure ipyparallel configuration profiles
 cp -r /etc/jupyter/profile_default $HOME/.ipython/
 
