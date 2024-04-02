@@ -17,21 +17,6 @@ from jupyterhub.utils import maybe_future
 from jupyterhub.traitlets import Callable
 from tornado import gen
 
-# Find all conda environments that have dask jupyterlab, batchspawner, and jupyterhub installed
-jupyterlab_packages = ['jupyterlab', 'batchspawner', 'jupyterhub']
-def conda_envs_w_packages(packages, names_only=False):
-    _environments = []
-    output = subprocess.check_output(['conda', 'env', 'list', '--json'])
-    environments = json.loads(output)['envs']
-    for environment in environments:
-        output = subprocess.check_output(['conda', 'list', '-p', environment, '--json'])
-        if set(packages)  <= {_['name'] for _ in json.loads(output)}:
-            _environments.append((os.path.basename(environment), environment))
-    if names_only:
-        return [env_name for env_name, path in _environments]
-    return _environments
-
-
 # Allow gathering of jupyterhub prometheus metrics
 c.JupyterHub.authenticate_prometheus = False
 
