@@ -170,7 +170,9 @@ if [ -d "/shared" ] && [ ! -L "$HOME/share" ]; then
   ln -s /shared "$HOME/share"
 fi
 
-# Ensure home directory is private
+echo "Ensure home directory $HOME is private"
+# This will remove read, write, execute permissions from the group and other users.
+# It will not change permissions for the user that owns the file.
 chmod go-rwx $HOME
 
 # ensure ipyparallel configuration profiles
