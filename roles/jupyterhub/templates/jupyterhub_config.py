@@ -148,7 +148,7 @@ def _get_user_groups_state(spawner):
     _user_groups = keycloak_admin.get_user_groups(username_uid)
     spawner.environment.update(
         {
-            "USER_GROUPS": [group['name'] for group in _user_groups]
+            "USER_GROUPS": json.dumps([group['name'] for group in _user_groups])
         }
     )
 
@@ -196,7 +196,7 @@ def populate_condarc(username, groups):
 def generate_batch_script(spawner):
     """Generate a batch script for SLURM and JupyterHub based on spawner settings."""
     username = spawner.user.name
-    _groups = spawner.environment.get("USER_GROUPS", [])
+    _groups = json.loads(spawner.environment.get("USER_GROUPS", "[]"))
 
     print(f"Generating batch script for {username}")
 
