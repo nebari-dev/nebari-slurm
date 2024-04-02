@@ -170,6 +170,11 @@ if [ -d "/shared" ] && [ ! -L "$HOME/share" ]; then
   ln -s /shared "$HOME/share"
 fi
 
+echo "Ensure home directory $HOME is private"
+# This will remove read, write, execute permissions from the group and other users.
+# It will not change permissions for the user that owns the file.
+chmod go-rwx $HOME
+
 # ensure ipyparallel configuration profiles
 cp -r /etc/jupyter/profile_default $HOME/.ipython/
 
