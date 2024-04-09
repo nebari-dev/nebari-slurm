@@ -87,7 +87,7 @@ http:
       service: "dummy"
 
     minio:
-      rule: "Host(`{{ traefik_domain | default(hostvars[groups['hpc_master'][0]].ansible_ssh_host) }}`) && PathPrefix(`/minio`)"
+      rule: "Host(`{{ traefik_domain | default(hostvars[groups['hpc_master'][0]].ansible_ssh_host) }}`)"
       entryPoints:
         - "minio"
       service: "minio"

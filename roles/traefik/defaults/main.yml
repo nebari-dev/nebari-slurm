@@ -34,4 +34,4 @@ conda_store_port: "5000"
 
 # role: minio
 minio_internal_port: "9001"
-minio_external_port: "9000"
+minio_external_port: "9080"
