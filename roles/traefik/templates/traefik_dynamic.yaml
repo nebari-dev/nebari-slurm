@@ -43,6 +43,20 @@ http:
     https-redirect:
       redirectscheme:
         scheme: "https"
+    minio-redirect:
+      # This reduces the need to expose further ports on restricted networks
+      redirectregex:
+        regex: ":{{ minio_external_port }}/(.*)"
+        replacement: "/minio/$1"
+    minio-host-header:
+      headers:
+      # This is requied as minio uses this field to match the calculated signature
+        customRequestHeaders:
+          Host: "{{ traefik_domain | default(hostvars[groups['hpc_master'][0]].ansible_ssh_host) }}:{{ minio_external_port }}"
+    minio-strip:
+      stripPrefix:
+        prefixes:
+          - "/minio"
     dask-gateway-strip:
       stripPrefix:
         prefixes:
@@ -88,8 +102,15 @@ http:
 
     minio:
       rule: "Host(`{{ traefik_domain | default(hostvars[groups['hpc_master'][0]].ansible_ssh_host) }}`)"
+      middlewares: ["minio-redirect"]
       entryPoints:
         - "minio"
+      service: "dummy"
+    minio-secure:
+      rule: "Host(`{{ traefik_domain | default(hostvars[groups['hpc_master'][0]].ansible_ssh_host) }}`) && PathPrefix(`/minio`)"
+      middlewares: ["minio-strip", "minio-host-header"]
+      entryPoints:
+        - "websecure"
       service: "minio"
     keycloak:
       rule: "Host(`{{ traefik_domain | default(hostvars[groups['hpc_master'][0]].ansible_ssh_host) }}`) && PathPrefix(`/auth`)"
