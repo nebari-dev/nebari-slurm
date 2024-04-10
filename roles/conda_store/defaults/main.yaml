@@ -11,7 +11,7 @@ conda_store_client_secret: SUPERSECRETPASSWORDCONDASTORE
 minio_username: admin
 minio_password: mWdaGyPmNOApU93Vxk6sNTac
 minio_internal_port: "9001"
-minio_external_port: "9000"
+minio_external_port: "9080"
 
 # role: mysql
 mysql_databases:
