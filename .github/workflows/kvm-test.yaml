@@ -99,14 +99,15 @@
             echo "Disabling unattended upgrades..."
             sudo apt-get remove --purge unattended-upgrades -y || true
 
-        # - name:  Run ssh session
-        #   uses: mxschmitt/action-tmate@v3
-        #   with:
-        #     detached: true
         - name: Move hpc variables from group_vars to temp location
           run: |
             mv deploy/group_vars/hpc_*.yaml /tmp
-    
+
+        - name: Includes long demanding package installs
+          run: |
+            echo "mysql_enabled: true" >> deploy/group_vars/hpc_master.yaml
+            echo "postgresql_enabled: true" >> deploy/group_vars/hpc_master.yaml
+
         - name: Run ansible playbook (partial)
           run: |
             cd deploy
@@ -114,7 +115,11 @@
           env:
             ANSIBLE_FORCE_COLOR: True
             ANSIBLE_CALLBACKS_ENABLED: "profile_tasks"
-        
+
+        - name: Remove custom changes
+          run: |
+            rm -rf deploy/group_vars/hpc_master.yaml
+
         - name: Move hpc variables back to group_vars
           run: |
             mv /tmp/hpc_*.yaml deploy/group_vars/
