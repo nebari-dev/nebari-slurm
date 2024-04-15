@@ -1,7 +1,7 @@
 ---
 - name: Install PostgreSQL
   become: true
-  timeout: 300
+  timeout: 600
   ansible.builtin.apt:
     name:
       - postgresql
