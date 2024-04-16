@@ -99,6 +99,11 @@
             echo "Disabling unattended upgrades..."
             sudo apt-get remove --purge unattended-upgrades -y || true
 
+        - name: List disk space
+          if: success() || failure()
+          run: |
+            df -h -l
+
         # Use tmate
         - name: Setup tmate session
           uses: mxschmitt/action-tmate@v3
@@ -124,6 +129,11 @@
           run: |
             mv /tmp/hpc_*.yaml deploy/group_vars/
 
+        - name: List disk space
+          if: success() || failure()
+          run: |
+            df -h -l
+
         - name: Run ansible playbook (Full)
           run: |
             cd deploy
@@ -131,3 +141,8 @@
           env:
             ANSIBLE_FORCE_COLOR: True
             ANSIBLE_CALLBACKS_ENABLED: "profile_tasks"
+
+        - name: List disk space
+          if: success() || failure()
+          run: |
+            df -h -l
