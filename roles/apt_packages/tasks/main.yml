@@ -1,6 +1,7 @@
 ---
 - name: Ensure apt packages are installed
   become: true
+  timeout: 300
   ansible.builtin.apt:
     name: "{{ installed_packages }}"
     state: latest

@@ -1,6 +1,7 @@
 ---
 - name: Install openjdk and python requirements
   become: true
+  timeout: 300
   ansible.builtin.apt:
     state: latest
     cache_valid_time: 3600
@@ -64,7 +65,8 @@
 
 - name: Ensure Keycloak admin user exists
   become: true
-  ansible.builtin.command: /opt/keycloak-{{ keycloak_version }}/bin/add-user-keycloak.sh -r master -u "{{ keycloak_admin_username }}" -p "{{ keycloak_admin_password
+  ansible.builtin.command:
+    /opt/keycloak-{{ keycloak_version }}/bin/add-user-keycloak.sh -r master -u "{{ keycloak_admin_username }}" -p "{{ keycloak_admin_password
     }}"
   args:
     creates: /opt/keycloak-{{ keycloak_version }}/standalone/configuration/keycloak-add-user.json

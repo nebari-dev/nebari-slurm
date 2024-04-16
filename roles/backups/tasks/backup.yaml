@@ -1,6 +1,7 @@
 ---
 - name: Ensure restic installed
   become: true
+  timeout: 300
   ansible.builtin.apt:
     name: restic
     state: latest

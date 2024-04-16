@@ -1,41 +1,148 @@
 ---
-name: Vagrant (KVM) Tests
+  name: Vagrant (KVM) Tests
 
-on:
-  pull_request:
-  push:
-    branches:
-      - main
+  on:
+    pull_request:
+    push:
+      branches:
+        - main
 
-jobs:
-  # https://github.com/jonashackt/vagrant-github-actions
-  test-kvm:
-    name: KVM Test
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v2
+  jobs:
+    test-kvm:
+      name: KVM Test
+      # Disable ci-run untill addressing /var/lib/dpkg/lock-frontend issue
+      runs-on: "cirun-runner--${{ github.run_id }}"
+      # runs-on: "ubuntu-latest"
+      steps:
+        - uses: actions/checkout@v4
 
-      - name: Cache Vagrant boxes
-        uses: actions/cache@v2
-        with:
-          path: ~/.vagrant.d/boxes
-          key: ${{ runner.os }}-vagrant-${{ hashFiles('Vagrantfile') }}
-          restore-keys: |
-            ${{ runner.os }}-vagrant-
+        - uses: actions/setup-python@v5
+          with:
+            python-version: "3.10"
+            cache: "pip"
 
-      - name: Install test dependencies.
-        run: sudo pip3 install ansible
+        - name: Install dependencies
+          run: |
+            pip install ansible
 
-      - name: Install Ansible Dependencies
-        working-directory: tests/ubuntu2004-singlenode
-        run: |
-          ansible-galaxy collection install community.general
-          ansible-galaxy collection install ansible.posix
+        - name: Install Ansible dependencies
+          run: |
+            ansible-galaxy collection install -r requirements.yaml
 
-      - name: Show Vagrant version
-        run: vagrant --version
+        - name: Create deploy folder and move inventory files
+          run: |
+            mkdir deploy
+            cp -r inventory.template/* deploy/
 
-# Disabled until we fix it
-#      - name: Run vagrant up
-#        working-directory: tests/ubuntu2004-singlenode
-#        run: vagrant up
+            chmod +x .github/scripts/gen_inventory.sh
+            ./.github/scripts/gen_inventory.sh $(hostname -s) deploy/inventory.ini
+
+        - name: Check network adapter
+          run: |
+            ip a
+
+        - name: Check hosts
+          run: |
+            cat /etc/hosts
+
+        - name: Extract Network Information
+          run: |
+            chmod +x .github/scripts/extract_network_info.sh
+            ./.github/scripts/extract_network_info.sh
+            echo "adapter_name=$(cat network_info.txt | head -1 | awk '{print $2}')" >> $GITHUB_ENV
+            echo "ip_range=$(cat network_info.txt | awk 'NR > 1 && $3 {print $3}')" >> $GITHUB_ENV
+
+        - name: Update group vars
+          run: |
+            cp deploy/group_vars/all.yaml deploy/group_vars/all.yaml.bak
+
+            echo "Updating group vars for firewall and internal network"
+            echo "firewall_internal_ip_range: $ip_range" >> deploy/group_vars/all.yaml
+            echo "internal_interface: $adapter_name" >> deploy/group_vars/all.yaml
+            echo "SlurmConfigFileDIr: /etc/slurm" >> deploy/group_vars/all.yaml
+
+            echo "Replace hpc01-test with $(hostname -s) in group_vars/hpc_worker.yaml file"
+            sed -i "s/hpc01-test/$(hostname -s)/g" deploy/group_vars/hpc_worker.yaml
+
+            echo "Replace LDAP server URI with $(hostname -s) in group_vars/all.yaml file"
+            sed -i "s|ldap://hpc01-test:389|ldap://$(hostname -s):389|g" deploy/group_vars/all.yaml
+
+            diff deploy/group_vars/all.yaml.bak deploy/group_vars/all.yaml || true
+
+        - name: Disable unattended-upgrades
+          run: |
+            # Ensure all commands are non-interactive by setting DEBIAN_FRONTEND to noninteractive
+            export DEBIAN_FRONTEND=noninteractive
+
+            # Check if unattended-upgrades service is active and stop it if it is
+            if systemctl is-active --quiet unattended-upgrades; then
+                echo "Stopping unattended-upgrades service..."
+                sudo systemctl stop unattended-upgrades
+            else
+                echo "unattended-upgrades service is not active. Skipping stop command."
+            fi
+
+            # Proceed with killing any running APT processes without manual confirmation
+            echo "Checking and killing running APT processes if necessary..."
+            sudo lsof /var/lib/dpkg/lock-frontend | awk '{print $2}' | tail -n +2 | while read PID; do
+                if [ ! -z "$PID" ]; then
+                    echo "Killing PID $PID"
+                    sudo kill -9 $PID
+                fi
+            done
+
+            # Configure any packages that are in an unclean state non-interactively
+            echo "Configuring any packages in an unclean state..."
+            sudo dpkg --configure -a
+
+            # Remove unattended-upgrades to avoid automatic background updates during script execution
+            echo "Disabling unattended upgrades..."
+            sudo apt-get remove --purge unattended-upgrades -y || true
+
+        - name: List disk space
+          if: success() || failure()
+          run: |
+            df -h -l
+
+        # Use tmate
+        - name: Setup tmate session
+          uses: mxschmitt/action-tmate@v3
+
+        - name: Move hpc variables from group_vars to temp location
+          run: |
+            mv deploy/group_vars/hpc_*.yaml /tmp
+
+        # - name: Includes long demanding package installs
+        #   run: |
+        #     echo "mysql_enabled: true" >> deploy/group_vars/hpc_master.yaml
+        #     echo "postgresql_enabled: true" >> deploy/group_vars/hpc_master.yaml
+
+        - name: Run ansible playbook (partial)
+          run: |
+            cd deploy
+            ansible-playbook ../playbook.yaml -i inventory.ini --connection=local -vvv
+          env:
+            ANSIBLE_FORCE_COLOR: True
+            ANSIBLE_CALLBACKS_ENABLED: "profile_tasks"
+
+        - name: Move hpc variables back to group_vars
+          run: |
+            mv /tmp/hpc_*.yaml deploy/group_vars/
+
+        - name: List disk space
+          if: success() || failure()
+          run: |
+            df -h -l
+
+        - name: Run ansible playbook (Full)
+          run: |
+            cd deploy
+            ansible-playbook ../playbook.yaml -i inventory.ini --connection=local -vvv
+          env:
+            ANSIBLE_FORCE_COLOR: True
+            ANSIBLE_CALLBACKS_ENABLED: "profile_tasks"
+
+        - name: List disk space
+          if: success() || failure()
+          run: |
+            df -h -l

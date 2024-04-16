@@ -1,6 +1,7 @@
 ---
 - name: Install cifs
   become: true
+  timeout: 300
   ansible.builtin.apt:
     state: latest
     cache_valid_time: 3600

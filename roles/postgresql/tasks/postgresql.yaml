@@ -1,6 +1,7 @@
 ---
 - name: Install PostgreSQL
   become: true
+  timeout: 600
   ansible.builtin.apt:
     name:
       - postgresql
@@ -11,6 +12,7 @@
     cache_valid_time: 3600
 
 - name: Ensure PostgreSQL service is running
+  become: true
   ansible.builtin.systemd:
     name: postgresql
     state: started

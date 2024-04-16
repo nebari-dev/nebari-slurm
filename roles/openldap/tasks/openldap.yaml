@@ -1,6 +1,7 @@
 ---
 - name: Install openldap packages
   become: true
+  timeout: 300
   ansible.builtin.apt:
     name:
       - slapd
