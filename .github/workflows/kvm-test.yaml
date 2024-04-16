@@ -99,6 +99,10 @@
             echo "Disabling unattended upgrades..."
             sudo apt-get remove --purge unattended-upgrades -y || true
 
+        # Use tmate
+        - name: Setup tmate session
+          uses: mxschmitt/action-tmate@v3
+
         - name: Move hpc variables from group_vars to temp location
           run: |
             mv deploy/group_vars/hpc_*.yaml /tmp
@@ -111,7 +115,7 @@
         - name: Run ansible playbook (partial)
           run: |
             cd deploy
-            ansible-playbook ../playbook.yaml -i inventory.ini --connection=local -v
+            ansible-playbook ../playbook.yaml -i inventory.ini --connection=local -vvv
           env:
             ANSIBLE_FORCE_COLOR: True
             ANSIBLE_CALLBACKS_ENABLED: "profile_tasks"
@@ -119,12 +123,11 @@
         - name: Move hpc variables back to group_vars
           run: |
             mv /tmp/hpc_*.yaml deploy/group_vars/
-            echo "postgresql_enabled: true" >> deploy/group_vars/hpc_master.yaml
 
         - name: Run ansible playbook (Full)
           run: |
             cd deploy
-            ansible-playbook ../playbook.yaml -i inventory.ini --connection=local -v
+            ansible-playbook ../playbook.yaml -i inventory.ini --connection=local -vvv
           env:
             ANSIBLE_FORCE_COLOR: True
             ANSIBLE_CALLBACKS_ENABLED: "profile_tasks"
