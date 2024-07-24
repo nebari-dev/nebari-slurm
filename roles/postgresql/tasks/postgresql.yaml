@@ -23,6 +23,7 @@
   command: "sudo -u {{ pg_user }} /usr/lib/postgresql/{{ pg_version }}/bin/initdb -D {{ pg_data_directory }}"
   args:
     creates: "{{ pg_data_directory }}/PG_VERSION"
+  become: true
 
 - name: Configure PostgreSQL to use the new data directory
   lineinfile:
