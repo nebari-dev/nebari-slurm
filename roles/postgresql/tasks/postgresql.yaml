@@ -17,6 +17,7 @@
     group: "{{ pg_user }}"
     mode: '0700'
     state: directory
+  become: true
 
 - name: Initialize the PostgreSQL database
   command: "sudo -u {{ pg_user }} /usr/lib/postgresql/{{ pg_version }}/bin/initdb -D {{ pg_data_directory }}"
