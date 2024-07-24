@@ -104,10 +104,6 @@
           run: |
             df -h -l
 
-        # Use tmate
-        - name: Setup tmate session
-          uses: mxschmitt/action-tmate@v3
-
         - name: Move hpc variables from group_vars to temp location
           run: |
             mv deploy/group_vars/hpc_*.yaml /tmp
