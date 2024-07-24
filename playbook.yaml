@@ -25,6 +25,7 @@
     - nfs
     - mysql
     - postgresql
+    - redis
     - minio
     - backups
     - traefik

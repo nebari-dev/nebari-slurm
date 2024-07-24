@@ -1,0 +1,9 @@
+---
+- name: Restart services redis
+  become: true
+  ansible.builtin.service:
+    name: "{{ item }}"
+    enabled: "yes"
+    state: restarted
+  with_items:
+    - redis

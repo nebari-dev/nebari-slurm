@@ -11,6 +11,7 @@ munge_enabled: true
 mysql_enabled: true
 minio_enabled: true
 conda_store_enabled: true
+redis_enabled: true
 postgres_enabled: true
 nfs_server_enabled: true
 node_exporter_enabled: true

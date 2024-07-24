@@ -23,12 +23,14 @@
   command: "sudo -u {{ pg_user }} /usr/lib/postgresql/{{ pg_version }}/bin/initdb -D {{ pg_data_directory }}"
   args:
     creates: "{{ pg_data_directory }}/PG_VERSION"
+  become: true
 
 - name: Configure PostgreSQL to use the new data directory
   lineinfile:
     path: /etc/postgresql/{{ pg_version }}/main/postgresql.conf
     regexp: '^#?data_directory ='
     line: "data_directory = '{{ pg_data_directory }}'"
+  become: true
 
 - name: Ensure PostgreSQL service is running
   ansible.builtin.systemd:
