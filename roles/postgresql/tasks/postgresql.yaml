@@ -29,6 +29,7 @@
     path: /etc/postgresql/{{ pg_version }}/main/postgresql.conf
     regexp: '^#?data_directory ='
     line: "data_directory = '{{ pg_data_directory }}'"
+  become: true
 
 - name: Ensure PostgreSQL service is running
   ansible.builtin.systemd:
