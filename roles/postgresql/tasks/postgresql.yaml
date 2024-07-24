@@ -16,6 +16,7 @@
     owner: "{{ pg_user }}"
     group: "{{ pg_user }}"
     mode: '0700'
+    become: true
     state: directory
 
 - name: Initialize the PostgreSQL database
