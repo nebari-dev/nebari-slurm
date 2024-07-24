@@ -10,6 +10,25 @@
     state: latest
     cache_valid_time: 3600
 
+- name: Create the data directory
+  file:
+    path: "{{ pg_data_directory }}"
+    owner: "{{ pg_user }}"
+    group: "{{ pg_user }}"
+    mode: '0700'
+    state: directory
+
+- name: Initialize the PostgreSQL database
+  command: "sudo -u {{ pg_user }} /usr/lib/postgresql/{{ pg_version }}/bin/initdb -D {{ pg_data_directory }}"
+  args:
+    creates: "{{ pg_data_directory }}/PG_VERSION"
+
+- name: Configure PostgreSQL to use the new data directory
+  lineinfile:
+    path: /etc/postgresql/{{ pg_version }}/main/postgresql.conf
+    regexp: '^#?data_directory ='
+    line: "data_directory = '{{ pg_data_directory }}'"
+
 - name: Ensure PostgreSQL service is running
   ansible.builtin.systemd:
     name: postgresql
