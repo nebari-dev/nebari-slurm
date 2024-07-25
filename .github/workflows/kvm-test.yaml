@@ -18,20 +18,27 @@
       steps:
         - uses: actions/checkout@v4
 
-        - name: Setup Python via Miniconda
-          uses: conda-incubator/setup-miniconda@v3
-          env:
-            CONDA: /home/runnerx/miniconda3
-          with:
-            python-version: "3.11"
-            channels: conda-forge
-            miniconda-version: "latest"
-            auto-update-conda: true
+        # - name: Setup Python via Miniconda
+        #   uses: conda-incubator/setup-miniconda@v3
+        #   env:
+        #     CONDA: /home/runnerx/miniconda3
+        #   with:
+        #     python-version: "3.11"
+        #     channels: conda-forge
+        #     miniconda-version: "latest"
+        #     auto-update-conda: true
 
-        - name: Install dependencies
+        - name: Setup Python via Micromamba
+          uses: mamba-org/setup-micromamba@v1.9.0
+          with:
+            environment-name: nebari-slurm
+            create-args: >-
+              python=3.11
+              ansible
+            
+        - name: List environment
           run: |
-            conda info
-            conda install -c conda-forge ansible
+            micromamba list
 
         - name: Install Ansible dependencies
           run: |
