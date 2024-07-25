@@ -35,7 +35,7 @@
 - name: Ensure that minio data directory exists
   become: true
   ansible.builtin.file:
-    path: {{ minio_data_directory }}
+    path: "{{ minio_data_directory }}"
     state: directory
     mode: "0700"
     owner: minio
