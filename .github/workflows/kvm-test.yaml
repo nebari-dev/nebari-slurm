@@ -19,7 +19,7 @@
         - uses: actions/checkout@v4
 
         - name: Setup Python via Miniconda
-          uses: conda-incubator/setup-miniconda@v3.0.4
+          uses: conda-incubator/setup-miniconda@v3
           env:
             CONDA: /home/runnerx/miniconda3
           with:
