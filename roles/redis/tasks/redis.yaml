@@ -6,17 +6,19 @@
   become: true
 
 - name: Add Redis GPG Key
-  ansible.builtin.shell: |
-    # See: https://ansible.readthedocs.io/projects/lint/rules/risky-shell-pipe/#correct-code
-    set -o pipefail
-    curl -fsSL https://packages.redis.io/gpg | sudo gpg --batch --dearmor -o /usr/share/keyrings/redis-archive-keyring.gpg
+  ansible.builtin.shell:
+    cmd: |
+      set -o pipefail  # See: https://ansible.readthedocs.io/projects/lint/rules/risky-shell-pipe/#correct-code
+      curl -fsSL https://packages.redis.io/gpg | sudo gpg --batch --dearmor -o /usr/share/keyrings/redis-archive-keyring.gpg
+    executable: /bin/bash
   become: true
 
 - name: Add Redis APT Repository
-  ansible.builtin.shell: |
-    # See: https://ansible.readthedocs.io/projects/lint/rules/risky-shell-pipe/#correct-code
-    set -o pipefail
-    echo "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/redis.list
+  ansible.builtin.shell:
+    cmd: |
+      set -o pipefail  # See: https://ansible.readthedocs.io/projects/lint/rules/risky-shell-pipe/#correct-code
+      echo "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/redis.list
+    executable: /bin/bash
   become: true
 
 - name: Ensure Redis data directory exists
