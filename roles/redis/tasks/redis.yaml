@@ -1,17 +1,16 @@
 ---
-
 - name: Remove existing Redis keyring file
-  file:
+  ansible.builtin.file:
     path: /usr/share/keyrings/redis-archive-keyring.gpg
     state: absent
   become: true
 
 - name: Add Redis GPG Key
-  shell: curl -fsSL https://packages.redis.io/gpg | sudo gpg --batch --dearmor -o /usr/share/keyrings/redis-archive-keyring.gpg
+  ansible.builtin.shell: curl -fsSL https://packages.redis.io/gpg | sudo gpg --batch --dearmor -o /usr/share/keyrings/redis-archive-keyring.gpg
   become: true
 
 - name: Add Redis APT Repository
-  shell: echo "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/redis.list
+  ansible.builtin.shell: echo "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/redis.list
   become: true
 
 - name: Ensure Redis data directory exists
@@ -20,14 +19,14 @@
     state: directory
     owner: redis
     group: redis
-    mode: '0755'
+    mode: "0755"
   become: true
 
 - name: Install redis
-  apt:
+  ansible.builtin.apt:
     name: redis
     state: present
-    update_cache: yes
+    update_cache: true
   become: true
 
 - name: Copy the redis systemd service file
@@ -52,10 +51,20 @@
   register: _redis_service
 
 - name: Ensure Redis Configuration
-  template: src=templates/redis.conf.j2 dest=/etc/redis/redis.conf owner=root group=root mode=0644
+  ansible.builtin.template:
+    src: templates/redis.conf.j2
+    dest: /etc/redis/redis.conf
+    owner: root
+    group: root
+    mode: "0644"
+    cmd: ""
   become: true
   notify: Restart services redis
 
 - name: Ensure Redis is started
-  service: name=redis state=started enabled=yes
+  ansible.builtin.service:
+    name: redis
+    state: started
+    enabled: "yes"
+    cmd: ""
   become: true
