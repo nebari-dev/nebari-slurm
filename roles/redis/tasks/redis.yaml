@@ -1,20 +1,42 @@
 ---
-- name: Add Redis PPA
-  ansible.builtin.apt_repository:
-    repo: "ppa:redislabs/redis"
-    state: present
+
+- name: Remove existing Redis keyring file
+  file:
+    path: /usr/share/keyrings/redis-archive-keyring.gpg
+    state: absent
   become: true
 
-- name: Update apt cache
-  ansible.builtin.apt:
+- name: Add Redis GPG Key
+  shell: curl -fsSL https://packages.redis.io/gpg | sudo gpg --batch --dearmor -o /usr/share/keyrings/redis-archive-keyring.gpg
+  become: true
+
+- name: Add Redis APT Repository
+  shell: echo "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/redis.list
+  become: true
+
+- name: Install redis
+  apt:
+    name: redis={{version}}
+    state: present
     update_cache: yes
   become: true
 
-- name: Install specific Redis version
-  ansible.builtin.apt:
-    name: "redis-server=7.2*"
-    state: present
-  become: true
+#- name: Add Redis PPA
+#  ansible.builtin.apt_repository:
+#    repo: "ppa:redislabs/redis"
+#    state: present
+#  become: true
+#
+#- name: Update apt cache
+#  ansible.builtin.apt:
+#    update_cache: yes
+#  become: true
+#
+#- name: Install specific Redis version
+#  ansible.builtin.apt:
+#    name: "redis-server=7.2*"
+#    state: present
+#  become: true
 
 - name: Ensure Redis is started
   service: name=redis-server state=started enabled=yes
