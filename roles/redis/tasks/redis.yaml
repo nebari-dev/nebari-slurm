@@ -6,11 +6,17 @@
   become: true
 
 - name: Add Redis GPG Key
-  ansible.builtin.shell: curl -fsSL https://packages.redis.io/gpg | sudo gpg --batch --dearmor -o /usr/share/keyrings/redis-archive-keyring.gpg
+  ansible.builtin.shell: |
+    # See: https://ansible.readthedocs.io/projects/lint/rules/risky-shell-pipe/#correct-code
+    set -o pipefail
+    curl -fsSL https://packages.redis.io/gpg | sudo gpg --batch --dearmor -o /usr/share/keyrings/redis-archive-keyring.gpg
   become: true
 
 - name: Add Redis APT Repository
-  ansible.builtin.shell: echo "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/redis.list
+  ansible.builtin.shell: |
+    # See: https://ansible.readthedocs.io/projects/lint/rules/risky-shell-pipe/#correct-code
+    set -o pipefail
+    echo "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/redis.list
   become: true
 
 - name: Ensure Redis data directory exists
