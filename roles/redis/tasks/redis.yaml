@@ -14,29 +14,20 @@
   shell: echo "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/redis.list
   become: true
 
+- name: Ensure Redis data directory exists
+  ansible.builtin.file:
+    path: "{{ redis_data_directory }}"
+    state: directory
+    owner: redis
+    group: redis
+    mode: '0755'
+
 - name: Install redis
   apt:
     name: redis
     state: present
     update_cache: yes
   become: true
-
-#- name: Add Redis PPA
-#  ansible.builtin.apt_repository:
-#    repo: "ppa:redislabs/redis"
-#    state: present
-#  become: true
-#
-#- name: Update apt cache
-#  ansible.builtin.apt:
-#    update_cache: yes
-#  become: true
-#
-#- name: Install specific Redis version
-#  ansible.builtin.apt:
-#    name: "redis-server=7.2*"
-#    state: present
-#  become: true
 
 - name: Ensure Redis is started
   service: name=redis-server state=started enabled=yes

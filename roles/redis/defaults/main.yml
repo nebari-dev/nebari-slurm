@@ -2,3 +2,4 @@
 redis_enabled: false
 redis_port: 6379
 redis_password: 1XoRW/Vgz+LdKLXeh9uwdBrYPBJKhIJR
+redis_data_directory: /opt/conda-store/redis/

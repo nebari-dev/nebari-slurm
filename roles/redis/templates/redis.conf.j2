@@ -507,7 +507,7 @@ rdb-del-sync-files no
 # The Append Only File will also be created inside this directory.
 #
 # Note that you must specify a directory here, not a file name.
-dir ./
+dir {{ redis_data_directory }}
 
 ################################# REPLICATION #################################
 
