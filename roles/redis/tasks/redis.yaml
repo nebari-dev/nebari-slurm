@@ -1,0 +1,25 @@
+---
+- name: Install Redis
+  tasks:
+    - name: Add Redis PPA
+      ansible.builtin.apt_repository:
+        repo: "ppa:redislabs/redis"
+        state: present
+
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: yes
+
+    - name: Install specific Redis version
+      ansible.builtin.apt:
+        name: "redis-server=7.2*"
+        state: present
+
+    - name: Ensure Redis is started
+      service: name=redis-server state=started enabled=yes
+      sudo: true
+
+    - name: Ensure Redis Configuration
+      template: src=templates/redis.conf.j2 dest=/etc/redis/redis.conf owner=root group=root mode=0644
+      sudo: true
+      notify: Restart services redis
