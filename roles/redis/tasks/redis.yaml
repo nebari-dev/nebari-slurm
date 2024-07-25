@@ -30,11 +30,32 @@
     update_cache: yes
   become: true
 
+- name: Copy the redis systemd service file
+  become: true
+  ansible.builtin.copy:
+    content: |
+      [Unit]
+      Description=Redis
+      After=syslog.target
+
+      [Service]
+      ExecStart=/usr/bin/redis-server /etc/redis/redis.conf
+      RestartSec=5s
+      Restart=on-success
+
+      [Install]
+      WantedBy=multi-user.target
+    dest: /etc/systemd/system/redis.service
+    owner: root
+    group: root
+    mode: "0644"
+  register: _redis_service
+
 - name: Ensure Redis Configuration
   template: src=templates/redis.conf.j2 dest=/etc/redis/redis.conf owner=root group=root mode=0644
   become: true
   notify: Restart services redis
 
 - name: Ensure Redis is started
-  service: name=redis-server state=started enabled=yes
+  service: name=redis state=started enabled=yes
   become: true
