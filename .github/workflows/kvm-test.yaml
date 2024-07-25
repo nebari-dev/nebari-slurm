@@ -20,9 +20,13 @@
 
         - name: Setup Python via Miniconda
           uses: conda-incubator/setup-miniconda@v3.0.4
+          env:
+            CONDA: /home/runnerx/miniconda3
           with:
-            python-version: "3.10"
+            python-version: "3.11"
             channels: conda-forge
+            miniconda-version: "latest"
+            auto-update-conda: true
 
         - name: Install dependencies
           run: |
