@@ -16,7 +16,7 @@
 
 - name: Install redis
   apt:
-    name: redis={{version}}
+    name: redis
     state: present
     update_cache: yes
   become: true
