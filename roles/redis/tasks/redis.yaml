@@ -21,6 +21,7 @@
     owner: redis
     group: redis
     mode: '0755'
+  become: true
 
 - name: Install redis
   apt:
