@@ -12,24 +12,24 @@
 
 - name: Create the data directory
   ansible.builtin.file:
-    path: "{{ pg_data_directory }}"
-    owner: "{{ pg_user }}"
-    group: "{{ pg_user }}"
+    path: "{{ postgres_data_directory }}"
+    owner: "{{ postgres_user }}"
+    group: "{{ postgres_user }}"
     mode: "0700"
     state: directory
   become: true
 
 - name: Initialize the PostgreSQL database
-  ansible.builtin.command: sudo -u {{ pg_user }} /usr/lib/postgresql/{{ pg_version }}/bin/initdb -D {{ pg_data_directory }}
+  ansible.builtin.command: sudo -u {{ postgres_user }} /usr/lib/postgresql/{{ postgres_version }}/bin/initdb -D {{ postgres_data_directory }}
   args:
-    creates: "{{ pg_data_directory }}/PG_VERSION"
+    creates: "{{ postgres_data_directory }}/PG_VERSION"
   become: true
 
 - name: Configure PostgreSQL to use the new data directory
   ansible.builtin.lineinfile:
-    path: /etc/postgresql/{{ pg_version }}/main/postgresql.conf
+    path: /etc/postgresql/{{ postgres_version }}/main/postgresql.conf
     regexp: ^#?data_directory =
-    line: data_directory = '{{ pg_data_directory }}'
+    line: data_directory = '{{ postgres_data_directory }}'
   become: true
 
 - name: Ensure PostgreSQL service is running
