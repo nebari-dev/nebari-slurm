@@ -26,7 +26,8 @@
 
         - name: Install dependencies
           run: |
-            pip install ansible
+            conda info
+            conda install -c conda-forge ansible
 
         - name: Install Ansible dependencies
           run: |
