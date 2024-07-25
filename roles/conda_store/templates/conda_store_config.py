@@ -12,9 +12,7 @@ from conda_store_server.server.auth import GenericOAuthAuthentication
 c.CondaStore.storage_class = S3Storage
 c.CondaStore.store_directory = "/opt/conda-store/conda-store/"
 c.CondaStore.database_url = "postgresql+psycopg2://{{ postgres_users[0].username }}:{{ postgres_users[0].password }}@localhost/{{ postgres_databases[0] }}"
-c.CondaStore.redis_url = (
-    f"redis://:{{ redis_password }}@localhost:6379/0"
-)
+c.CondaStore.redis_url = f"redis://:{{ redis_password }}@localhost:6379/0"
 c.CondaStore.default_uid = 1000
 c.CondaStore.default_gid = 100
 c.CondaStore.default_permissions = "775"

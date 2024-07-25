@@ -47,3 +47,5 @@ postgres_users:
   - username: conda-store
     password: eIbmUditL4RbQm0YPeLozRme
     role: CREATEDB,CREATEROLE
+
+redis_password: 1XoRW/Vgz+LdKLXeh9uwdBrYPBJKhIJR
