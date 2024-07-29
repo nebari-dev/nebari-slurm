@@ -35,7 +35,7 @@
 - name: Ensure that minio data directory exists
   become: true
   ansible.builtin.file:
-    path: /var/lib/minio
+    path: "{{ minio_data_directory }}"
     state: directory
     mode: "0700"
     owner: minio
@@ -44,7 +44,7 @@
 - name: Ensure that minio buckets exist
   become: true
   ansible.builtin.file:
-    path: /var/lib/minio/{{ item }}
+    path: "{{ minio_data_directory }}/{{ item }}"
     state: directory
     mode: "0700"
     owner: minio
@@ -83,11 +83,11 @@
       AssertFileIsExecutable=/usr/local/bin/minio
 
       [Service]
-      WorkingDirectory=/var/lib/minio/
+      WorkingDirectory={{ minio_data_directory }}
       User=minio
       Group=minio
       EnvironmentFile=/etc/minio/minio.env
-      ExecStart=/usr/local/bin/minio server /var/lib/minio/ --address ":{{ minio_internal_port }}"
+      ExecStart=/usr/local/bin/minio server {{ minio_data_directory }} --address ":{{ minio_internal_port }}"
       Restart=always
       LimitNOFILE=65536
       TasksMax=infinity

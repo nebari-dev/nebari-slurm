@@ -8,3 +8,4 @@ minio_username: admin
 minio_password: mWdaGyPmNOApU93Vxk6sNTac
 minio_buckets:
   - conda-store
+minio_data_directory: /opt/conda-store/minio

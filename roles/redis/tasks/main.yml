@@ -1,0 +1,4 @@
+---
+- name: Install redis
+  ansible.builtin.include_tasks: redis.yaml
+  when: redis_enabled

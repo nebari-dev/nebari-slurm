@@ -3,7 +3,6 @@ channels:
  - conda-forge
 dependencies:
   - python ==3.10
-  - conda-store-server=={{ conda_store_version }}
   # conda environment builds
   - conda ==23.5.2
   - python-docker
@@ -36,3 +35,6 @@ dependencies:
   - minio
   # installer
   - constructor
+  - pip:
+        # version 2024.3.1 is not on conda-forge unfortunately
+      - conda-store-server=={{ conda_store_version }}

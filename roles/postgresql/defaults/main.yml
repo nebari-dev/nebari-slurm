@@ -2,6 +2,9 @@
 postgres_enabled: false
 postgres_databases:
   - conda-store
+postgres_data_directory: /opt/conda-store/postgres/data/
+postgres_user: postgres
+postgres_version: 14
 
 postgres_users:
   - username: conda-store

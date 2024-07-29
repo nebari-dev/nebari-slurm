@@ -24,7 +24,7 @@ jobs:
             ${{ runner.os }}-vagrant-
 
       - name: Install test dependencies.
-        run: sudo pip3 install ansible
+        run: pip install ansible
 
       - name: Install Ansible Dependencies
         working-directory: tests/ubuntu2004-singlenode
@@ -32,6 +32,10 @@ jobs:
           ansible-galaxy collection install community.general
           ansible-galaxy collection install ansible.posix
 
+      - name: Install Vagrant
+        run: |
+          brew tap hashicorp/tap
+          brew install hashicorp/tap/hashicorp-vagrant
       - name: Show Vagrant version
         run: vagrant --version
 
