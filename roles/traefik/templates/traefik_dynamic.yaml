@@ -47,7 +47,11 @@ http:
       stripPrefix:
         prefixes:
           - "/gateway"
-
+    # This is a workaround due to a mismatch between the keycloak realm name and the nebari-jupyterhub-theme
+    realm-replacepathregex:
+      replacePathRegex:
+        regex: "^/auth/admin/nebari/console/"
+        replacement: "/auth/"
   services:
     dummy: # never reacher due to middleware http -> https redirect
       loadBalancer:
@@ -93,6 +97,7 @@ http:
       service: "minio"
     keycloak:
       rule: "Host(`{{ traefik_domain | default(hostvars[groups['hpc_master'][0]].ansible_ssh_host) }}`) && PathPrefix(`/auth`)"
+      middlewares: ["realm-replacepathregex"]
       entryPoints:
         - "websecure"
       service: "keycloak"
