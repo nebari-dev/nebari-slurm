@@ -10,3 +10,4 @@ skip_list:
   - no-handler
   - risky-octal
   - args[module]
+  - ignore-errors

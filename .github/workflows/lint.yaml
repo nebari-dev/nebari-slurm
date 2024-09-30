@@ -11,4 +11,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Run ansible-lint
-        uses: ansible/ansible-lint@main
+        uses: ansible/ansible-lint@v24.9.2
+
+      - name: Check ansible-lint diff
+        if: failure()
+        uses: ansible/ansible-lint@v24.9.2
+        with:
+          args: --fix
+
+      - name: Check ansible lint diff and undo
+        if: failure()
+        run: |
+          git diff
