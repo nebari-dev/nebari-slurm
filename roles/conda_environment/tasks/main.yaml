@@ -13,9 +13,15 @@
     mode: "0644"
   register: _environment
 
+- name: Remove existing conda environment {{ environment_path | basename | splitext | first }}
+  become: true
+  ansible.builtin.command:
+    cmd: "{{ miniforge_home }}/bin/mamba env remove --name {{ environment_path | basename | splitext | first }}"
+  ignore_errors: true
+  when: _environment.changed
+
 - name: Install conda environment {{ environment_path | basename }}
   become: true
   ansible.builtin.command:
-    cmd: "{{ miniforge_home }}/bin/mamba env update -f /opt/conda-environments/{{ environment_path | basename }} --prefix {{ miniforge_home }}/envs/{{ environment_path
-      | basename | splitext | first }}"
+    cmd: "{{ miniforge_home }}/bin/mamba env create -f /opt/conda-environments/{{ environment_path | basename }} --prefix {{ miniforge_home }}/envs/{{ environment_path | basename | splitext | first }}"
   when: _environment.changed
